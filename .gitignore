@@ -1,0 +1,22 @@
+node_modules/
+build/
+dist/
+coverage/
+playwright-report/
+test-results/
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+*.log
+
+# React Router
+/.react-router/
+
+# Editor/OS
+.vscode/*
+!.vscode/extensions.json
+
+# Local Claude Code tool permissions (machine-specific)
+.claude/settings.local.json

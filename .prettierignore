@@ -1,0 +1,11 @@
+node_modules
+build
+.react-router
+coverage
+playwright-report
+test-results
+pnpm-lock.yaml
+
+# Approved documentation is preserved verbatim; Prettier does not reformat it.
+*.md
+docs/
