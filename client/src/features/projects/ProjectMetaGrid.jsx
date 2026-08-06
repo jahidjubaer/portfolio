@@ -11,6 +11,12 @@ export function ProjectMetaGrid({ project, className = "" }) {
     { label: "Type", value: project.projectType },
     { label: "Status", value: STATUS_META[project.status].label },
   ];
+  if (project.caseStudy?.role) {
+    items.push({ label: "Role", value: project.caseStudy.role });
+  }
+  if (project.caseStudy?.timeline) {
+    items.push({ label: "Timeline", value: project.caseStudy.timeline });
+  }
   if (caseStudyMeta) {
     items.push({ label: "Case study", value: caseStudyMeta.label });
   }

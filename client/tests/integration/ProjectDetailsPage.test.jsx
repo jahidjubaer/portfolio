@@ -37,7 +37,7 @@ describe("Project detail route", () => {
       "Workflow",
       "Capabilities",
       "Architecture",
-      "Engineering decisions",
+      "Implementation approach",
       "Challenge, outcome and reflection",
     ].forEach((heading) => {
       expect(
@@ -46,16 +46,43 @@ describe("Project detail route", () => {
     });
   });
 
-  it("shows a restrained note instead of fabricated challenge/outcome content", () => {
+  it("shows restrained, non-fabricated challenge, outcome, and reflection content", () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work/sarabo"],
     });
     render(<RouterProvider router={router} />);
 
     expect(
+      screen.getByText(/Validation was one of the main implementation/),
+    ).toBeInTheDocument();
+    expect(
       screen.getByText(
-        "Detailed implementation notes for this section are still being prepared.",
+        /Quantitative product outcomes and usage metrics are not currently available/,
       ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Building Sarabo as a solo project/),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the confirmed role and timeline in project metadata", () => {
+    const router = createMemoryRouter(routeConfig, {
+      initialEntries: ["/work/sarabo"],
+    });
+    render(<RouterProvider router={router} />);
+
+    expect(screen.getByText("Sole Developer")).toBeInTheDocument();
+    expect(screen.getByText("July–August")).toBeInTheDocument();
+  });
+
+  it("describes the workflow as a cautious lifecycle summary, not a fixed step sequence", () => {
+    const router = createMemoryRouter(routeConfig, {
+      initialEntries: ["/work/sarabo"],
+    });
+    render(<RouterProvider router={router} />);
+
+    expect(
+      screen.getByText(/Sarabo supports a repair-request lifecycle covering/),
     ).toBeInTheDocument();
   });
 

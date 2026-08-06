@@ -14,8 +14,11 @@ import { assertValidProjects } from "./project-schema";
  * @typedef {{ id: string, heading: string }} CaseStudySectionMeta
  * @typedef {{
  *   overview: string,
+ *   role?: string,
+ *   timeline?: string,
+ *   responsibility?: string,
  *   roles?: ProjectRole[],
- *   workflow?: WorkflowStep[],
+ *   workflow?: string | WorkflowStep[],
  *   capabilities?: string[],
  *   architecture?: ArchitectureLayer[],
  *   decisions?: string[],
@@ -80,6 +83,10 @@ const rawProjects = [
     caseStudy: {
       overview:
         "Sarabo is a multi-role electronics-repair service platform. Customers submit repair requests and track progress; technicians manage assigned repairs; administrators oversee accounts, requests, and technician assignment across the platform.",
+      role: "Sole Developer",
+      timeline: "July–August",
+      responsibility:
+        "This was a solo project. Jahid was responsible for the end-to-end development of the client and server applications.",
       roles: [
         {
           name: "Customer",
@@ -97,36 +104,8 @@ const rawProjects = [
             "Manages accounts and repair requests, and assigns technicians across the platform.",
         },
       ],
-      workflow: [
-        {
-          label: "Request submitted",
-          description: "A customer creates a repair request for a device.",
-        },
-        {
-          label: "Quotation provided",
-          description: "The request is reviewed and a quotation is issued.",
-        },
-        {
-          label: "Technician assigned",
-          description:
-            "Once a quotation is accepted, a technician is assigned to the request.",
-        },
-        {
-          label: "Repair in progress",
-          description:
-            "The technician works the request and progress is tracked through the lifecycle.",
-        },
-        {
-          label: "Payment",
-          description:
-            "The customer completes payment through the Stripe payment flow.",
-        },
-        {
-          label: "Review",
-          description:
-            "The customer leaves a review once the repair is complete.",
-        },
-      ],
+      workflow:
+        "Sarabo supports a repair-request lifecycle covering service selection, request submission, quotation and review, assignment-related handling, progress tracking and payment-related states.",
       capabilities: SARABO_CAPABILITIES,
       architecture: [
         {
@@ -155,19 +134,22 @@ const rawProjects = [
         },
       ],
       decisions: [
-        "The React client and the Express API were built and deployed separately (the client via Firebase Hosting, the API on its own deployment) rather than as a single combined service.",
+        "The React client and the Express API are deployed separately — the client via Firebase Hosting, the API on its own deployment.",
         "Firebase handles authentication while a custom Express and MongoDB API manages repair-request, quotation, and role data.",
       ],
-      challenge: null,
-      outcome: null,
-      reflection: null,
+      challenge:
+        "Validation was one of the main implementation challenges during development. Detailed notes about the specific validation cases and the final solution are still being documented.",
+      outcome:
+        "The project resulted in a working full-stack service platform that demonstrates role-based workflows, repair-request management, authentication, tracking and payment-related integration. Quantitative product outcomes and usage metrics are not currently available.",
+      reflection:
+        "Building Sarabo as a solo project provided practical experience managing a full-stack application from client-side flows through server-side functionality. Validation emerged as an important area for further refinement and documentation.",
       sections: [
         { id: "overview", heading: "Overview" },
         { id: "roles", heading: "Roles" },
         { id: "workflow", heading: "Workflow" },
         { id: "capabilities", heading: "Capabilities" },
         { id: "architecture", heading: "Architecture" },
-        { id: "decisions", heading: "Engineering decisions" },
+        { id: "decisions", heading: "Implementation approach" },
         { id: "reflection", heading: "Challenge, outcome and reflection" },
       ],
     },
@@ -178,16 +160,11 @@ const rawProjects = [
         "How Sarabo, a multi-role electronics-repair service platform, handles authentication, repair-request tracking, technician assignment, and payments across customer, technician, and administrator roles.",
     },
     missingContent: [
-      "exact role",
-      "team size",
-      "timeline",
       "client repository URL",
       "server repository URL",
       "public documentation URL",
       "current status detail",
-      "2-4 real challenges and solutions",
-      "result or outcome",
-      "what would be improved next",
+      "validation challenge solution",
       "cover image",
       "5-10 screenshots",
       "optional demo video",

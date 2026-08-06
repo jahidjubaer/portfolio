@@ -84,9 +84,10 @@ Recommended source dimensions:
 
 - [x] Final project title: `Sarabo`.
 - [x] One-line problem statement: `A multi-role electronics-repair service platform that helps customers request repairs and track service progress while technicians and administrators manage the repair lifecycle.`
-- [ ] Jahid's exact role: `TODO_CONTENT`.
-- [ ] Team size and collaborators: `TODO_CONTENT`.
-- [ ] Timeline: `TODO_CONTENT`.
+- [x] Jahid's exact role: `Sole Developer.`
+- [x] Team size and collaborators: `Solo project — no additional collaborators.`
+- [x] Timeline: `July–August (year not confirmed).`
+- [x] Responsibility: `End-to-end development of the client and server applications.`
 - [ ] Client repository URL: `TODO_CONTENT`.
 - [ ] Server repository URL: `TODO_CONTENT`.
 - [ ] Public documentation URL: `TODO_CONTENT`.
@@ -115,7 +116,8 @@ Recommended source dimensions:
 
 #### Case-study evidence still required
 
-- [ ] Two to four real challenges and solutions: `TODO_CONTENT`.
+- [x] Primary challenge: `Validation.`
+- [ ] Validation challenge solution: `TODO_CONTENT`.
 - [ ] Result or current outcome: `TODO_CONTENT`.
 - [ ] What Jahid would improve next: `TODO_CONTENT`.
 - [ ] Cover image: `TODO_CONTENT`.
@@ -269,7 +271,7 @@ Known candidates exist, but presentation readiness is not confirmed. Do not publ
 Complete these before implementation content-freeze:
 
 1. Provide the final résumé PDF and approve the email/links inside it.
-2. Supply Sarabo's exact role, team size, timeline, repositories, current status, real challenges, outcome, and visuals.
+2. Supply Sarabo's repositories, current status detail, the validation challenge solution, and visuals. (Role, team size, timeline, and primary challenge are now confirmed — see section 7.)
 3. Supply live URLs and case-study evidence for Bang Learner and Note Bank.
 4. Supply the professional portraits and photography selection with publication permission.
 5. Confirm the Scouts history and Red Crescent details.

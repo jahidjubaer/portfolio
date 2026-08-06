@@ -95,6 +95,11 @@ function CompleteCaseStudy({ project, relatedProjects }) {
           <p className="body-md text-(--color-text-secondary)">
             {caseStudy.overview}
           </p>
+          {caseStudy.responsibility ? (
+            <p className="body-md mt-3 text-(--color-text-secondary)">
+              {caseStudy.responsibility}
+            </p>
+          ) : null}
         </ProjectSection>
 
         <ProjectSection id="roles" heading="Roles">
@@ -118,7 +123,12 @@ function CompleteCaseStudy({ project, relatedProjects }) {
         </ProjectSection>
 
         <ProjectSection id="workflow" heading="Workflow">
-          {caseStudy.workflow?.length ? (
+          {typeof caseStudy.workflow === "string" && caseStudy.workflow ? (
+            <p className="body-md text-(--color-text-secondary)">
+              {caseStudy.workflow}
+            </p>
+          ) : null}
+          {Array.isArray(caseStudy.workflow) && caseStudy.workflow.length ? (
             <ProjectWorkflow steps={caseStudy.workflow} />
           ) : null}
         </ProjectSection>
@@ -148,7 +158,7 @@ function CompleteCaseStudy({ project, relatedProjects }) {
           ) : null}
         </ProjectSection>
 
-        <ProjectSection id="decisions" heading="Engineering decisions">
+        <ProjectSection id="decisions" heading="Implementation approach">
           {caseStudy.decisions?.length ? (
             <ul className="space-y-3">
               {caseStudy.decisions.map((decision) => (
