@@ -3,10 +3,14 @@
  *
  * To add a future asset:
  *   1. Place the file under client/public/assets in the expected folder
- *      (profile/, resume/, projects/<slug>/).
+ *      (profile/, resume/, projects/<slug>/, or for Beyond:
+ *      beyond/photography/<street|nature|campus|sports|events|uncategorized>/,
+ *      beyond/leadership/, beyond/volunteering/, beyond/highlights/).
  *   2. Use the expected filename (profile-portrait.webp,
  *      profile-portrait-square.webp, jahid-hasan-resume.pdf, cover.<ext>,
- *      screenshot-01.<ext>, screenshot-02.<ext>, ...).
+ *      screenshot-01.<ext>, screenshot-02.<ext>, ...). Beyond photography
+ *      and leadership/volunteering/highlights files may use any filename —
+ *      the folder they're placed in determines their category.
  *   3. Restart `npm run dev` (or run `npm run build`).
  *   4. The manifest regenerates automatically via the predev/prebuild hook.
  */
@@ -33,6 +37,23 @@ const PLACEHOLDERS = {
   projectCover: "/assets/placeholders/project-cover-placeholder.svg",
   projectScreenshot: "/assets/placeholders/project-screenshot-placeholder.svg",
 };
+
+// Photography source files are always real photographs, never SVG icons —
+// scoped separately from SUPPORTED_EXTENSIONS above so an SVG accidentally
+// dropped in a Beyond folder is not mistaken for a photograph.
+const PHOTOGRAPHY_EXTENSIONS = [".webp", ".jpg", ".jpeg", ".png", ".avif"];
+
+// Fixed, deterministic category order — also drives display order in the
+// UI (see client/src/data/photography.js). "uncategorized" is the
+// catch-all for any photograph that hasn't been sorted into a category.
+const PHOTOGRAPHY_CATEGORIES = [
+  "street",
+  "nature",
+  "campus",
+  "sports",
+  "events",
+  "uncategorized",
+];
 
 function listFiles(dir) {
   try {
@@ -108,6 +129,42 @@ function buildProjectGallery(slug) {
   }));
 }
 
+function listBeyondCategoryFiles(...dirParts) {
+  const dir = join(ASSETS_DIR, "beyond", ...dirParts);
+  return listFiles(dir)
+    .filter((name) =>
+      PHOTOGRAPHY_EXTENSIONS.includes(extname(name).toLowerCase()),
+    )
+    .sort()
+    .map((file) => ({
+      file,
+      src: `/assets/beyond/${[...dirParts, file].join("/")}`,
+    }));
+}
+
+function buildBeyondPhotography() {
+  const categories = Object.fromEntries(
+    PHOTOGRAPHY_CATEGORIES.map((category) => [
+      category,
+      listBeyondCategoryFiles("photography", category),
+    ]),
+  );
+  const total = Object.values(categories).reduce(
+    (sum, files) => sum + files.length,
+    0,
+  );
+  return { available: total > 0, total, categories };
+}
+
+function buildBeyond() {
+  return {
+    photography: buildBeyondPhotography(),
+    leadership: listBeyondCategoryFiles("leadership"),
+    volunteering: listBeyondCategoryFiles("volunteering"),
+    highlights: listBeyondCategoryFiles("highlights"),
+  };
+}
+
 function buildManifest() {
   const projectSlugDirs = {
     sarabo: "sarabo",
@@ -132,6 +189,7 @@ function buildManifest() {
     },
     resume: buildResume(),
     projects,
+    beyond: buildBeyond(),
   };
 }
 
@@ -178,6 +236,8 @@ export {
   buildResume,
   buildProjectCover,
   buildProjectGallery,
+  buildBeyond,
+  buildBeyondPhotography,
   serialize,
   ASSETS_DIR,
 };
@@ -189,6 +249,6 @@ const isMainModule =
 if (isMainModule) {
   const manifest = generate();
   console.log(
-    `Asset manifest written to ${OUTPUT_FILE.replace(CLIENT_ROOT, "client")} (profile: ${manifest.profile.portrait.available ? "found" : "missing"}, resume: ${manifest.resume.available ? "found" : "missing"}, sarabo gallery: ${manifest.projects.sarabo.gallery.length} image(s)).`,
+    `Asset manifest written to ${OUTPUT_FILE.replace(CLIENT_ROOT, "client")} (profile: ${manifest.profile.portrait.available ? "found" : "missing"}, resume: ${manifest.resume.available ? "found" : "missing"}, sarabo gallery: ${manifest.projects.sarabo.gallery.length} image(s), beyond photography: ${manifest.beyond.photography.total} image(s)).`,
   );
 }

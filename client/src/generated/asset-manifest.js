@@ -77,4 +77,21 @@ export const assetManifest = {
       gallery: [],
     },
   },
+  beyond: {
+    photography: {
+      available: false,
+      total: 0,
+      categories: {
+        street: [],
+        nature: [],
+        campus: [],
+        sports: [],
+        events: [],
+        uncategorized: [],
+      },
+    },
+    leadership: [],
+    volunteering: [],
+    highlights: [],
+  },
 };

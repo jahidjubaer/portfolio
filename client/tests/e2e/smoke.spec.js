@@ -313,7 +313,7 @@ test("unknown route provides working recovery navigation", async ({ page }) => {
   ).toBeVisible();
 });
 
-for (const path of ["/about", "/work", "/resume"]) {
+for (const path of ["/about", "/work", "/resume", "/beyond"]) {
   test(`no horizontal overflow on ${path} at 360px`, async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await page.goto(path);
@@ -361,4 +361,21 @@ test("Résumé download action is visible on a mobile viewport", async ({
   const hasDownload = await downloadLink.isVisible().catch(() => false);
   const hasNotice = await preparingNotice.isVisible().catch(() => false);
   expect(hasDownload || hasNotice).toBe(true);
+});
+
+test("Beyond page renders its sections on a mobile viewport", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/beyond");
+
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Photography" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Leadership" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("A curated photography selection is being prepared."),
+  ).toBeVisible();
 });

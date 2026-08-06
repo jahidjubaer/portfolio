@@ -58,7 +58,7 @@
 
 ## 5. Résumé
 
-- [ ] Final portfolio résumé PDF: `TODO_CONTENT`.
+- [x] Final portfolio résumé PDF: `Available — client/public/assets/resume/jahid-hasan-resume.pdf, verified via the generated asset manifest.`
 - [x] Required production filename: `jahid-hasan-resume.pdf`.
 - [ ] Last updated date: `TODO_CONTENT`.
 - [ ] Confirm final public email and links inside PDF: `TODO_CONTENT`.
@@ -66,8 +66,8 @@
 
 ## 6. Professional imagery
 
-- [ ] Professional portrait, vertical: `TODO_CONTENT`.
-- [ ] Professional portrait, landscape or square: `TODO_CONTENT`.
+- [x] Professional portrait, vertical: `Available — client/public/assets/profile/profile-portrait.webp, verified via the generated asset manifest.`
+- [x] Professional portrait, landscape or square: `Available — client/public/assets/profile/profile-portrait-square.webp, verified via the generated asset manifest.`
 - [ ] Casual/personal portrait for the Beyond/Story section: `TODO_CONTENT`.
 - [ ] Permission to publish every selected image: `TODO_CONTENT`.
 - [x] Recommended treatment: `Mixed — clean color portraits for professional pages; selective monochrome treatment for Story/photography transitions.`
