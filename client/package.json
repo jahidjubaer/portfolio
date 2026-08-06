@@ -3,6 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "assets:sync": "node scripts/generate-asset-manifest.js",
+    "predev": "npm run assets:sync",
+    "prebuild": "npm run assets:sync",
+    "pretest": "npm run assets:sync",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

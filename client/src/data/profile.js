@@ -1,3 +1,5 @@
+import { assetManifest } from "../generated/asset-manifest";
+
 /**
  * Verified identity and contact data, sourced from CONTENT_CHECKLIST.md.
  * Never invent a value here — use `null` and hide the dependent UI instead.
@@ -29,12 +31,12 @@ export const profile = {
     primaryLanguage: "C++",
     platforms: "VJudge, Codeforces, Dimik OJ, and LeetCode",
   },
+  // Availability and URL come from the generated asset manifest (the single
+  // source of truth for what asset files actually exist on disk) — never
+  // duplicate this as a separate hardcoded boolean.
   resume: {
-    // No résumé PDF has been supplied yet (CONTENT_CHECKLIST.md, section 5).
-    // Keep this null until a real file exists at the given path — never
-    // link to a file that hasn't been confirmed.
-    available: false,
+    available: assetManifest.resume.available,
     filename: "jahid-hasan-resume.pdf",
-    url: null,
+    url: assetManifest.resume.available ? assetManifest.resume.src : null,
   },
 };

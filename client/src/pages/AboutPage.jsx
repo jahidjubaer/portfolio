@@ -5,9 +5,11 @@ import { ButtonLink } from "../components/ui/ButtonLink";
 import { Divider } from "../components/ui/Divider";
 import { Reveal } from "../features/motion/Reveal";
 import { StaggerGroup, StaggerItem } from "../features/motion/StaggerGroup";
+import { ImageWithFallback } from "../components/media/ImageWithFallback";
 import { profile } from "../data/profile";
 import { capabilityGroups } from "../data/capabilities";
 import { leadershipRoles } from "../data/leadership";
+import { assetManifest } from "../generated/asset-manifest";
 
 export function AboutPage() {
   usePageMeta({
@@ -18,15 +20,29 @@ export function AboutPage() {
 
   return (
     <Container as="div" className="section-spacing">
-      <Reveal>
-        <SectionLabel>About</SectionLabel>
-        <h1 className="heading-xl mt-3 text-(--color-text-primary)">
-          About Jahid
-        </h1>
-        <p className="body-lg mt-6 max-w-prose text-(--color-text-secondary)">
-          {profile.heroSupport}
-        </p>
-      </Reveal>
+      <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
+        <Reveal>
+          <SectionLabel>About</SectionLabel>
+          <h1 className="heading-xl mt-3 text-(--color-text-primary)">
+            About Jahid
+          </h1>
+          <p className="body-lg mt-6 max-w-prose text-(--color-text-secondary)">
+            {profile.heroSupport}
+          </p>
+        </Reveal>
+
+        <Reveal delay={0.08}>
+          <div className="mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface)">
+            <ImageWithFallback
+              src={assetManifest.profile.portraitSquare.src}
+              fallbackSrc={assetManifest.profile.portraitSquare.fallback}
+              alt="Portrait of Jahid Hasan"
+              className="h-full w-full object-cover"
+              loading="eager"
+            />
+          </div>
+        </Reveal>
+      </div>
 
       <Divider className="my-16" />
 

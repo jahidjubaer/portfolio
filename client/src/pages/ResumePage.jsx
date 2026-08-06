@@ -21,8 +21,12 @@ export function ResumePage() {
 
         {profile.resume.available ? (
           <div className="mt-6">
-            <ButtonLink href={profile.resume.url} variant="primary">
-              Download Résumé (PDF)
+            <ButtonLink
+              href={profile.resume.url}
+              download={profile.resume.filename}
+              variant="primary"
+            >
+              Download résumé
             </ButtonLink>
           </div>
         ) : (

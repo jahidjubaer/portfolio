@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="title desc">
+  <title id="title">Photography placeholder</title>
+  <desc id="desc">Photography selection coming soon</desc>
+  <rect width="960" height="600" fill="#201c17" />
+  <rect x="0.5" y="0.5" width="959" height="599" fill="none" stroke="rgba(238,232,220,0.14)" stroke-width="1" />
+  <rect x="72" y="72" width="816" height="456" fill="none" stroke="rgba(238,232,220,0.24)" stroke-width="1.5" />
+  <circle cx="480" cy="270" r="64" fill="none" stroke="#ff6b3d" stroke-width="2" />
+  <circle cx="480" cy="270" r="18" fill="none" stroke="#ff6b3d" stroke-width="2" />
+  <text x="480" y="270" text-anchor="middle" dy="112" font-family="Consolas, 'Courier New', monospace" font-size="18" letter-spacing="1" fill="#eee8dc">Photography selection coming soon</text>
+</svg>

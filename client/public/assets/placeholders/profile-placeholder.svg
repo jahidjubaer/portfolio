@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" role="img" aria-labelledby="title desc">
+  <title id="title">Portrait placeholder</title>
+  <desc id="desc">Portrait coming soon</desc>
+  <rect width="480" height="480" fill="#0d1116" />
+  <rect x="0.5" y="0.5" width="479" height="479" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1" />
+  <circle cx="240" cy="196" r="72" fill="none" stroke="#7f8995" stroke-width="2" />
+  <path d="M112 392c0-70.7 57.3-128 128-128s128 57.3 128 128" fill="none" stroke="#7f8995" stroke-width="2" />
+  <line x1="60" y1="440" x2="420" y2="440" stroke="#b9ff46" stroke-width="2" />
+  <text x="240" y="440" text-anchor="middle" dy="-14" font-family="Consolas, 'Courier New', monospace" font-size="15" letter-spacing="1" fill="#f4f1e8">Portrait coming soon</text>
+</svg>

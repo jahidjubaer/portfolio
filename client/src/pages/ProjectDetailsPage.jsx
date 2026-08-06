@@ -9,12 +9,14 @@ import { ProjectSection } from "../features/projects/ProjectSection";
 import { ProjectSectionNav } from "../features/projects/ProjectSectionNav";
 import { ProjectWorkflow } from "../features/projects/ProjectWorkflow";
 import { ProjectArchitecture } from "../features/projects/ProjectArchitecture";
+import { ProjectMediaGallery } from "../features/projects/ProjectMediaGallery";
 import { RelatedProjects } from "../features/projects/RelatedProjects";
 import { CaseStudyUnavailable } from "../features/projects/CaseStudyUnavailable";
 import {
   getProjectBySlug,
   getRelatedProjects,
 } from "../features/projects/project-selectors";
+import { getProjectMedia } from "../lib/project-assets";
 
 function ProjectNotFound({ slug }) {
   return (
@@ -82,13 +84,22 @@ function CompleteCaseStudy({ project, relatedProjects }) {
   const hasReflectionContent =
     caseStudy.challenge || caseStudy.outcome || caseStudy.reflection;
 
+  const { gallery: galleryImages } = getProjectMedia(project.slug);
+  const hasGallery = galleryImages.length > 0;
+  const captionsByFile = Object.fromEntries(
+    (caseStudy.gallery ?? []).map((entry) => [entry.file, entry.caption]),
+  );
+  const visibleSections = caseStudy.sections.filter(
+    (section) => hasGallery || section.id !== "gallery",
+  );
+
   return (
     <Container as="div" className="section-spacing">
       <Reveal>
         <ProjectHero project={project} />
       </Reveal>
 
-      <ProjectSectionNav sections={caseStudy.sections} className="mt-10" />
+      <ProjectSectionNav sections={visibleSections} className="mt-10" />
 
       <div className="mt-10 space-y-14">
         <ProjectSection id="overview" heading="Overview">
@@ -151,6 +162,16 @@ function CompleteCaseStudy({ project, relatedProjects }) {
             </ul>
           ) : null}
         </ProjectSection>
+
+        {hasGallery ? (
+          <ProjectSection id="gallery" heading="Gallery">
+            <ProjectMediaGallery
+              title={project.title}
+              images={galleryImages}
+              captionsByFile={captionsByFile}
+            />
+          </ProjectSection>
+        ) : null}
 
         <ProjectSection id="architecture" heading="Architecture">
           {caseStudy.architecture?.length ? (

@@ -25,6 +25,7 @@ import { assertValidProjects } from "./project-schema";
  *   challenge?: string | null,
  *   outcome?: string | null,
  *   reflection?: string | null,
+ *   gallery?: { file: string, caption: string }[],
  *   sections: CaseStudySectionMeta[],
  * }} CaseStudy
  * @typedef {{
@@ -53,6 +54,21 @@ const SARABO_CAPABILITIES = [
   "Notifications",
   "Customer reviews",
   "Stripe payment flow",
+];
+
+// Captions for currently known Sarabo screenshots — matched to the asset
+// manifest's detected gallery files by filename. Any future screenshot the
+// manifest detects without an entry here falls back to a neutral generic
+// caption in ProjectMediaGallery rather than an invented one.
+const SARABO_GALLERY = [
+  { file: "screenshot-01.webp", caption: "Sarabo administrator dashboard" },
+  { file: "screenshot-02.webp", caption: "Sarabo home interface" },
+  { file: "screenshot-03.webp", caption: "Sarabo mobile view" },
+  { file: "screenshot-04.webp", caption: "Sarabo payment interface" },
+  { file: "screenshot-05.webp", caption: "Sarabo repair-request flow" },
+  { file: "screenshot-06.webp", caption: "Sarabo technician dashboard" },
+  { file: "screenshot-07.webp", caption: "Sarabo tracking interface" },
+  { file: "screenshot-08.webp", caption: "Sarabo customer dashboard" },
 ];
 
 /** @type {Project[]} */
@@ -143,11 +159,13 @@ const rawProjects = [
         "The project resulted in a working full-stack service platform that demonstrates role-based workflows, repair-request management, authentication, tracking and payment-related integration. Quantitative product outcomes and usage metrics are not currently available.",
       reflection:
         "Building Sarabo as a solo project provided practical experience managing a full-stack application from client-side flows through server-side functionality. Validation emerged as an important area for further refinement and documentation.",
+      gallery: SARABO_GALLERY,
       sections: [
         { id: "overview", heading: "Overview" },
         { id: "roles", heading: "Roles" },
         { id: "workflow", heading: "Workflow" },
         { id: "capabilities", heading: "Capabilities" },
+        { id: "gallery", heading: "Gallery" },
         { id: "architecture", heading: "Architecture" },
         { id: "decisions", heading: "Implementation approach" },
         { id: "reflection", heading: "Challenge, outcome and reflection" },
@@ -165,8 +183,6 @@ const rawProjects = [
       "public documentation URL",
       "current status detail",
       "validation challenge solution",
-      "cover image",
-      "5-10 screenshots",
       "optional demo video",
     ],
   },

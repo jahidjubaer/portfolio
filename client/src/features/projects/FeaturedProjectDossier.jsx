@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { ImageWithFallback } from "../../components/media/ImageWithFallback";
+import { getProjectMedia } from "../../lib/project-assets";
 import { ProjectStack } from "./ProjectStack";
 import { ProjectStatus } from "./ProjectStatus";
 import { ProjectLinks } from "./ProjectLinks";
@@ -19,9 +21,10 @@ export function FeaturedProjectDossier({
 }) {
   const HeadingTag = headingLevel;
   const detailHref = `/work/${project.slug}`;
+  const { cover } = getProjectMedia(project.slug);
 
   return (
-    <article className="grid gap-6 rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-8 lg:grid-cols-[auto_1fr] lg:gap-10 lg:p-10">
+    <article className="grid gap-8 rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-8 lg:grid-cols-[auto_1fr_0.9fr] lg:items-start lg:gap-10 lg:p-10">
       <span
         className="mono-meta text-(--color-accent-primary)"
         aria-hidden="true"
@@ -45,6 +48,15 @@ export function FeaturedProjectDossier({
           <ProjectStatus project={project} />
           <ProjectLinks links={project.links} />
         </div>
+      </div>
+      <div className="aspect-video overflow-hidden rounded-(--radius-md) border border-(--color-border) lg:aspect-square">
+        <ImageWithFallback
+          src={cover.src}
+          fallbackSrc={cover.fallback}
+          alt={`${project.title} project cover`}
+          className="h-full w-full object-cover"
+          loading="lazy"
+        />
       </div>
     </article>
   );
