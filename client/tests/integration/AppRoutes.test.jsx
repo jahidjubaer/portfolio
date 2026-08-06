@@ -4,11 +4,11 @@ import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routeConfig } from "../../src/routes/route-config";
 
 const routes = [
-  { path: "/", heading: "Portfolio foundation" },
-  { path: "/work", heading: "Selected work" },
+  { path: "/", heading: "I build clear interfaces for real product problems." },
+  { path: "/work", heading: "Projects I've built" },
   { path: "/about", heading: "About Jahid" },
   { path: "/beyond", heading: "Beyond the code" },
-  { path: "/contact", heading: "Contact" },
+  { path: "/contact", heading: "Get in touch" },
   { path: "/resume", heading: "Résumé" },
 ];
 

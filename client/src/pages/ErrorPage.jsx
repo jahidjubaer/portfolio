@@ -1,11 +1,11 @@
 import { Link, useRouteError, isRouteErrorResponse } from "react-router-dom";
-import { useDocumentHead } from "../hooks/use-document-head";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 export function ErrorPage() {
   const error = useRouteError();
   const is404 = isRouteErrorResponse(error) && error.status === 404;
 
-  useDocumentHead({
+  usePageMeta({
     title: is404
       ? "Page not found — Jahid Hasan"
       : "Something went wrong — Jahid Hasan",

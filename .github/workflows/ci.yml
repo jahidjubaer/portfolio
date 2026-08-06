@@ -16,30 +16,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Enable Corepack
-        run: corepack enable
+          cache: npm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Format check
-        run: pnpm format:check
+        run: npm run format:check
 
       - name: Lint client and server
-        run: pnpm lint
+        run: npm run lint
 
       - name: Test client
-        run: pnpm test:client
+        run: npm run test:client
 
       - name: Test server
-        run: pnpm test:server
+        run: npm run test:server
 
       - name: Build client
-        run: pnpm build
+        run: npm run build
 
       - name: Install Playwright Chromium
-        run: pnpm --filter client exec playwright install --with-deps chromium
+        run: npm --workspace client exec playwright install --with-deps chromium
 
       - name: End-to-end smoke tests
-        run: pnpm test:e2e
+        run: npm run test:e2e

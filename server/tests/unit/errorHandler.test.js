@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { errorHandler } from "../../src/middleware/error-handler.js";
+import { errorHandler } from "../../src/middleware/errorHandler.js";
 
 function createMockResponse() {
   const res = {};

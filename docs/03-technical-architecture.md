@@ -1,10 +1,10 @@
 # 03 — Technical Architecture Specification
 
-> **Architecture correction (2026-08-05):** this document originally specified React Router Framework Mode with TypeScript and static pre-rendering. That direction was fully replaced by a plain React SPA client (`client/`) plus a separate Express.js API server (`server/`), in a pnpm workspace, using JavaScript only. See `docs/audits/phase-1-architecture-correction-report.md` for the full rationale and migration record. Sections 1–6, 15, and 16 below reflect the corrected architecture. Sections covering design tokens, state scope, forms, SEO content, image budgets, testing intent, and maintenance cadence (7–14, 17) remain valid in spirit even though code samples elsewhere in this suite may still show `.tsx`/framework-route syntax from the original draft — treat those as illustrative of intent, not literal syntax to reproduce.
+> **Architecture correction (2026-08-05):** this document originally specified React Router Framework Mode with TypeScript and static pre-rendering. That direction was fully replaced by a plain React SPA client (`client/`) plus a separate Express.js API server (`server/`), in an **npm workspace**, using JavaScript only. A second correction the same day replaced the initial pnpm-based package-manager choice with **npm workspaces** — do not use pnpm or yarn. See `docs/audits/phase-1-architecture-correction-report.md` and `docs/audits/phase-1-stack-correction-and-visible-foundation-report.md` for the full rationale and migration record. Sections 1–6, 15, and 16 below reflect the corrected architecture. Sections covering design tokens, state scope, forms, SEO content, image budgets, testing intent, and maintenance cadence (7–14, 17) remain valid in spirit even though code samples elsewhere in this suite may still show `.tsx`/framework-route syntax from the original draft — treat those as illustrative of intent, not literal syntax to reproduce.
 
 ## 1. Architecture decision
 
-Use a **React SPA client** (Vite + React Router DOM, client-side routing only) paired with a **separate Node.js + Express.js API server**, in a **pnpm workspace** (`client/` + `server/`).
+Use a **React SPA client** (Vite + React Router DOM, client-side routing only) paired with a **separate Node.js + Express.js API server**, in an **npm workspace** (`client/` + `server/`).
 
 Why:
 
@@ -114,33 +114,33 @@ Rule: Motion owns component animation. GSAP owns at most two complex, scroll-orc
 
 ## 4. Initialization
 
-The project is a pnpm workspace with two packages: `client/` (Vite + React) and `server/` (Express).
+The project is an npm workspace with two packages: `client/` (Vite + React) and `server/` (Express). The root `package.json` declares `"workspaces": ["client", "server"]` and there is exactly one lockfile, `package-lock.json`, at the repository root — never inside `client/` or `server/`.
 
 ```bash
 # root
-pnpm init
-# pnpm-workspace.yaml: packages: [client, server]
+npm init -y
+# package.json: "workspaces": ["client", "server"]
 
 # client
-pnpm create vite@latest client -- --template react
-pnpm --filter client add react-router-dom
-pnpm --filter client add -D tailwindcss @tailwindcss/vite
+npm create vite@latest client -- --template react
+npm install --workspace client react-router-dom
+npm install --workspace client -D tailwindcss @tailwindcss/vite
 
 # server
-mkdir server && cd server && pnpm init
-pnpm --filter server add express cors helmet dotenv
-pnpm --filter server add -D nodemon supertest vitest
+mkdir server && cd server && npm init -y && cd ..
+npm install --workspace server express cors helmet dotenv
+npm install --workspace server -D nodemon supertest vitest
 
-# shared dev tooling (client + server, added where relevant)
-pnpm add -D -w vitest @testing-library/react @testing-library/jest-dom \
+# shared dev tooling (root, used by both workspaces where relevant)
+npm install -D vitest @testing-library/react @testing-library/jest-dom \
   @testing-library/user-event jsdom @playwright/test \
   @axe-core/playwright eslint prettier concurrently
 ```
 
 Later phases add `motion`, `gsap`, `@gsap/react`, `lenis`, `lucide-react`, `cmdk`, `react-hot-toast`, `react-hook-form`, `zod`, `@hookform/resolvers`, `clsx`, `tailwind-merge`, `class-variance-authority`, `yet-another-react-lightbox`, and `daisyui` to `client/` only, once the design system phase actually needs them. Do not install them during foundation work.
 
-Package manager: **pnpm** only (no npm/yarn lockfiles).
-Engine: define Node `>=22` in the root `package.json`.
+Package manager: **npm** only (no pnpm/yarn lockfiles).
+Engine: define Node `>=20` in the root `package.json` (CI runs Node 22).
 
 ---
 
@@ -272,11 +272,11 @@ portfolio/
 ├── docs/
 ├── .github/workflows/ci.yml
 ├── CLAUDE.md
-├── pnpm-workspace.yaml
+├── package-lock.json
 └── package.json
 ```
 
-There is no `tsconfig.json`, `react-router.config.ts`, or root `vite.config.ts` — each of those belonged to the superseded Framework Mode architecture.
+There is no `tsconfig.json`, `react-router.config.ts`, root `vite.config.ts`, `pnpm-lock.yaml`, or `pnpm-workspace.yaml` — the first three belonged to the superseded Framework Mode architecture, and the last two belonged to the superseded pnpm-based package-manager choice.
 
 ---
 
@@ -601,24 +601,24 @@ Root scripts (workspace-level):
 ```json
 {
   "scripts": {
-    "dev": "concurrently -k -n client,server \"pnpm dev:client\" \"pnpm dev:server\"",
-    "dev:client": "pnpm --filter client dev",
-    "dev:server": "pnpm --filter server dev",
-    "build": "pnpm --filter client build",
-    "lint": "pnpm --filter client lint && pnpm --filter server lint",
-    "test": "pnpm test:client && pnpm test:server",
-    "test:client": "pnpm --filter client test",
-    "test:server": "pnpm --filter server test",
-    "test:e2e": "pnpm --filter client test:e2e",
+    "dev": "concurrently \"npm run dev --workspace=client\" \"npm run dev --workspace=server\"",
+    "dev:client": "npm run dev --workspace=client",
+    "dev:server": "npm run dev --workspace=server",
+    "build": "npm run build --workspace=client",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:client": "npm run test --workspace=client",
+    "test:server": "npm run test --workspace=server",
+    "test:e2e": "npm run test:e2e --workspace=client",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "pnpm format:check && pnpm lint && pnpm test && pnpm build",
-    "check:full": "pnpm check && pnpm test:e2e"
+    "check": "npm run format:check && npm run lint && npm run test:client && npm run test:server && npm run build",
+    "check:full": "npm run check && npm run test:e2e"
   }
 }
 ```
 
-The server's production script is `pnpm --filter server start`, which runs `node src/server.js` directly — there is no server build/transpile step.
+The server's production script is `npm run start --workspace=server`, which runs `node src/server.js` directly — there is no server build/transpile step.
 
 ---
 
@@ -629,7 +629,7 @@ The server's production script is `pnpm --filter server start`, which runs `node
 The client and server deploy as two separate applications.
 
 - **Client:** GitHub repository, static host (Vercel, Netlify, or Cloudflare Pages) serving the `client/` Vite build output, with an SPA rewrite rule (all paths → `index.html`) since there is no static pre-rendering. Custom domain, automatic preview deployments.
-- **Server:** A Node.js-capable host (e.g. Render, Railway, Fly.io, or a VPS) running `pnpm --filter server start`. Not required until a feature (e.g. contact form) actually needs it live.
+- **Server:** A Node.js-capable host (e.g. Render, Railway, Fly.io, or a VPS) running `npm run start --workspace=server`. Not required until a feature (e.g. contact form) actually needs it live.
 
 ### Deployment checklist
 

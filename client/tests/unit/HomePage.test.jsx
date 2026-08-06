@@ -10,6 +10,8 @@ describe("HomePage", () => {
 
     const headings = screen.getAllByRole("heading", { level: 1 });
     expect(headings).toHaveLength(1);
-    expect(headings[0]).toHaveTextContent("Portfolio foundation");
+    expect(headings[0]).toHaveTextContent(
+      "I build clear interfaces for real product problems.",
+    );
   });
 });

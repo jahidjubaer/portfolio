@@ -44,24 +44,24 @@ When a conflict exists, use this priority:
 
 ## Required stack
 
-**Architecture correction (2026-08-05, supersedes the original stack below the notice):** the project uses a plain React SPA client plus a separate Express.js API server, in a pnpm workspace. **Do not use TypeScript.** Do not use React Router Framework Mode, framework-generated route modules, or static framework prerendering — those were the original, incorrect direction and were fully removed. See `docs/audits/phase-1-architecture-correction-report.md` for the full rationale and migration record.
+**Architecture correction (2026-08-05, supersedes the original stack below the notice):** the project uses a plain React SPA client plus a separate Express.js API server, in an **npm workspace**. **Do not use TypeScript. Do not use pnpm.** Do not use React Router Framework Mode, framework-generated route modules, or static framework prerendering — those were the original, incorrect direction and were fully removed. See `docs/audits/phase-1-architecture-correction-report.md` and `docs/audits/phase-1-stack-correction-and-visible-foundation-report.md` for the full rationale and migration record.
 
 - React 19.
 - JavaScript only (no TypeScript, no `.ts`/`.tsx` files).
 - Vite.
 - React Router DOM (client-side routing via `createBrowserRouter`/`RouterProvider`), not Framework Mode.
 - Tailwind CSS 4.
+- daisyUI used selectively, never as the visible theme (not yet installed — deferred to Phase 2).
 - Node.js + Express.js for the API server (`server/`), separate from the client (`client/`).
-- daisyUI 5 only for selected foundations, never as the visible theme.
-- Motion for normal animation.
-- GSAP + `@gsap/react` only for approved signature sequences.
-- Lenis only as progressive enhancement.
-- React Hot Toast only; do not add Toastify or Sonner.
-- React Hook Form + Zod for contact.
-- Lucide React only for general icons.
+- Motion for normal animation (not yet installed — deferred).
+- GSAP + `@gsap/react` only for approved signature sequences (not yet installed — deferred).
+- Lenis only as progressive enhancement (not yet installed — deferred).
+- React Hot Toast only; do not add Toastify or Sonner (not yet installed — deferred).
+- React Hook Form + Zod for contact (not yet installed — deferred until the contact API exists).
+- Lucide React, clsx, and tailwind-merge are approved for the client when actually needed (not yet installed — the current UI uses plain text/CSS instead of icons or conditional class merging).
 - Vitest, Testing Library, Playwright, Supertest, and Axe for quality.
-- pnpm workspace (`client` + `server`).
-- Node 22+.
+- **npm workspaces** (`client` + `server`), one root `package-lock.json`. Do not use pnpm or yarn, and do not create lockfiles inside `client/` or `server/`.
+- Node 20+ (CI runs Node 22).
 
 Do not add Redux, Zustand, TanStack Query, AOS, Animate.css, Swiper, React Icons, Three.js, or a CMS in the MVP unless the user explicitly changes the architecture.
 
@@ -69,7 +69,7 @@ Do not add Redux, Zustand, TanStack Query, AOS, Animate.css, Swiper, React Icons
 
 ## Architecture rules
 
-- Client (`client/`) and server (`server/`) are separate pnpm workspace packages.
+- Client (`client/`) and server (`server/`) are separate npm workspace packages.
 - Routing is client-side via React Router DOM; there is no static framework prerendering or SSR.
 - Keep content in typed-by-convention (JSDoc, not TypeScript) files under `client/src/data`.
 - Keep route/page modules thin.

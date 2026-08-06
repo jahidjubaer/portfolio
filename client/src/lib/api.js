@@ -1,7 +1,7 @@
-const API_BASE_URL =
+export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000";
 
-export async function checkApiHealth() {
+export async function getApiHealth() {
   const response = await fetch(`${API_BASE_URL}/api/health`);
   if (!response.ok) {
     throw new Error(`Health check failed with status ${response.status}`);

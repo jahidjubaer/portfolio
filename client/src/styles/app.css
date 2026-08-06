@@ -1,42 +1,80 @@
 @import "tailwindcss";
 
-:root {
-  color-scheme: light dark;
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --color-background: #070a0d;
+  --color-surface: #0d1116;
+  --color-surface-elevated: #121820;
+  --color-text: #f4f1e8;
+  --color-text-muted: #9ca6b2;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-accent: #b9ff46;
+  --color-accent-secondary: #71d7ff;
 }
 
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-  line-height: 1.5;
-}
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
 
-:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-}
+  * {
+    box-sizing: border-box;
+  }
 
-.skip-link {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  z-index: 100;
-  background: #000;
-  color: #fff;
-  padding: 0.75rem 1rem;
-}
+  body {
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
 
-.skip-link:focus {
-  left: 0.5rem;
-  top: 0.5rem;
-}
+  h1,
+  h2,
+  h3,
+  h4 {
+    line-height: 1.1;
+    font-weight: 600;
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  a {
+    color: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    background: var(--color-accent);
+    color: #06210a;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0 0 0.5rem 0;
+  }
+
+  .skip-link:focus {
+    left: 0;
+    top: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

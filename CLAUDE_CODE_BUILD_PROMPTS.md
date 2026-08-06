@@ -163,11 +163,20 @@ Audit the current implementation against docs/01-master-product-design-spec.md a
 - **Commit hash:** See report Section 18 (Git Result)
 - **Note:** This phase used React Router Framework Mode with TypeScript and static pre-rendering. That direction was based on a misreading of the approved architecture and was fully replaced by the Phase 1 Correction below. The report and commit are retained for history, not as the current state of the repository.
 
-### Phase 1 Correction — Migrate to React JavaScript + Node.js + Express.js
+### Phase 1 Correction — Migrate to React JavaScript + Node.js + Express.js (superseded)
+
+- **Date:** 2026-08-05
+- **Status:** Complete, then superseded the same day
+- **Summary:** Previous Phase 1 used the wrong architecture (React Router Framework Mode, TypeScript, static framework prerendering). It was corrected to a plain React SPA client (`client/`, JavaScript, Vite, `react-router-dom`) plus a separate Express.js API server (`server/`), in a **pnpm** workspace. TypeScript and React Router Framework Mode were fully removed — zero `.ts`/`.tsx` project files remain.
+- **Note:** The package-manager choice (pnpm) was itself corrected the same day to npm — see the Phase 1 Stack Correction entry below. The report and commit are retained for history.
+- **Report path:** `docs/audits/phase-1-architecture-correction-report.md`
+- **Commit hash:** See report Section 16 (Git Result)
+
+### Phase 1 Stack Correction + Visible Foundation — Migrate pnpm to npm, build real homepage
 
 - **Date:** 2026-08-05
 - **Status:** Complete
-- **Summary:** Previous Phase 1 used the wrong architecture (React Router Framework Mode, TypeScript, static framework prerendering). It was corrected to a plain React SPA client (`client/`, JavaScript, Vite, `react-router-dom`) plus a separate Express.js API server (`server/`), in a pnpm workspace. TypeScript and React Router Framework Mode were fully removed — zero `.ts`/`.tsx` project files remain.
-- **Report path:** `docs/audits/phase-1-architecture-correction-report.md`
-- **Commit hash:** See report Section 16 (Git Result)
-- **Next phase:** Phase 2 — Design system
+- **Summary:** Migrated the workspace's package manager from pnpm to npm workspaces (single root `package-lock.json`). Replaced every placeholder page with real, verified-content pages — homepage (hero, credibility strip, featured projects, capabilities, journey, Beyond portal, contact CTA), `/work`, `/about`, `/beyond`, `/contact`, `/resume` — plus a working application shell (header with functional mobile menu, footer) and a first Tailwind CSS 4 design foundation. All content sourced from `CONTENT_CHECKLIST.md`; nothing invented.
+- **Report path:** `docs/audits/phase-1-stack-correction-and-visible-foundation-report.md`
+- **Commit hash:** See report Section 20 (Git Result)
+- **Next phase:** Phase 2 — Complete design system, motion, and application shell refinement

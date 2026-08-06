@@ -4,7 +4,7 @@ import { useEffect } from "react";
  * Sets the document title and meta description for the current route.
  * @param {{ title: string, description: string }} head
  */
-export function useDocumentHead({ title, description }) {
+export function usePageMeta({ title, description }) {
   useEffect(() => {
     const previousTitle = document.title;
     document.title = title;

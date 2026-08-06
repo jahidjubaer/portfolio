@@ -1,3 +1,4 @@
+import { AppLayout } from "../layouts/AppLayout";
 import { HomePage } from "../pages/HomePage";
 import { WorkPage } from "../pages/WorkPage";
 import { ProjectDetailsPage } from "../pages/ProjectDetailsPage";
@@ -9,16 +10,19 @@ import { NotFoundPage } from "../pages/NotFoundPage";
 import { ErrorPage } from "../pages/ErrorPage";
 
 export const routeConfig = [
-  { path: "/", element: <HomePage />, errorElement: <ErrorPage /> },
-  { path: "/work", element: <WorkPage />, errorElement: <ErrorPage /> },
   {
-    path: "/work/:slug",
-    element: <ProjectDetailsPage />,
+    path: "/",
+    element: <AppLayout />,
     errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "work", element: <WorkPage /> },
+      { path: "work/:slug", element: <ProjectDetailsPage /> },
+      { path: "about", element: <AboutPage /> },
+      { path: "beyond", element: <BeyondPage /> },
+      { path: "contact", element: <ContactPage /> },
+      { path: "resume", element: <ResumePage /> },
+      { path: "*", element: <NotFoundPage /> },
+    ],
   },
-  { path: "/about", element: <AboutPage />, errorElement: <ErrorPage /> },
-  { path: "/beyond", element: <BeyondPage />, errorElement: <ErrorPage /> },
-  { path: "/contact", element: <ContactPage />, errorElement: <ErrorPage /> },
-  { path: "/resume", element: <ResumePage />, errorElement: <ErrorPage /> },
-  { path: "*", element: <NotFoundPage />, errorElement: <ErrorPage /> },
 ];
