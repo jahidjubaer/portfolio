@@ -198,3 +198,12 @@ Audit the current implementation against docs/01-master-product-design-spec.md a
 - **Report path:** `docs/audits/phase-3-project-system-sarabo-report.md`
 - **Commit hash:** See report Section 20 (Git Result)
 - **Next phase:** Prompt 6 — review and recommend the second and third featured projects
+
+### Phase 3.1 — Sarabo Content Review and Featured Project Freeze
+
+- **Date:** 2026-08-06
+- **Status:** Complete (review only, no production source changed)
+- **Summary:** Reviewed every Sarabo case-study claim against `CONTENT_CHECKLIST.md` §7 and classified each as verified, supported inference, user-confirmation-required, or omit. Found no invented content. Flagged two cautious-wording candidates for user approval — the workflow section's inferred step ordering, and the "Engineering decisions" heading/framing, which implies deliberate rationale not documented (recommended rename to "Implementation approach") — neither judged unsafe enough to change without approval. Confirmed the current featured-project order (Sarabo flagship, Bang Learner and Note Bank as honest project cards) and archive-empty state are already correct; no promotion or demotion recommended. Produced a 10-question user questionnaire for the remaining high-value facts (role, timeline, challenges, outcome, repos, screenshots).
+- **Report path:** `docs/reviews/phase-3-1-sarabo-content-review.md`
+- **Commit hash:** See review report Section 15 / console report
+- **Next phase:** Await user answers to the questionnaire, then a small wording-and-content-expansion pass on Sarabo
