@@ -312,3 +312,53 @@ test("unknown route provides working recovery navigation", async ({ page }) => {
     }),
   ).toBeVisible();
 });
+
+for (const path of ["/about", "/work", "/resume"]) {
+  test(`no horizontal overflow on ${path} at 360px`, async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto(path);
+
+    const hasOverflow = await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth >
+        document.documentElement.clientWidth,
+    );
+    expect(hasOverflow).toBe(false);
+  });
+}
+
+test("About page portrait renders visibly on a mobile viewport", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/about");
+
+  await expect(
+    page.getByRole("img", { name: "Portrait of Jahid Hasan" }),
+  ).toBeVisible();
+});
+
+test("Work page flagship project is usable on a mobile viewport", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/work");
+
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Sarabo" }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Sarabo" })).toBeVisible();
+});
+
+test("Résumé download action is visible on a mobile viewport", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/resume");
+
+  const downloadLink = page.getByRole("link", { name: /download résumé/i });
+  const preparingNotice = page.getByText(/being prepared/i);
+  const hasDownload = await downloadLink.isVisible().catch(() => false);
+  const hasNotice = await preparingNotice.isVisible().catch(() => false);
+  expect(hasDownload || hasNotice).toBe(true);
+});

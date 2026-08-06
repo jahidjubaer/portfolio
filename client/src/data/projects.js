@@ -40,6 +40,7 @@ import { assertValidProjects } from "./project-schema";
  *   links: ProjectLink[],
  *   caseStudyStatus: "complete" | "in-preparation" | "none",
  *   caseStudy: CaseStudy | null,
+ *   roleContext?: string,
  *   relatedSlugs: string[],
  *   seo: { title: string, description: string },
  *   missingContent: string[],
@@ -245,6 +246,8 @@ const rawProjects = [
     ],
     caseStudyStatus: "in-preparation",
     caseStudy: null,
+    roleContext:
+      "Frontend designer/contributor in an academic team project — contributed responsive UI, ideas, and feature design.",
     relatedSlugs: ["sarabo"],
     seo: {
       title: "Note Bank — Jahid Hasan",

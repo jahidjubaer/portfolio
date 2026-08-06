@@ -31,12 +31,21 @@ export function WorkPage() {
         as="h1"
         label="Selected Work"
         heading="Projects I've built"
-        description={`${allProjects.length} project${allProjects.length === 1 ? "" : "s"} shown below. ${completeCaseStudies.length} full case ${completeCaseStudies.length === 1 ? "study is" : "studies are"} available today; the rest are in preparation.`}
+        description={`${allProjects.length} project${allProjects.length === 1 ? "" : "s"} shown below. ${completeCaseStudies.length} full case ${completeCaseStudies.length === 1 ? "study is" : "studies are"} available today; the rest are shown as verified project overviews while their full case studies are prepared.`}
       />
+      <p className="body-sm mt-4 max-w-prose text-(--color-text-muted)">
+        I build focused, working products end-to-end and document them with
+        evidence I can actually stand behind — no invented metrics, no rewritten
+        history.
+      </p>
 
       {completeCaseStudies.length > 0 ? (
         <div className="mt-12">
-          <SectionLabel>Full case studies</SectionLabel>
+          <SectionLabel>
+            {completeCaseStudies.length === 1
+              ? "Flagship project"
+              : "Flagship projects"}
+          </SectionLabel>
           <div className="mt-6 space-y-6">
             {completeCaseStudies.map((project, index) => (
               <FeaturedProjectDossier
@@ -44,6 +53,7 @@ export function WorkPage() {
                 project={project}
                 index={index + 1}
                 headingLevel="h2"
+                showMeta
               />
             ))}
           </div>
@@ -52,11 +62,13 @@ export function WorkPage() {
 
       {inPreparation.length > 0 ? (
         <div className="mt-16">
-          <SectionLabel>Case studies in preparation</SectionLabel>
-          <StaggerGroup
-            as="ul"
-            className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-          >
+          <SectionLabel>Supporting projects</SectionLabel>
+          <p className="body-sm mt-3 max-w-prose text-(--color-text-secondary)">
+            Verified project overviews — technologies, known features, and
+            current status — while their full narrative case studies are
+            prepared.
+          </p>
+          <StaggerGroup as="ul" className="mt-6 grid gap-6 sm:grid-cols-2">
             {inPreparation.map((project) => (
               <StaggerItem key={project.slug} as="li">
                 <ProjectCard project={project} headingLevel="h2" />

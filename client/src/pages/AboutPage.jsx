@@ -3,6 +3,7 @@ import { Container } from "../components/ui/Container";
 import { SectionLabel } from "../components/ui/SectionLabel";
 import { ButtonLink } from "../components/ui/ButtonLink";
 import { Divider } from "../components/ui/Divider";
+import { StatusIndicator } from "../components/ui/StatusIndicator";
 import { Reveal } from "../features/motion/Reveal";
 import { StaggerGroup, StaggerItem } from "../features/motion/StaggerGroup";
 import { ImageWithFallback } from "../components/media/ImageWithFallback";
@@ -26,7 +27,10 @@ export function AboutPage() {
           <h1 className="heading-xl mt-3 text-(--color-text-primary)">
             About Jahid
           </h1>
-          <p className="body-lg mt-6 max-w-prose text-(--color-text-secondary)">
+          <p className="body-md mt-2 font-medium text-(--color-text-primary)">
+            {profile.title}
+          </p>
+          <p className="body-lg mt-4 max-w-prose text-(--color-text-secondary)">
             {profile.heroSupport}
           </p>
         </Reveal>
@@ -72,11 +76,6 @@ export function AboutPage() {
           <p className="body-sm mt-3 max-w-prose text-(--color-text-secondary)">
             {profile.supportingDirection}
           </p>
-          <div className="mt-6">
-            <ButtonLink to="/contact" variant="secondary">
-              Get in touch
-            </ButtonLink>
-          </div>
         </Reveal>
 
         <section>
@@ -119,6 +118,17 @@ export function AboutPage() {
             ))}
           </ul>
         </section>
+      </div>
+
+      <Divider className="my-16" />
+
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <StatusIndicator tone="positive">
+          {profile.availabilityStatement}
+        </StatusIndicator>
+        <ButtonLink to="/contact" variant="secondary">
+          Get in touch
+        </ButtonLink>
       </div>
     </Container>
   );

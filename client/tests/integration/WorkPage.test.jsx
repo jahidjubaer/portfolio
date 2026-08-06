@@ -38,4 +38,43 @@ describe("WorkPage", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("does not render an empty archive section", () => {
+    const router = createMemoryRouter(routeConfig, {
+      initialEntries: ["/work"],
+    });
+    render(<RouterProvider router={router} />);
+
+    expect(screen.queryByText("Archive")).not.toBeInTheDocument();
+  });
+
+  it("shows the flagship project's role and timeline metadata", () => {
+    const router = createMemoryRouter(routeConfig, {
+      initialEntries: ["/work"],
+    });
+    render(<RouterProvider router={router} />);
+
+    expect(screen.getByText("Sole Developer")).toBeInTheDocument();
+    expect(screen.getByText("July–August")).toBeInTheDocument();
+  });
+
+  it("renders placeholder covers for supporting projects without a real cover image", () => {
+    const router = createMemoryRouter(routeConfig, {
+      initialEntries: ["/work"],
+    });
+    render(<RouterProvider router={router} />);
+
+    expect(
+      screen.getByRole("img", { name: "Bang Learner project cover" }),
+    ).toHaveAttribute(
+      "src",
+      "/assets/placeholders/project-cover-placeholder.svg",
+    );
+    expect(
+      screen.getByRole("img", { name: "Note Bank project cover" }),
+    ).toHaveAttribute(
+      "src",
+      "/assets/placeholders/project-cover-placeholder.svg",
+    );
+  });
 });

@@ -4,20 +4,23 @@ import { getProjectMedia } from "../../lib/project-assets";
 import { ProjectStack } from "./ProjectStack";
 import { ProjectStatus } from "./ProjectStatus";
 import { ProjectLinks } from "./ProjectLinks";
+import { ProjectMetaGrid } from "./ProjectMetaGrid";
 
 /**
  * Larger, numbered project presentation used for the homepage's headline
- * featured project.
+ * featured project and the Work page's flagship project.
  * @param {{
  *   project: import("../../data/projects").Project,
  *   index: number,
  *   headingLevel?: "h2" | "h3",
+ *   showMeta?: boolean,
  * }} props
  */
 export function FeaturedProjectDossier({
   project,
   index,
   headingLevel = "h3",
+  showMeta = false,
 }) {
   const HeadingTag = headingLevel;
   const detailHref = `/work/${project.slug}`;
@@ -43,6 +46,9 @@ export function FeaturedProjectDossier({
         <p className="body-md mt-3 text-(--color-text-secondary)">
           {project.summary}
         </p>
+        {showMeta ? (
+          <ProjectMetaGrid project={project} className="mt-5" />
+        ) : null}
         <ProjectStack stack={project.stack} className="mt-5" />
         <div className="mt-6 flex flex-wrap items-center gap-4">
           <ProjectStatus project={project} />

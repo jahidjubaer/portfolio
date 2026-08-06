@@ -63,6 +63,35 @@ function ProjectInPreparation({ project, relatedProjects }) {
     <Container as="div" className="section-spacing">
       <Reveal>
         <ProjectHero project={project} />
+
+        {project.roleContext ? (
+          <p className="body-md mt-6 max-w-prose text-(--color-text-secondary)">
+            {project.roleContext}
+          </p>
+        ) : null}
+
+        {project.capabilities?.length ? (
+          <div className="mt-10">
+            <h2 className="label text-(--color-text-muted)">
+              Known capabilities
+            </h2>
+            <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+              {project.capabilities.map((capability) => (
+                <li
+                  key={capability}
+                  className="body-sm flex items-start gap-2 text-(--color-text-secondary)"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-(--color-accent-primary)"
+                  />
+                  {capability}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
         <div className="mt-10">
           <CaseStudyUnavailable
             message={`The full case study for ${project.title} — role, architecture, decisions, challenges, and outcomes — is still in preparation.`}

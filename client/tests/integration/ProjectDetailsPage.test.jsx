@@ -112,6 +112,34 @@ describe("Project detail route", () => {
     expect(screen.getByText(/still in preparation/)).toBeInTheDocument();
   });
 
+  it("shows Bang Learner's verified capabilities on its project-overview page", () => {
+    const router = createMemoryRouter(routeConfig, {
+      initialEntries: ["/work/bang-learner"],
+    });
+    render(<RouterProvider router={router} />);
+
+    expect(
+      screen.getByRole("heading", { name: "Known capabilities" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Responsive UI")).toBeInTheDocument();
+    expect(screen.getByText("User authentication")).toBeInTheDocument();
+  });
+
+  it("shows Note Bank's verified role context and capabilities on its project-overview page", () => {
+    const router = createMemoryRouter(routeConfig, {
+      initialEntries: ["/work/note-bank"],
+    });
+    render(<RouterProvider router={router} />);
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Note Bank" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Frontend designer\/contributor in an academic team/),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Note requests")).toBeInTheDocument();
+  });
+
   it("shows related projects on the Sarabo case study", () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work/sarabo"],

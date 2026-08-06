@@ -57,4 +57,79 @@ describe("ResumePage", () => {
     ).not.toBeInTheDocument();
     expect(screen.getByText(/being prepared/i)).toBeInTheDocument();
   });
+
+  it("uses the correct download filename when the résumé is available", async () => {
+    mockManifest({
+      available: true,
+      src: "/assets/resume/jahid-hasan-resume.pdf",
+    });
+    const { ResumePage } = await import("../../src/pages/ResumePage");
+
+    render(
+      <MemoryRouter>
+        <ResumePage />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole("link", { name: /download résumé/i }),
+    ).toHaveAttribute("download", "jahid-hasan-resume.pdf");
+  });
+
+  it("shows education and selected projects", async () => {
+    mockManifest({ available: false, src: null });
+    const { ResumePage } = await import("../../src/pages/ResumePage");
+
+    render(
+      <MemoryRouter>
+        <ResumePage />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByText("BSc in Computer Science and Engineering"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Selected projects" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Sarabo")).toBeInTheDocument();
+    expect(screen.getByText("Bang Learner")).toBeInTheDocument();
+    expect(screen.getByText("Note Bank")).toBeInTheDocument();
+  });
+
+  it("shows verified leadership roles", async () => {
+    mockManifest({ available: false, src: null });
+    const { ResumePage } = await import("../../src/pages/ResumePage");
+
+    render(
+      <MemoryRouter>
+        <ResumePage />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Leadership" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("Organizing Secretary").length).toBeGreaterThan(
+      0,
+    );
+    expect(
+      screen.getAllByText(/Metropolitan University Sports Club/).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it("does not claim unsupported professional experience", async () => {
+    mockManifest({ available: false, src: null });
+    const { ResumePage } = await import("../../src/pages/ResumePage");
+
+    const { container } = render(
+      <MemoryRouter>
+        <ResumePage />
+      </MemoryRouter>,
+    );
+
+    const text = container.textContent;
+    expect(text).not.toMatch(/years? of experience/i);
+    expect(text).not.toMatch(/senior/i);
+  });
 });
