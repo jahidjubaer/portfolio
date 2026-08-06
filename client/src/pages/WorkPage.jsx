@@ -1,12 +1,24 @@
-import { ArrowUpRight } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { Container } from "../components/ui/Container";
 import { SectionHeader } from "../components/ui/SectionHeader";
-import { Tag } from "../components/ui/Tag";
+import { SectionLabel } from "../components/ui/SectionLabel";
 import { StaggerGroup, StaggerItem } from "../features/motion/StaggerGroup";
-import { projects } from "../data/projects";
+import { FeaturedProjectDossier } from "../features/projects/FeaturedProjectDossier";
+import { ProjectCard } from "../features/projects/ProjectCard";
+import { getAllProjects } from "../features/projects/project-selectors";
 
 export function WorkPage() {
+  const allProjects = getAllProjects();
+  const completeCaseStudies = allProjects.filter(
+    (project) => project.caseStudyStatus === "complete",
+  );
+  const inPreparation = allProjects.filter(
+    (project) => project.caseStudyStatus === "in-preparation",
+  );
+  const archived = allProjects.filter(
+    (project) => project.status === "archived",
+  );
+
   usePageMeta({
     title: "Selected Work — Jahid Hasan",
     description:
@@ -19,58 +31,56 @@ export function WorkPage() {
         as="h1"
         label="Selected Work"
         heading="Projects I've built"
-        description={`${projects.length} project${projects.length === 1 ? "" : "s"} shown below. Full case studies — with challenges, outcomes, and screenshots — are still in preparation; what's shown here is verified today.`}
+        description={`${allProjects.length} project${allProjects.length === 1 ? "" : "s"} shown below. ${completeCaseStudies.length} full case ${completeCaseStudies.length === 1 ? "study is" : "studies are"} available today; the rest are in preparation.`}
       />
 
-      <StaggerGroup
-        as="ul"
-        className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        {projects.map((project) => (
-          <StaggerItem
-            key={project.slug}
-            as="li"
-            className="flex flex-col rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-6"
+      {completeCaseStudies.length > 0 ? (
+        <div className="mt-12">
+          <SectionLabel>Full case studies</SectionLabel>
+          <div className="mt-6 space-y-6">
+            {completeCaseStudies.map((project, index) => (
+              <FeaturedProjectDossier
+                key={project.slug}
+                project={project}
+                index={index + 1}
+                headingLevel="h2"
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {inPreparation.length > 0 ? (
+        <div className="mt-16">
+          <SectionLabel>Case studies in preparation</SectionLabel>
+          <StaggerGroup
+            as="ul"
+            className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
           >
-            <h2 className="heading-md text-(--color-text-primary)">
-              {project.title}
-            </h2>
-            <p className="body-sm mt-2 flex-1 text-(--color-text-secondary)">
-              {project.summary}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {project.stack.map((tech) => (
-                <Tag key={tech}>{tech}</Tag>
-              ))}
-            </div>
-            <p className="mt-4 text-xs font-medium text-(--color-accent-primary)">
-              {project.statusLabel}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-4 text-xs">
-              {project.liveUrl ? (
-                <a
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-(--color-accent-secondary) hover:underline"
-                >
-                  Live site <ArrowUpRight aria-hidden="true" size={12} />
-                </a>
-              ) : null}
-              {project.repoUrl ? (
-                <a
-                  href={project.repoUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-(--color-accent-secondary) hover:underline"
-                >
-                  Repository <ArrowUpRight aria-hidden="true" size={12} />
-                </a>
-              ) : null}
-            </div>
-          </StaggerItem>
-        ))}
-      </StaggerGroup>
+            {inPreparation.map((project) => (
+              <StaggerItem key={project.slug} as="li">
+                <ProjectCard project={project} headingLevel="h2" />
+              </StaggerItem>
+            ))}
+          </StaggerGroup>
+        </div>
+      ) : null}
+
+      {archived.length > 0 ? (
+        <div className="mt-16">
+          <SectionLabel>Archive</SectionLabel>
+          <StaggerGroup
+            as="ul"
+            className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {archived.map((project) => (
+              <StaggerItem key={project.slug} as="li">
+                <ProjectCard project={project} headingLevel="h2" />
+              </StaggerItem>
+            ))}
+          </StaggerGroup>
+        </div>
+      ) : null}
     </Container>
   );
 }

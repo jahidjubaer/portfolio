@@ -216,6 +216,59 @@ test("known project route renders project details", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("known incomplete project route renders a preparation state", async ({
+  page,
+}) => {
+  await page.goto("/work/bang-learner");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Bang Learner" }),
+  ).toBeVisible();
+  await expect(page.getByText(/still in preparation/)).toBeVisible();
+});
+
+test("unknown project route renders a controlled recovery state", async ({
+  page,
+}) => {
+  await page.goto("/work/unknown-project");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Project not found" }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "View Work" }).click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Projects I've built" }),
+  ).toBeVisible();
+});
+
+test("Sarabo case-study section navigation jumps to the target section", async ({
+  page,
+}) => {
+  await page.goto("/work/sarabo");
+  const sectionNav = page.getByRole("navigation", {
+    name: "Case study sections",
+  });
+  await expect(sectionNav).toBeVisible();
+
+  await sectionNav.getByRole("link", { name: "Architecture" }).click();
+  await expect(page).toHaveURL(/#architecture$/);
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Architecture" }),
+  ).toBeInViewport();
+});
+
+test("no horizontal overflow on the Sarabo case study at 360px", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto("/work/sarabo");
+
+  const hasOverflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth >
+      document.documentElement.clientWidth,
+  );
+  expect(hasOverflow).toBe(false);
+});
+
 test("reduced-motion mode still renders and navigates correctly", async ({
   page,
 }) => {

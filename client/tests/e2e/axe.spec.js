@@ -28,6 +28,22 @@ test("known project route has no automatically detectable accessibility violatio
   expect(results.violations).toEqual([]);
 });
 
+test("known incomplete project route has no automatically detectable accessibility violations", async ({
+  page,
+}) => {
+  await page.goto("/work/bang-learner");
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations).toEqual([]);
+});
+
+test("unknown project route has no automatically detectable accessibility violations", async ({
+  page,
+}) => {
+  await page.goto("/work/unknown-project");
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations).toEqual([]);
+});
+
 test("unknown route has no automatically detectable accessibility violations", async ({
   page,
 }) => {
