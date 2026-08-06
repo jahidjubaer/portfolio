@@ -155,10 +155,19 @@ Audit the current implementation against docs/01-master-product-design-spec.md a
 - **Commit hash:** N/A (read-only audit, no commit)
 - **Next phase:** Phase 1
 
-### Phase 1 — Initialize foundation
+### Phase 1 — Initialize foundation (superseded)
+
+- **Date:** 2026-08-05
+- **Status:** Complete, then superseded the same day
+- **Report path:** `docs/audits/phase-1-foundation-report.md`
+- **Commit hash:** See report Section 18 (Git Result)
+- **Note:** This phase used React Router Framework Mode with TypeScript and static pre-rendering. That direction was based on a misreading of the approved architecture and was fully replaced by the Phase 1 Correction below. The report and commit are retained for history, not as the current state of the repository.
+
+### Phase 1 Correction — Migrate to React JavaScript + Node.js + Express.js
 
 - **Date:** 2026-08-05
 - **Status:** Complete
-- **Report path:** `docs/audits/phase-1-foundation-report.md`
-- **Commit hash:** See report Section 18 (Git Result)
+- **Summary:** Previous Phase 1 used the wrong architecture (React Router Framework Mode, TypeScript, static framework prerendering). It was corrected to a plain React SPA client (`client/`, JavaScript, Vite, `react-router-dom`) plus a separate Express.js API server (`server/`), in a pnpm workspace. TypeScript and React Router Framework Mode were fully removed — zero `.ts`/`.tsx` project files remain.
+- **Report path:** `docs/audits/phase-1-architecture-correction-report.md`
+- **Commit hash:** See report Section 16 (Git Result)
 - **Next phase:** Phase 2 — Design system

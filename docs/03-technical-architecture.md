@@ -1,28 +1,30 @@
 # 03 — Technical Architecture Specification
 
+> **Architecture correction (2026-08-05):** this document originally specified React Router Framework Mode with TypeScript and static pre-rendering. That direction was fully replaced by a plain React SPA client (`client/`) plus a separate Express.js API server (`server/`), in a pnpm workspace, using JavaScript only. See `docs/audits/phase-1-architecture-correction-report.md` for the full rationale and migration record. Sections 1–6, 15, and 16 below reflect the corrected architecture. Sections covering design tokens, state scope, forms, SEO content, image budgets, testing intent, and maintenance cadence (7–14, 17) remain valid in spirit even though code samples elsewhere in this suite may still show `.tsx`/framework-route syntax from the original draft — treat those as illustrative of intent, not literal syntax to reproduce.
+
 ## 1. Architecture decision
 
-Use **React Router Framework Mode** with **static pre-rendering**.
+Use a **React SPA client** (Vite + React Router DOM, client-side routing only) paired with a **separate Node.js + Express.js API server**, in a **pnpm workspace** (`client/` + `server/`).
 
 Why:
 
-- Maintains a React-first stack.
-- Supports route modules, automatic code splitting, loaders, error boundaries, and typed routes.
-- Produces static HTML for SEO and fast first loads.
-- Can deploy to static hosting without a permanent application server.
-- Leaves a path to SSR later without rewriting the whole routing architecture.
+- Matches the user's explicit architecture decision: plain React SPA, JavaScript only, no framework-owned routing or build pipeline.
+- Keeps the frontend deployable as static assets to any static host or CDN.
+- Keeps the backend free to grow (contact form handling, project/content APIs, future integrations) without coupling it to the frontend build or forcing SSR.
+- Avoids TypeScript and React Router Framework Mode entirely, per the corrected `CLAUDE.md` stack.
 
 ### Baseline
 
-As of 5 August 2026:
+As of 5 August 2026 (corrected):
 
 - React 19.
-- React Router 8.x Framework Mode.
-- Vite 7+ baseline required by React Router 8.
+- React Router DOM (client-side routing via `createBrowserRouter`/`RouterProvider`), current stable.
+- Vite (client build tool).
 - Node.js 22+.
-- TypeScript strict mode.
+- JavaScript only — no TypeScript anywhere.
 - Tailwind CSS 4.
-- daisyUI 5, used selectively.
+- daisyUI 5, used selectively (deferred to Phase 2).
+- Node.js + Express.js for the API server.
 
 Use the latest mutually compatible stable package versions during implementation. Do not hard-code old versions merely because they appear in this document.
 
@@ -30,34 +32,12 @@ Use the latest mutually compatible stable package versions during implementation
 
 ## 2. Rendering strategy
 
-Recommended `react-router.config.ts` direction:
+The client is a pure client-side-rendered SPA. There is no static pre-rendering and no SSR.
 
-```ts
-import type { Config } from "@react-router/dev/config";
-import { projects } from "./app/data/projects";
-
-export default {
-  ssr: false,
-  async prerender() {
-    return [
-      "/",
-      "/work",
-      "/about",
-      "/beyond",
-      "/contact",
-      "/resume",
-      ...projects.map((project) => `/work/${project.slug}`),
-    ];
-  },
-} satisfies Config;
-```
-
-Requirements:
-
-- All public routes must be pre-rendered.
-- Dynamic project paths must be generated from project data.
-- Static host must serve the SPA fallback for unknown client routes while preserving generated HTML for pre-rendered paths.
-- Directly loading `/work/sarabo` must not return 404.
+- The production build (`vite build`) emits a single `index.html` plus hashed static assets.
+- The hosting platform must rewrite all non-file paths to `index.html` (an SPA fallback rule) so that direct loads of `/work`, `/about`, `/work/:slug`, etc. resolve to the app shell, which then renders the correct route client-side.
+- Directly loading `/work/sarabo` must not return a raw 404 from the host — it must serve the SPA shell, which then renders either the project view or the app's own not-found state depending on whether the slug exists in `client/src/data/projects.js`.
+- Local development/testing must configure the dev/preview server's SPA fallback equivalently (Vite's dev server does this by default; `vite preview` requires the same rewrite behavior for nested paths without a trailing slash — verify this explicitly when configuring hosting in Phase 12).
 
 ---
 
@@ -68,11 +48,17 @@ Requirements:
 | Package | Purpose | Decision |
 |---|---|---|
 | `react` / `react-dom` | UI runtime | Required |
-| `react-router` | Routing and framework features | Required |
-| `typescript` | Type safety | Required |
+| `react-router-dom` | Client-side routing | Required |
+| `vite` / `@vitejs/plugin-react` | Client build tool | Required |
 | `tailwindcss` | Styling and design tokens | Required |
 | `@tailwindcss/vite` | Tailwind Vite integration | Required |
-| `daisyui` | Selected accessible patterns and semantic utilities | Selective |
+| `daisyui` | Selected accessible patterns and semantic utilities | Selective, deferred to Phase 2 |
+| `express` | API server | Required (`server/`) |
+| `cors` | Cross-origin requests from the client dev/prod origin | Required (`server/`) |
+| `helmet` | Baseline HTTP security headers | Required (`server/`) |
+| `dotenv` | Server environment variable loading | Required (`server/`) |
+
+TypeScript is not used anywhere in this project.
 
 ### 3.2 Motion
 
@@ -128,142 +114,169 @@ Rule: Motion owns component animation. GSAP owns at most two complex, scroll-orc
 
 ## 4. Initialization
 
-Recommended commands:
+The project is a pnpm workspace with two packages: `client/` (Vite + React) and `server/` (Express).
 
 ```bash
-pnpm dlx create-react-router@latest jahid-portfolio
-cd jahid-portfolio
+# root
+pnpm init
+# pnpm-workspace.yaml: packages: [client, server]
 
-pnpm add motion gsap @gsap/react lenis \
-  lucide-react cmdk react-hot-toast \
-  react-hook-form zod @hookform/resolvers \
-  clsx tailwind-merge class-variance-authority \
-  yet-another-react-lightbox
+# client
+pnpm create vite@latest client -- --template react
+pnpm --filter client add react-router-dom
+pnpm --filter client add -D tailwindcss @tailwindcss/vite
 
-pnpm add -D tailwindcss @tailwindcss/vite daisyui \
-  vitest @testing-library/react @testing-library/jest-dom \
-  @testing-library/user-event @playwright/test \
-  @axe-core/playwright eslint prettier
+# server
+mkdir server && cd server && pnpm init
+pnpm --filter server add express cors helmet dotenv
+pnpm --filter server add -D nodemon supertest vitest
+
+# shared dev tooling (client + server, added where relevant)
+pnpm add -D -w vitest @testing-library/react @testing-library/jest-dom \
+  @testing-library/user-event jsdom @playwright/test \
+  @axe-core/playwright eslint prettier concurrently
 ```
 
-Before installing, inspect the generated template and avoid adding packages already present.
+Later phases add `motion`, `gsap`, `@gsap/react`, `lenis`, `lucide-react`, `cmdk`, `react-hot-toast`, `react-hook-form`, `zod`, `@hookform/resolvers`, `clsx`, `tailwind-merge`, `class-variance-authority`, `yet-another-react-lightbox`, and `daisyui` to `client/` only, once the design system phase actually needs them. Do not install them during foundation work.
 
-Package manager: **pnpm**.  
-Engine: define Node `>=22` in `package.json`.
+Package manager: **pnpm** only (no npm/yarn lockfiles).
+Engine: define Node `>=22` in the root `package.json`.
 
 ---
 
 ## 5. Route architecture
 
-Suggested `app/routes.ts`:
+Routes are configured with `react-router-dom`'s `createBrowserRouter`, in `client/src/routes/route-config.jsx`:
 
-```ts
-import { index, route } from "@react-router/dev/routes";
+```jsx
+import { createBrowserRouter } from "react-router-dom";
+import App from "../App";
+import HomePage from "../pages/HomePage";
+import WorkPage from "../pages/WorkPage";
+import ProjectDetailsPage from "../pages/ProjectDetailsPage";
+import AboutPage from "../pages/AboutPage";
+import BeyondPage from "../pages/BeyondPage";
+import ContactPage from "../pages/ContactPage";
+import ResumePage from "../pages/ResumePage";
+import NotFoundPage from "../pages/NotFoundPage";
+import ErrorPage from "../pages/ErrorPage";
 
-export default [
-  index("routes/home.tsx"),
-  route("work", "routes/work/index.tsx"),
-  route("work/:slug", "routes/work/detail.tsx"),
-  route("about", "routes/about.tsx"),
-  route("beyond", "routes/beyond.tsx"),
-  route("contact", "routes/contact.tsx"),
-  route("resume", "routes/resume.tsx"),
-  route("*", "routes/not-found.tsx"),
-];
+export const router = createBrowserRouter([
+  {
+    element: <App />,
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "work", element: <WorkPage /> },
+      { path: "work/:slug", element: <ProjectDetailsPage /> },
+      { path: "about", element: <AboutPage /> },
+      { path: "beyond", element: <BeyondPage /> },
+      { path: "contact", element: <ContactPage /> },
+      { path: "resume", element: <ResumePage /> },
+      { path: "*", element: <NotFoundPage /> },
+    ],
+  },
+]);
 ```
 
 Every route must define:
 
-- Page title and metadata.
-- Route-level error behavior where relevant.
-- Semantic page heading.
+- Page title and metadata (via the shared document-head hook, since there is no framework route-metadata API in SPA mode).
+- Route-level error behavior via the shared `errorElement`.
+- Semantic page heading (`<h1>`).
 - Scroll restoration behavior.
-- Route-specific content data.
+- Route-specific content data, sourced from `client/src/data/*.js`.
 
 ---
 
 ## 6. Folder structure
 
 ```text
-jahid-portfolio/
-├── app/
-│   ├── assets/
+portfolio/
+├── client/
+│   ├── public/
+│   │   ├── icons/
 │   │   ├── images/
-│   │   ├── projects/
-│   │   ├── photography/
-│   │   └── textures/
-│   ├── components/
-│   │   ├── ui/
-│   │   ├── layout/
-│   │   ├── navigation/
-│   │   ├── feedback/
-│   │   └── media/
-│   ├── features/
-│   │   ├── command-palette/
-│   │   ├── identity-mode/
-│   │   ├── contact/
-│   │   ├── projects/
-│   │   ├── photography/
-│   │   └── motion/
-│   ├── routes/
-│   │   ├── home.tsx
-│   │   ├── about.tsx
-│   │   ├── beyond.tsx
-│   │   ├── contact.tsx
-│   │   ├── resume.tsx
-│   │   ├── not-found.tsx
-│   │   └── work/
-│   │       ├── index.tsx
-│   │       └── detail.tsx
-│   ├── sections/
-│   │   ├── home/
-│   │   ├── about/
-│   │   └── beyond/
-│   ├── data/
-│   │   ├── profile.ts
-│   │   ├── projects.ts
-│   │   ├── capabilities.ts
-│   │   ├── timeline.ts
-│   │   ├── leadership.ts
-│   │   ├── photography.ts
-│   │   └── navigation.ts
-│   ├── hooks/
-│   │   ├── use-copy-to-clipboard.ts
-│   │   ├── use-media-query.ts
-│   │   ├── use-motion-preference.ts
-│   │   └── use-page-visibility.ts
-│   ├── lib/
-│   │   ├── cn.ts
-│   │   ├── metadata.ts
-│   │   ├── analytics.ts
-│   │   ├── forms.ts
-│   │   └── structured-data.ts
-│   ├── styles/
-│   │   ├── app.css
-│   │   ├── tokens.css
-│   │   ├── typography.css
-│   │   ├── utilities.css
-│   │   └── reduced-motion.css
-│   ├── root.tsx
-│   └── routes.ts
-├── public/
-│   ├── resume/
-│   ├── og/
-│   ├── icons/
-│   ├── robots.txt
-│   ├── sitemap.xml
-│   └── _redirects                  [when deploying to Netlify/static host]
-├── tests/
-│   ├── unit/
-│   ├── integration/
-│   └── e2e/
+│   │   ├── og/
+│   │   └── resume/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   │   ├── feedback/
+│   │   │   ├── layout/
+│   │   │   ├── media/
+│   │   │   ├── navigation/
+│   │   │   └── ui/
+│   │   ├── data/
+│   │   │   └── projects.js
+│   │   ├── features/
+│   │   │   ├── command-palette/
+│   │   │   ├── contact/
+│   │   │   ├── identity-mode/
+│   │   │   ├── motion/
+│   │   │   ├── photography/
+│   │   │   └── projects/
+│   │   ├── hooks/
+│   │   ├── layouts/
+│   │   ├── lib/
+│   │   │   └── api.js
+│   │   ├── pages/
+│   │   │   ├── HomePage.jsx
+│   │   │   ├── WorkPage.jsx
+│   │   │   ├── ProjectDetailsPage.jsx
+│   │   │   ├── AboutPage.jsx
+│   │   │   ├── BeyondPage.jsx
+│   │   │   ├── ContactPage.jsx
+│   │   │   ├── ResumePage.jsx
+│   │   │   ├── NotFoundPage.jsx
+│   │   │   └── ErrorPage.jsx
+│   │   ├── routes/
+│   │   │   └── route-config.jsx
+│   │   ├── sections/
+│   │   │   ├── about/
+│   │   │   ├── beyond/
+│   │   │   └── home/
+│   │   ├── styles/
+│   │   │   └── app.css
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── tests/
+│   │   ├── unit/
+│   │   ├── integration/
+│   │   └── e2e/
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── vitest.config.js
+│   └── playwright.config.js
+│
+├── server/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   ├── app.js
+│   │   └── server.js
+│   ├── tests/
+│   │   ├── integration/
+│   │   └── unit/
+│   ├── eslint.config.js
+│   ├── package.json
+│   ├── vitest.config.js
+│   └── .env.example
+│
 ├── docs/
+├── .github/workflows/ci.yml
 ├── CLAUDE.md
-├── react-router.config.ts
-├── vite.config.ts
-├── tsconfig.json
+├── pnpm-workspace.yaml
 └── package.json
 ```
+
+There is no `tsconfig.json`, `react-router.config.ts`, or root `vite.config.ts` — each of those belonged to the superseded Framework Mode architecture.
 
 ---
 
@@ -566,13 +579,16 @@ Automation does not replace manual keyboard and screen-reader testing.
 GitHub Actions on pull request and main branch:
 
 ```text
-install
-→ lint
-→ typecheck
-→ unit tests
-→ production build
-→ Playwright smoke tests
+install (frozen lockfile)
+→ format check
+→ lint (client + server)
+→ unit/component tests (client)
+→ unit/integration tests (server)
+→ production build (client)
+→ Playwright smoke tests (if stable)
 ```
+
+There is no `typecheck` step — the project is JavaScript only.
 
 Optional pre-deployment:
 
@@ -580,24 +596,29 @@ Optional pre-deployment:
 - Broken-link check.
 - Bundle-size check.
 
-Required scripts:
+Root scripts (workspace-level):
 
 ```json
 {
   "scripts": {
-    "dev": "react-router dev",
-    "build": "react-router build",
-    "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc --noEmit",
-    "lint": "eslint .",
-    "test": "vitest run",
-    "test:e2e": "playwright test",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+    "dev": "concurrently -k -n client,server \"pnpm dev:client\" \"pnpm dev:server\"",
+    "dev:client": "pnpm --filter client dev",
+    "dev:server": "pnpm --filter server dev",
+    "build": "pnpm --filter client build",
+    "lint": "pnpm --filter client lint && pnpm --filter server lint",
+    "test": "pnpm test:client && pnpm test:server",
+    "test:client": "pnpm --filter client test",
+    "test:server": "pnpm --filter server test",
+    "test:e2e": "pnpm --filter client test:e2e",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "pnpm format:check && pnpm lint && pnpm test && pnpm build",
+    "check:full": "pnpm check && pnpm test:e2e"
   }
 }
 ```
 
-Adjust `start` when deploying as a purely static build.
+The server's production script is `pnpm --filter server start`, which runs `node src/server.js` directly — there is no server build/transpile step.
 
 ---
 
@@ -605,21 +626,21 @@ Adjust `start` when deploying as a purely static build.
 
 ### Recommended V1
 
-- GitHub repository.
-- Vercel or Cloudflare Pages.
-- Static pre-rendered build.
-- Custom domain.
-- Automatic preview deployments.
+The client and server deploy as two separate applications.
+
+- **Client:** GitHub repository, static host (Vercel, Netlify, or Cloudflare Pages) serving the `client/` Vite build output, with an SPA rewrite rule (all paths → `index.html`) since there is no static pre-rendering. Custom domain, automatic preview deployments.
+- **Server:** A Node.js-capable host (e.g. Render, Railway, Fly.io, or a VPS) running `pnpm --filter server start`. Not required until a feature (e.g. contact form) actually needs it live.
 
 ### Deployment checklist
 
-- Environment variables configured.
-- Direct-route fallback configured.
+- Environment variables configured on both client (`VITE_API_BASE_URL`) and server (`PORT`, `NODE_ENV`, `CLIENT_ORIGIN`, per `server/.env.example`).
+- SPA fallback/rewrite rule configured on the client host so direct loads of nested routes resolve to `index.html`.
+- Server CORS (`CLIENT_ORIGIN`) matches the deployed client origin exactly.
 - Canonical domain enforced.
-- HTTPS active.
-- Security headers configured.
+- HTTPS active on both client and server hosts.
+- Security headers configured (Helmet on the server; host-level headers for the static client).
 - Preview deployments set to noindex when possible.
-- Contact form tested from production.
+- Contact form tested from production once implemented.
 - Sitemap submitted after domain is final.
 
 ### Suggested security headers

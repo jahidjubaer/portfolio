@@ -52,8 +52,9 @@ Full-stack and AI/ML must be represented as active growth directions, not as sen
 
 ## Implementation Status
 
-- **Current completed phase:** Phase 1 — Foundation, Repository Isolation and Application Scaffold.
-- **Current stack status:** React 19.2, React Router 8.3 (Framework Mode, `ssr: false` with static pre-rendering), TypeScript strict, Tailwind CSS 4, pnpm, Node ≥22. All approved Phase 1 dev tooling installed (ESLint, Prettier, Vitest, Testing Library, Playwright + Axe). All Phase 2+ packages (daisyUI, Motion, GSAP, Lenis, React Hot Toast, React Hook Form, Zod, Lucide React, cmdk, etc.) remain uninstalled as planned.
-- **Validation status:** `pnpm check` and `pnpm check:full` both pass (lint, typecheck, unit/component tests, production build, and Playwright e2e + Axe scan).
+- **Current completed phase:** Phase 1 Correction — Architecture migration to a plain React SPA client (`client/`) plus a separate Express.js API server (`server/`), in a pnpm workspace. This supersedes the original Phase 1, which incorrectly used React Router Framework Mode and TypeScript.
+- **Current stack status:** React 19, Vite, React Router DOM (client-side), Tailwind CSS 4, JavaScript only (no TypeScript), Node.js + Express.js, pnpm workspace (`client` + `server`), Node ≥22. All approved Phase 1 dev tooling installed (ESLint, Prettier, Vitest, Testing Library, Supertest, Playwright + Axe). All Phase 2+ packages (daisyUI, Motion, GSAP, Lenis, React Hot Toast, React Hook Form, Zod, Lucide React, cmdk, etc.) remain uninstalled as planned.
+- **Validation status:** see `docs/audits/phase-1-architecture-correction-report.md` for exact command-by-command results.
 - **Next planned phase:** Phase 2 — Design tokens and UI primitives.
-- **Phase 1 report:** [`docs/audits/phase-1-foundation-report.md`](docs/audits/phase-1-foundation-report.md).
+- **Architecture correction report:** [`docs/audits/phase-1-architecture-correction-report.md`](docs/audits/phase-1-architecture-correction-report.md).
+- **Original Phase 1 report (superseded):** [`docs/audits/phase-1-foundation-report.md`](docs/audits/phase-1-foundation-report.md).

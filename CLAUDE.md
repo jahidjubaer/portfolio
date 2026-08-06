@@ -44,10 +44,14 @@ When a conflict exists, use this priority:
 
 ## Required stack
 
+**Architecture correction (2026-08-05, supersedes the original stack below the notice):** the project uses a plain React SPA client plus a separate Express.js API server, in a pnpm workspace. **Do not use TypeScript.** Do not use React Router Framework Mode, framework-generated route modules, or static framework prerendering — those were the original, incorrect direction and were fully removed. See `docs/audits/phase-1-architecture-correction-report.md` for the full rationale and migration record.
+
 - React 19.
-- React Router Framework Mode, current stable 8.x baseline.
-- TypeScript strict.
+- JavaScript only (no TypeScript, no `.ts`/`.tsx` files).
+- Vite.
+- React Router DOM (client-side routing via `createBrowserRouter`/`RouterProvider`), not Framework Mode.
 - Tailwind CSS 4.
+- Node.js + Express.js for the API server (`server/`), separate from the client (`client/`).
 - daisyUI 5 only for selected foundations, never as the visible theme.
 - Motion for normal animation.
 - GSAP + `@gsap/react` only for approved signature sequences.
@@ -55,8 +59,8 @@ When a conflict exists, use this priority:
 - React Hot Toast only; do not add Toastify or Sonner.
 - React Hook Form + Zod for contact.
 - Lucide React only for general icons.
-- Vitest, Testing Library, Playwright, and Axe for quality.
-- pnpm.
+- Vitest, Testing Library, Playwright, Supertest, and Axe for quality.
+- pnpm workspace (`client` + `server`).
 - Node 22+.
 
 Do not add Redux, Zustand, TanStack Query, AOS, Animate.css, Swiper, React Icons, Three.js, or a CMS in the MVP unless the user explicitly changes the architecture.
@@ -65,17 +69,18 @@ Do not add Redux, Zustand, TanStack Query, AOS, Animate.css, Swiper, React Icons
 
 ## Architecture rules
 
-- Use React Router static pre-rendering for all public routes and project slugs.
-- Keep content in typed files under `app/data`.
-- Keep route modules thin.
-- Break route content into meaningful section components.
-- Keep reusable primitives under `app/components/ui`.
-- Keep feature-specific code under `app/features`.
+- Client (`client/`) and server (`server/`) are separate pnpm workspace packages.
+- Routing is client-side via React Router DOM; there is no static framework prerendering or SSR.
+- Keep content in typed-by-convention (JSDoc, not TypeScript) files under `client/src/data`.
+- Keep route/page modules thin.
+- Break page content into meaningful section components.
+- Keep reusable primitives under `client/src/components/ui`.
+- Keep feature-specific code under `client/src/features`.
 - Keep all public claims in data, not buried inside JSX.
 - Use semantic HTML first.
 - Use links for navigation and buttons for actions.
-- Use error boundaries where route/data failure can occur.
-- Ensure every direct route works on production hosting.
+- Use error boundaries (`errorElement`) where route/data failure can occur.
+- The server (`server/`) exposes only the API endpoints a feature actually needs; do not add speculative routes, models, or auth.
 
 ---
 
@@ -165,9 +170,9 @@ If content is unknown, add an explicit `TODO_CONTENT` value and surface it in th
 
 ## Coding standards
 
-- TypeScript strict; no casual `any`.
+- JavaScript only. Do not use TypeScript syntax, `.ts`/`.tsx` files, interfaces, enums, type assertions, or generics.
+- Use JSDoc comments only where they materially improve editor support (e.g. documenting a data shape); JSDoc must not become hidden TypeScript.
 - Prefer named exports for reusable components and utilities.
-- Use `interface` for structured public data models; use `type` for unions and composition.
 - Avoid nested ternaries.
 - Avoid premature memoization.
 - Do not use effects for values that can be derived during render.
@@ -200,10 +205,9 @@ After changes:
 
 1. Run formatting if configured.
 2. Run lint.
-3. Run typecheck.
-4. Run relevant tests.
-5. Run production build.
-6. Report files changed, behavior added, checks run, and remaining TODOs.
+3. Run relevant tests (client and/or server).
+4. Run production build.
+5. Report files changed, behavior added, checks run, and remaining TODOs.
 
 Do not claim a command passed unless it was executed successfully.
 

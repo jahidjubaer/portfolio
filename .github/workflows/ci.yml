@@ -23,20 +23,23 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Lint client and server
         run: pnpm lint
 
-      - name: Typecheck
-        run: pnpm typecheck
+      - name: Test client
+        run: pnpm test:client
 
-      - name: Unit and component tests
-        run: pnpm test
+      - name: Test server
+        run: pnpm test:server
 
-      - name: Production build
+      - name: Build client
         run: pnpm build
 
       - name: Install Playwright Chromium
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm --filter client exec playwright install --with-deps chromium
 
       - name: End-to-end smoke tests
         run: pnpm test:e2e

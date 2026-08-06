@@ -1,0 +1,25 @@
+{
+  "name": "@portfolio/server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "express": "^5",
+    "cors": "^2",
+    "helmet": "^8",
+    "dotenv": "^17"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9",
+    "eslint": "^9",
+    "globals": "^15",
+    "nodemon": "^3",
+    "supertest": "^7",
+    "vitest": "^3"
+  }
+}

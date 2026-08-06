@@ -11,9 +11,6 @@ test-results/
 Thumbs.db
 *.log
 
-# React Router
-/.react-router/
-
 # Editor/OS
 .vscode/*
 !.vscode/extensions.json
