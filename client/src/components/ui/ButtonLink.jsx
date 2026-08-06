@@ -1,46 +1,55 @@
 import { Link } from "react-router-dom";
-
-const VARIANT_CLASSES = {
-  primary:
-    "bg-(--color-accent) text-[#06210a] hover:brightness-110 border border-transparent",
-  secondary:
-    "bg-transparent text-(--color-text) border border-(--color-border) hover:border-(--color-accent) hover:text-(--color-accent)",
-  ghost:
-    "bg-transparent text-(--color-text-muted) border border-transparent hover:text-(--color-text)",
-};
-
-const BASE_CLASSES =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-colors duration-150";
+import { getButtonClasses } from "./button-styles";
 
 /**
+ * Link-flavored counterpart to Button — same visual variants/sizes, but
+ * renders an <a> or React Router <Link> instead of a <button>, so it stays
+ * semantically correct for navigation actions.
  * @param {{
  *   to?: string,
  *   href?: string,
- *   variant?: "primary" | "secondary" | "ghost",
+ *   variant?: "primary" | "secondary" | "ghost" | "text",
+ *   size?: "sm" | "md" | "lg",
  *   disabled?: boolean,
+ *   leadingIcon?: import("react").ReactNode,
+ *   trailingIcon?: import("react").ReactNode,
  *   children: import("react").ReactNode,
  *   className?: string,
- * }} props
+ * } & import("react").AnchorHTMLAttributes<HTMLAnchorElement>} props
  */
 export function ButtonLink({
   to,
   href,
   variant = "primary",
+  size = "md",
   disabled = false,
+  leadingIcon,
+  trailingIcon,
   children,
   className = "",
   ...rest
 }) {
-  const classes =
-    `${BASE_CLASSES} ${VARIANT_CLASSES[variant]} ${className}`.trim();
+  const classes = getButtonClasses({ variant, size, disabled, className });
+  const content = (
+    <>
+      {leadingIcon ? (
+        <span aria-hidden="true" className="inline-flex shrink-0">
+          {leadingIcon}
+        </span>
+      ) : null}
+      {children}
+      {trailingIcon ? (
+        <span aria-hidden="true" className="inline-flex shrink-0">
+          {trailingIcon}
+        </span>
+      ) : null}
+    </>
+  );
 
   if (disabled) {
     return (
-      <span
-        className={`${classes} cursor-not-allowed opacity-50`}
-        aria-disabled="true"
-      >
-        {children}
+      <span className={classes} aria-disabled="true">
+        {content}
       </span>
     );
   }
@@ -48,14 +57,14 @@ export function ButtonLink({
   if (to) {
     return (
       <Link to={to} className={classes} {...rest}>
-        {children}
+        {content}
       </Link>
     );
   }
 
   return (
     <a href={href} className={classes} {...rest}>
-      {children}
+      {content}
     </a>
   );
 }

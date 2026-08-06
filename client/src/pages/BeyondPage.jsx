@@ -1,6 +1,8 @@
 import { usePageMeta } from "../hooks/usePageMeta";
 import { Container } from "../components/ui/Container";
 import { SectionLabel } from "../components/ui/SectionLabel";
+import { Reveal } from "../features/motion/Reveal";
+import { StaggerGroup, StaggerItem } from "../features/motion/StaggerGroup";
 import { leadershipRoles } from "../data/leadership";
 
 const BEYOND_AREAS = [
@@ -33,45 +35,47 @@ export function BeyondPage() {
   });
 
   return (
-    <Container className="py-20">
-      <SectionLabel>Beyond the Code</SectionLabel>
-      <h1 className="mt-3 text-3xl font-semibold text-(--color-text) sm:text-4xl">
-        Beyond the code
-      </h1>
-      <p className="mt-6 max-w-prose text-(--color-text-muted)">
-        Outside of engineering, I'm involved in photography, sports leadership,
-        and university organisations. This part of the site is being prepared —
-        the full photography gallery and story content will follow in a later
-        phase. Here's an honest look at what's confirmed today.
-      </p>
+    <Container as="div" className="section-spacing">
+      <Reveal>
+        <SectionLabel>Beyond the Code</SectionLabel>
+        <h1 className="display-lg mt-3 text-(--color-text-primary)">
+          Beyond the code
+        </h1>
+        <p className="body-lg mt-6 max-w-prose text-(--color-text-secondary)">
+          Outside of engineering, I&apos;m involved in photography, sports
+          leadership, and university organisations. This part of the site is
+          being prepared — the full photography gallery and story content will
+          follow in a later phase. Here&apos;s an honest look at what&apos;s
+          confirmed today.
+        </p>
+      </Reveal>
 
-      <ul className="mt-12 grid gap-6 sm:grid-cols-2">
+      <StaggerGroup as="ul" className="mt-14 grid gap-6 sm:grid-cols-2">
         {BEYOND_AREAS.map((area) => (
-          <li
+          <StaggerItem
             key={area.title}
-            className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-6"
+            as="li"
+            className="rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-6"
           >
-            <h2 className="text-lg font-semibold text-(--color-text)">
+            <h2 className="heading-md text-(--color-text-primary)">
               {area.title}
             </h2>
-            <p className="mt-2 text-sm text-(--color-text-muted)">
+            <p className="body-sm mt-2 text-(--color-text-secondary)">
               {area.description}
             </p>
-          </li>
+          </StaggerItem>
         ))}
-      </ul>
+      </StaggerGroup>
 
       <section className="mt-16">
-        <h2 className="text-sm font-semibold tracking-wide text-(--color-text) uppercase">
-          Roles
-        </h2>
+        <h2 className="label text-(--color-text-muted)">Roles</h2>
         <ul className="mt-6 space-y-4">
           {leadershipRoles.map((role) => (
             <li
               key={`${role.organization}-${role.role}-${role.dates}`}
-              className="text-sm text-(--color-text-muted)"
+              className="body-sm text-(--color-text-secondary)"
             >
-              <span className="font-semibold text-(--color-text)">
+              <span className="font-semibold text-(--color-text-primary)">
                 {role.role}
               </span>{" "}
               — {role.organization} ({role.dates})

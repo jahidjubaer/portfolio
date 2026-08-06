@@ -116,3 +116,146 @@ test("mobile navigation works", async ({ page }) => {
   ).toBeVisible();
   await expect(mobileNav).toBeHidden();
 });
+
+test("mobile menu opens and closes via its toggle button", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+
+  const toggle = page.getByRole("button", { name: "Open menu" });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+  await toggle.click();
+  const closeToggle = page.getByRole("button", { name: "Close menu" });
+  await expect(closeToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("navigation", { name: "Mobile" })).toBeVisible();
+
+  await closeToggle.click();
+  await expect(page.getByRole("navigation", { name: "Mobile" })).toBeHidden();
+  await expect(page.getByRole("button", { name: "Open menu" })).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+});
+
+test("Escape closes the mobile menu and returns focus to the toggle", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+
+  const toggle = page.getByRole("button", { name: "Open menu" });
+  await toggle.click();
+  await expect(page.getByRole("navigation", { name: "Mobile" })).toBeVisible();
+
+  await page.keyboard.press("Escape");
+
+  await expect(page.getByRole("navigation", { name: "Mobile" })).toBeHidden();
+  await expect(page.getByRole("button", { name: "Open menu" })).toBeFocused();
+});
+
+test("active route indicator updates as navigation changes", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const nav = page.getByRole("navigation", { name: "Primary" });
+
+  await expect(nav.getByRole("link", { name: "Home" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+
+  await nav.getByRole("link", { name: "Work" }).click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Projects I've built" }),
+  ).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Work" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await expect(nav.getByRole("link", { name: "Home" })).not.toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+});
+
+test("focus remains visible when tabbing through primary navigation", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  await page.keyboard.press("Tab"); // skip link
+  await page.keyboard.press("Tab"); // JH. monogram / home link
+
+  const activeElement = page.locator(":focus");
+  await expect(activeElement).toBeVisible();
+  const outlineStyle = await activeElement.evaluate(
+    (el) => getComputedStyle(el).outlineStyle,
+  );
+  expect(outlineStyle).not.toBe("none");
+});
+
+test("/beyond uses the STORY identity", async ({ page }) => {
+  await page.goto("/beyond");
+  await expect(page.locator("html")).toHaveAttribute("data-identity", "story");
+});
+
+test("professional routes use the SYSTEM identity", async ({ page }) => {
+  for (const path of ["/", "/work", "/about", "/contact", "/resume"]) {
+    await page.goto(path);
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-identity",
+      "system",
+    );
+  }
+});
+
+test("known project route renders project details", async ({ page }) => {
+  await page.goto("/work/sarabo");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Sarabo" }),
+  ).toBeVisible();
+});
+
+test("reduced-motion mode still renders and navigates correctly", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "I build clear interfaces for real product problems.",
+    }),
+  ).toBeVisible();
+
+  await page
+    .getByRole("navigation", { name: "Primary" })
+    .getByRole("link", { name: "Work" })
+    .click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Projects I've built" }),
+  ).toBeVisible();
+});
+
+test("no horizontal overflow at 360px", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto("/");
+
+  const hasOverflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth >
+      document.documentElement.clientWidth,
+  );
+  expect(hasOverflow).toBe(false);
+});
+
+test("unknown route provides working recovery navigation", async ({ page }) => {
+  await page.goto("/this-route-does-not-exist");
+  await page.getByRole("link", { name: "Return home" }).click();
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "I build clear interfaces for real product problems.",
+    }),
+  ).toBeVisible();
+});

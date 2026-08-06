@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
 import { usePageMeta } from "../../hooks/usePageMeta";
 import { Container } from "./Container";
+import { ButtonLink } from "./ButtonLink";
+import { Reveal } from "../../features/motion/Reveal";
 
 /**
  * @param {{
@@ -8,7 +9,7 @@ import { Container } from "./Container";
  *   description: string,
  *   heading: string,
  *   statement: string,
- *   showHomeLink?: boolean,
+ *   showWorkLink?: boolean,
  * }} props
  */
 export function RoutePlaceholder({
@@ -16,24 +17,28 @@ export function RoutePlaceholder({
   description,
   heading,
   statement,
-  showHomeLink = true,
+  showWorkLink = false,
 }) {
   usePageMeta({ title, description });
 
   return (
-    <Container className="py-24 text-center">
-      <h1 className="text-3xl font-semibold text-(--color-text)">{heading}</h1>
-      <p className="mx-auto mt-4 max-w-prose text-(--color-text-muted)">
-        {statement}
-      </p>
-      {showHomeLink ? (
-        <Link
-          to="/"
-          className="mt-8 inline-block text-(--color-accent) hover:underline"
-        >
-          Return to the homepage
-        </Link>
-      ) : null}
+    <Container as="div" className="section-spacing text-center">
+      <Reveal>
+        <h1 className="heading-xl text-(--color-text-primary)">{heading}</h1>
+        <p className="body-md mx-auto mt-4 max-w-prose text-(--color-text-secondary)">
+          {statement}
+        </p>
+        <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <ButtonLink to="/" variant="primary">
+            Return to the homepage
+          </ButtonLink>
+          {showWorkLink ? (
+            <ButtonLink to="/work" variant="secondary">
+              View Work
+            </ButtonLink>
+          ) : null}
+        </div>
+      </Reveal>
     </Container>
   );
 }

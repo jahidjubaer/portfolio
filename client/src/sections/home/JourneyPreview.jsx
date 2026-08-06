@@ -1,31 +1,38 @@
-import { SectionLabel } from "../../components/ui/SectionLabel";
+import { SectionHeader } from "../../components/ui/SectionHeader";
 import { Container } from "../../components/ui/Container";
+import { StaggerGroup, StaggerItem } from "../../features/motion/StaggerGroup";
 import { journeySteps } from "../../data/journey";
 
 export function JourneyPreview() {
   return (
-    <section className="border-b border-(--color-border) py-20">
+    <section className="section-spacing border-b border-(--color-border)">
       <Container>
-        <SectionLabel>Journey</SectionLabel>
-        <h2 className="mt-3 text-2xl font-semibold text-(--color-text) sm:text-3xl">
-          Where I'm heading
-        </h2>
+        <SectionHeader label="Journey" heading="Where I'm heading" />
 
-        <ol className="mt-10 space-y-6 border-l border-(--color-border) pl-6">
+        <StaggerGroup
+          as="ol"
+          className="mt-12 grid gap-x-8 gap-y-8 lg:grid-cols-2"
+        >
           {journeySteps.map((step, index) => (
-            <li key={step.title} className="relative">
-              <span className="absolute top-1 -left-[1.65rem] font-mono text-xs text-(--color-accent)">
+            <StaggerItem
+              key={step.title}
+              as="li"
+              className="flex gap-4 border-t border-(--color-border) pt-4"
+            >
+              <span className="mono-meta shrink-0 text-(--color-accent-primary)">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <h3 className="text-sm font-semibold text-(--color-text)">
-                {step.title}
-              </h3>
-              <p className="mt-1 text-sm text-(--color-text-muted)">
-                {step.description}
-              </p>
-            </li>
+              <div>
+                <h3 className="text-sm font-semibold text-(--color-text-primary)">
+                  {step.title}
+                </h3>
+                <p className="body-sm mt-1 text-(--color-text-secondary)">
+                  {step.description}
+                </p>
+              </div>
+            </StaggerItem>
           ))}
-        </ol>
+        </StaggerGroup>
       </Container>
     </section>
   );

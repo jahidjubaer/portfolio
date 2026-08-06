@@ -2,6 +2,7 @@ import { usePageMeta } from "../hooks/usePageMeta";
 import { Container } from "../components/ui/Container";
 import { SectionLabel } from "../components/ui/SectionLabel";
 import { ButtonLink } from "../components/ui/ButtonLink";
+import { Reveal } from "../features/motion/Reveal";
 import { profile } from "../data/profile";
 import { capabilityGroups } from "../data/capabilities";
 
@@ -13,65 +14,62 @@ export function ResumePage() {
   });
 
   return (
-    <Container className="py-20">
-      <SectionLabel>Résumé</SectionLabel>
-      <h1 className="mt-3 text-3xl font-semibold text-(--color-text) sm:text-4xl">
-        Résumé
-      </h1>
+    <Container as="div" className="section-spacing">
+      <Reveal>
+        <SectionLabel>Résumé</SectionLabel>
+        <h1 className="heading-xl mt-3 text-(--color-text-primary)">Résumé</h1>
 
-      {profile.resume.available ? (
-        <div className="mt-6">
-          <ButtonLink href={profile.resume.url} variant="primary">
-            Download Résumé (PDF)
-          </ButtonLink>
-        </div>
-      ) : (
-        <p className="mt-6 max-w-prose text-(--color-text-muted)">
-          The downloadable résumé PDF is being prepared. In the meantime, here's
-          a summary of my education and current capabilities.
-        </p>
-      )}
+        {profile.resume.available ? (
+          <div className="mt-6">
+            <ButtonLink href={profile.resume.url} variant="primary">
+              Download Résumé (PDF)
+            </ButtonLink>
+          </div>
+        ) : (
+          <p className="body-md mt-6 max-w-prose text-(--color-text-secondary)">
+            The downloadable résumé PDF is being prepared. In the meantime,
+            here&apos;s a summary of my education and current capabilities.
+          </p>
+        )}
 
-      <section className="mt-12">
-        <h2 className="text-sm font-semibold tracking-wide text-(--color-text) uppercase">
-          Education
-        </h2>
-        <p className="mt-3 text-(--color-text)">{profile.education.degree}</p>
-        <p className="text-(--color-text-muted)">
-          {profile.education.university} &middot; {profile.education.graduation}
-        </p>
-      </section>
+        <section className="mt-14">
+          <h2 className="label text-(--color-text-muted)">Education</h2>
+          <p className="body-md mt-3 text-(--color-text-primary)">
+            {profile.education.degree}
+          </p>
+          <p className="body-sm text-(--color-text-secondary)">
+            {profile.education.university} &middot;{" "}
+            {profile.education.graduation}
+          </p>
+        </section>
 
-      <section className="mt-12">
-        <h2 className="text-sm font-semibold tracking-wide text-(--color-text) uppercase">
-          Key skills
-        </h2>
-        <div className="mt-6 grid gap-8 sm:grid-cols-3">
-          {capabilityGroups.map((group) => (
-            <div key={group.id}>
-              <h3 className="text-sm font-semibold text-(--color-text)">
-                {group.title}
-              </h3>
-              <ul className="mt-3 space-y-2 text-sm text-(--color-text-muted)">
-                {group.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
+        <section className="mt-14">
+          <h2 className="label text-(--color-text-muted)">Key skills</h2>
+          <div className="mt-6 grid gap-8 sm:grid-cols-3">
+            {capabilityGroups.map((group) => (
+              <div key={group.id}>
+                <h3 className="text-sm font-semibold text-(--color-text-primary)">
+                  {group.title}
+                </h3>
+                <ul className="mt-3 space-y-2 text-sm text-(--color-text-secondary)">
+                  {group.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
 
-      <section className="mt-12">
-        <h2 className="text-sm font-semibold tracking-wide text-(--color-text) uppercase">
-          Problem solving
-        </h2>
-        <p className="mt-3 text-(--color-text-muted)">
-          {profile.problemSolving.total}, primarily in{" "}
-          {profile.problemSolving.primaryLanguage}, across{" "}
-          {profile.problemSolving.platforms}.
-        </p>
-      </section>
+        <section className="mt-14">
+          <h2 className="label text-(--color-text-muted)">Problem solving</h2>
+          <p className="body-sm mt-3 text-(--color-text-secondary)">
+            {profile.problemSolving.total}, primarily in{" "}
+            {profile.problemSolving.primaryLanguage}, across{" "}
+            {profile.problemSolving.platforms}.
+          </p>
+        </section>
+      </Reveal>
     </Container>
   );
 }

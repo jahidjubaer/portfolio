@@ -51,14 +51,14 @@ When a conflict exists, use this priority:
 - Vite.
 - React Router DOM (client-side routing via `createBrowserRouter`/`RouterProvider`), not Framework Mode.
 - Tailwind CSS 4.
-- daisyUI used selectively, never as the visible theme (not yet installed — deferred to Phase 2).
+- daisyUI used selectively, never as the visible theme (still not installed as of Phase 2 — no concrete behavioral need has justified it yet; all Phase 2 UI primitives were built with plain Tailwind + custom tokens).
 - Node.js + Express.js for the API server (`server/`), separate from the client (`client/`).
-- Motion for normal animation (not yet installed — deferred).
-- GSAP + `@gsap/react` only for approved signature sequences (not yet installed — deferred).
+- Motion for normal animation (installed in Phase 2 — `motion/react`; owns page transitions, section reveals, the active-nav indicator, and the mobile-menu transition; see `client/src/features/motion/`).
+- GSAP + `@gsap/react` only for approved signature sequences (not yet installed — deferred; no signature sequence has been approved yet).
 - Lenis only as progressive enhancement (not yet installed — deferred).
 - React Hot Toast only; do not add Toastify or Sonner (not yet installed — deferred).
 - React Hook Form + Zod for contact (not yet installed — deferred until the contact API exists).
-- Lucide React, clsx, and tailwind-merge are approved for the client when actually needed (not yet installed — the current UI uses plain text/CSS instead of icons or conditional class merging).
+- Lucide React, clsx, and tailwind-merge are approved for the client when actually needed (installed in Phase 2 — Lucide for the header/footer/contact icons, `cn()` in `client/src/lib/cn.js` wraps clsx + tailwind-merge for all conditional class merging).
 - Vitest, Testing Library, Playwright, Supertest, and Axe for quality.
 - **npm workspaces** (`client` + `server`), one root `package-lock.json`. Do not use pnpm or yarn, and do not create lockfiles inside `client/` or `server/`.
 - Node 20+ (CI runs Node 22).

@@ -1,0 +1,17 @@
+/*
+ * Global reduced-motion baseline. Motion (the JS library) reads
+ * prefers-reduced-motion itself via client/src/features/motion/motion-config.js
+ * for JS-driven animation; this file is the CSS-level backstop so that any
+ * CSS transition/animation is neutralized even before React mounts.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

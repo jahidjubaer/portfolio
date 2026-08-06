@@ -1,0 +1,100 @@
+/*
+ * Typography system. Font choice: Manrope/Geist Sans + JetBrains Mono/Geist
+ * Mono are named first so browsers that already have them (or a future
+ * self-hosted @font-face) pick them up, but no font files are committed and
+ * no third-party font CDN is loaded — every name has a reliable system
+ * fallback, so first paint never blocks on a network font request. This is
+ * a documented interpretation of "efficient web-font loading or reliable
+ * fallbacks" from the Phase 2 spec.
+ */
+
+:root {
+  --font-sans:
+    "Manrope", "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-mono:
+    "JetBrains Mono", "Geist Mono", ui-monospace, "SFMono-Regular", Menlo,
+    Consolas, monospace;
+
+  --leading-tight: 1.1;
+  --leading-snug: 1.3;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.04em;
+  --tracking-widest: 0.2em;
+}
+
+@layer base {
+  .display-xl {
+    font-size: clamp(2.75rem, 6vw + 1rem, 6.5rem);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    font-weight: 600;
+  }
+
+  .display-lg {
+    font-size: clamp(2.25rem, 4.5vw + 1rem, 4.5rem);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    font-weight: 600;
+  }
+
+  .heading-xl {
+    font-size: clamp(1.875rem, 2.5vw + 1rem, 3rem);
+    line-height: var(--leading-tight);
+    font-weight: 600;
+  }
+
+  .heading-lg {
+    font-size: clamp(1.5rem, 1.6vw + 1rem, 2.25rem);
+    line-height: var(--leading-snug);
+    font-weight: 600;
+  }
+
+  .heading-md {
+    font-size: clamp(1.125rem, 0.8vw + 1rem, 1.5rem);
+    line-height: var(--leading-snug);
+    font-weight: 600;
+  }
+
+  .body-lg {
+    font-size: clamp(1.0625rem, 0.3vw + 1rem, 1.1875rem);
+    line-height: var(--leading-relaxed);
+    max-width: var(--container-content);
+  }
+
+  .body-md {
+    font-size: 1rem;
+    line-height: var(--leading-normal);
+    max-width: var(--container-content);
+  }
+
+  .body-sm {
+    font-size: 0.875rem;
+    line-height: var(--leading-normal);
+  }
+
+  .label {
+    font-size: 0.8125rem;
+    line-height: var(--leading-snug);
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+  }
+
+  .mono-meta {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: var(--tracking-normal);
+  }
+}

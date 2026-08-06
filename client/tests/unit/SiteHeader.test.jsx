@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { SiteHeader } from "../../src/components/navigation/SiteHeader";
@@ -56,8 +56,16 @@ describe("SiteHeader", () => {
 
     await user.keyboard("{Escape}");
 
-    expect(
-      screen.queryByRole("navigation", { name: "Mobile" }),
-    ).not.toBeInTheDocument();
+    // The panel has an exit animation (Motion AnimatePresence), so it is
+    // removed from the DOM asynchronously rather than on the same tick.
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("navigation", { name: "Mobile" }),
+      ).not.toBeInTheDocument();
+    });
+    expect(screen.getByRole("button", { name: "Open menu" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
   });
 });

@@ -2,6 +2,9 @@ import { usePageMeta } from "../hooks/usePageMeta";
 import { Container } from "../components/ui/Container";
 import { SectionLabel } from "../components/ui/SectionLabel";
 import { ButtonLink } from "../components/ui/ButtonLink";
+import { Divider } from "../components/ui/Divider";
+import { Reveal } from "../features/motion/Reveal";
+import { StaggerGroup, StaggerItem } from "../features/motion/StaggerGroup";
 import { profile } from "../data/profile";
 import { capabilityGroups } from "../data/capabilities";
 import { leadershipRoles } from "../data/leadership";
@@ -14,91 +17,93 @@ export function AboutPage() {
   });
 
   return (
-    <Container className="py-20">
-      <SectionLabel>About</SectionLabel>
-      <h1 className="mt-3 text-3xl font-semibold text-(--color-text) sm:text-4xl">
-        About Jahid
-      </h1>
-      <p className="mt-6 max-w-prose text-(--color-text-muted)">
-        {profile.heroSupport}
-      </p>
-
-      <section className="mt-16">
-        <h2 className="text-sm font-semibold tracking-wide text-(--color-text) uppercase">
-          Education
-        </h2>
-        <p className="mt-3 text-(--color-text)">{profile.education.degree}</p>
-        <p className="text-(--color-text-muted)">
-          {profile.education.university} &middot; {profile.education.graduation}
+    <Container as="div" className="section-spacing">
+      <Reveal>
+        <SectionLabel>About</SectionLabel>
+        <h1 className="heading-xl mt-3 text-(--color-text-primary)">
+          About Jahid
+        </h1>
+        <p className="body-lg mt-6 max-w-prose text-(--color-text-secondary)">
+          {profile.heroSupport}
         </p>
-      </section>
+      </Reveal>
 
-      <section className="mt-16">
-        <h2 className="text-sm font-semibold tracking-wide text-(--color-text) uppercase">
-          Capabilities
-        </h2>
-        <div className="mt-6 grid gap-8 sm:grid-cols-3">
-          {capabilityGroups.map((group) => (
-            <div key={group.id}>
-              <h3 className="text-sm font-semibold text-(--color-text)">
-                {group.title}
-              </h3>
-              <ul className="mt-3 space-y-2 text-sm text-(--color-text-muted)">
-                {group.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
+      <Divider className="my-16" />
 
-      <section className="mt-16">
-        <h2 className="text-sm font-semibold tracking-wide text-(--color-text) uppercase">
-          Problem solving
-        </h2>
-        <p className="mt-3 text-(--color-text-muted)">
-          {profile.problemSolving.total}, primarily in{" "}
-          {profile.problemSolving.primaryLanguage}, across{" "}
-          {profile.problemSolving.platforms}.
-        </p>
-      </section>
+      <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+        <Reveal as="section">
+          <h2 className="label text-(--color-text-muted)">Education</h2>
+          <p className="heading-md mt-3 text-(--color-text-primary)">
+            {profile.education.degree}
+          </p>
+          <p className="body-sm mt-1 text-(--color-text-secondary)">
+            {profile.education.university} &middot;{" "}
+            {profile.education.graduation}
+          </p>
 
-      <section className="mt-16">
-        <h2 className="text-sm font-semibold tracking-wide text-(--color-text) uppercase">
-          Leadership
-        </h2>
-        <ul className="mt-6 space-y-6">
-          {leadershipRoles.map((role) => (
-            <li key={`${role.organization}-${role.role}-${role.dates}`}>
-              <p className="text-(--color-text)">
-                <span className="font-semibold">{role.role}</span> &mdash;{" "}
-                {role.organization}{" "}
-                <span className="text-(--color-text-muted)">
-                  ({role.dates})
-                </span>
-              </p>
-              <p className="mt-1 text-sm text-(--color-text-muted)">
-                {role.description}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </section>
+          <h2 className="label mt-10 text-(--color-text-muted)">
+            Problem solving
+          </h2>
+          <p className="body-sm mt-3 text-(--color-text-secondary)">
+            {profile.problemSolving.total}, primarily in{" "}
+            {profile.problemSolving.primaryLanguage}, across{" "}
+            {profile.problemSolving.platforms}.
+          </p>
 
-      <section className="mt-16">
-        <h2 className="text-sm font-semibold tracking-wide text-(--color-text) uppercase">
-          Current direction
-        </h2>
-        <p className="mt-3 max-w-prose text-(--color-text-muted)">
-          {profile.supportingDirection}
-        </p>
-        <div className="mt-6">
-          <ButtonLink to="/contact" variant="secondary">
-            Get in touch
-          </ButtonLink>
-        </div>
-      </section>
+          <h2 className="label mt-10 text-(--color-text-muted)">
+            Current direction
+          </h2>
+          <p className="body-sm mt-3 max-w-prose text-(--color-text-secondary)">
+            {profile.supportingDirection}
+          </p>
+          <div className="mt-6">
+            <ButtonLink to="/contact" variant="secondary">
+              Get in touch
+            </ButtonLink>
+          </div>
+        </Reveal>
+
+        <section>
+          <h2 className="label text-(--color-text-muted)">Capabilities</h2>
+          <StaggerGroup as="div" className="mt-6 grid gap-8 sm:grid-cols-2">
+            {capabilityGroups.map((group) => (
+              <StaggerItem key={group.id}>
+                <h3 className="text-sm font-semibold text-(--color-text-primary)">
+                  {group.title}
+                </h3>
+                <ul className="mt-3 space-y-2 border-l border-(--color-border) pl-4">
+                  {group.items.map((item) => (
+                    <li
+                      key={item}
+                      className="body-sm text-(--color-text-secondary)"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </StaggerItem>
+            ))}
+          </StaggerGroup>
+
+          <h2 className="label mt-10 text-(--color-text-muted)">Leadership</h2>
+          <ul className="mt-6 space-y-6">
+            {leadershipRoles.map((role) => (
+              <li key={`${role.organization}-${role.role}-${role.dates}`}>
+                <p className="text-(--color-text-primary)">
+                  <span className="font-semibold">{role.role}</span> &mdash;{" "}
+                  {role.organization}{" "}
+                  <span className="mono-meta text-(--color-text-muted)">
+                    ({role.dates})
+                  </span>
+                </p>
+                <p className="body-sm mt-1 text-(--color-text-secondary)">
+                  {role.description}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
     </Container>
   );
 }
