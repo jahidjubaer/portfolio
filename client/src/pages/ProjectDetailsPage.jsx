@@ -286,6 +286,7 @@ export function ProjectDetailsPage() {
           title: "Project not found — Jahid Hasan",
           description:
             "This project could not be found. Return to the work index to see available case studies.",
+          robots: "noindex, follow",
         },
   );
 

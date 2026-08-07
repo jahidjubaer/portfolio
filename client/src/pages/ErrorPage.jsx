@@ -12,6 +12,7 @@ export function ErrorPage() {
       ? "Page not found — Jahid Hasan"
       : "Something went wrong — Jahid Hasan",
     description: "An error occurred while loading this page.",
+    robots: "noindex, follow",
   });
 
   return (

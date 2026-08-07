@@ -7,6 +7,7 @@ export function NotFoundPage() {
   usePageMeta({
     title: "Page not found — Jahid Hasan",
     description: "The page you requested could not be found.",
+    robots: "noindex, follow",
   });
 
   return (

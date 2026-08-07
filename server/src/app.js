@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import { env } from "./config/env.js";
 import { healthRouter } from "./routes/healthRoutes.js";
+import { contactRouter } from "./routes/contactRoutes.js";
 import { apiNotFoundHandler } from "./middleware/notFound.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -22,6 +23,7 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/api", healthRouter);
+app.use("/api", contactRouter);
 app.use("/api", apiNotFoundHandler);
 
 app.use(errorHandler);

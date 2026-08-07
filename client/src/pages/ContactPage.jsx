@@ -2,9 +2,9 @@ import { Mail, ArrowUpRight, MapPin } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { Container } from "../components/ui/Container";
 import { SectionLabel } from "../components/ui/SectionLabel";
-import { ButtonLink } from "../components/ui/ButtonLink";
 import { StatusIndicator } from "../components/ui/StatusIndicator";
 import { Reveal } from "../features/motion/Reveal";
+import { ContactForm } from "../features/contact/ContactForm";
 import { profile } from "../data/profile";
 
 const CONTACT_ENTRIES = [
@@ -79,17 +79,23 @@ export function ContactPage() {
             </div>
           ))}
         </dl>
+      </Reveal>
 
-        <p className="body-sm mt-12 text-(--color-text-muted)">
-          A direct contact form is being prepared. Until then, email is the
-          fastest way to reach me.
+      <Reveal className="mt-16">
+        <h2 className="heading-md text-(--color-text-primary)">
+          Send a message
+        </h2>
+        <p className="body-sm mt-3 max-w-prose text-(--color-text-muted)">
+          Prefer email? Reaching out at{" "}
+          <a
+            href={`mailto:${profile.email}`}
+            className="text-(--color-accent-primary) underline underline-offset-4"
+          >
+            {profile.email}
+          </a>{" "}
+          works just as well.
         </p>
-
-        <div className="mt-6">
-          <ButtonLink href={`mailto:${profile.email}`} variant="primary">
-            Email me
-          </ButtonLink>
-        </div>
+        <ContactForm />
       </Reveal>
     </Container>
   );
