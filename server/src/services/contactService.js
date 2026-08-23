@@ -1,20 +1,22 @@
 import { env } from "../config/env.js";
 
 /**
- * Environment-aware contact-delivery abstraction. No email provider is
- * installed or configured yet (CONTENT_CHECKLIST.md has no confirmed
- * provider/credentials), so this module never claims delivery it cannot
- * perform:
+ * Environment-aware contact-delivery abstraction. CONTENT_CHECKLIST.md
+ * section 3 names Web3Forms as the intended contact-form provider, but no
+ * access key is configured yet, so this module never claims delivery it
+ * cannot perform:
  *
  * - development/test: simulates delivery and logs a redacted summary only.
  * - production with CONTACT_PROVIDER + CONTACT_RECIPIENT_EMAIL configured:
- *   would call the real provider (not implemented — no provider chosen yet).
+ *   would call the real provider (not implemented — Web3Forms integration
+ *   is pending an access key; no other provider has been selected).
  * - production without a configured provider: returns `delivered: false`
  *   with `reason: "provider-unavailable"` so the controller can respond
  *   honestly instead of faking success.
  *
- * Swapping in Resend/Nodemailer later means implementing `sendViaProvider`
- * below — the controller and route never need to change.
+ * Wiring in Web3Forms (or swapping to Resend/Nodemailer) later means
+ * implementing `sendViaProvider` below — the controller and route never
+ * need to change.
  */
 
 function redactEmail(email) {
@@ -25,10 +27,11 @@ function redactEmail(email) {
 }
 
 async function sendViaProvider(_message) {
-  // No provider is configured/verified for this portfolio yet
-  // (server/.env.example: CONTACT_PROVIDER=). Implement here once one is
-  // chosen — the controller's contract (a resolved { delivered } object)
-  // does not need to change.
+  // Web3Forms is the selected provider (CONTENT_CHECKLIST.md section 3),
+  // but no access key exists yet (server/.env.example: CONTACT_PROVIDER=).
+  // Implement the Web3Forms request here once a key is issued — the
+  // controller's contract (a resolved { delivered } object) does not need
+  // to change.
   throw new Error("No contact provider is implemented yet.");
 }
 

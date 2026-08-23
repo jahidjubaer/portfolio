@@ -13,8 +13,9 @@ import { getFeaturedProjects } from "../features/projects/project-selectors";
 export function ResumePage() {
   usePageMeta({
     title: "Résumé — Jahid Hasan",
-    description:
-      "Résumé summary of Jahid Hasan, a CSE graduate and frontend developer / junior software engineer. The downloadable PDF is being prepared.",
+    description: profile.resume.available
+      ? "Résumé summary and downloadable PDF for Jahid Hasan, a CSE graduate and frontend developer / junior software engineer."
+      : "Résumé summary of Jahid Hasan, a CSE graduate and frontend developer / junior software engineer. The downloadable PDF is being prepared.",
   });
 
   const featuredProjects = getFeaturedProjects();

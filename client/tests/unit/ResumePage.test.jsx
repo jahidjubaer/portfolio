@@ -118,6 +118,25 @@ describe("ResumePage", () => {
     ).toBeGreaterThan(0);
   });
 
+  it("does not claim the PDF is still being prepared once it is available", async () => {
+    mockManifest({
+      available: true,
+      src: "/assets/resume/jahid-hasan-resume.pdf",
+    });
+    const { ResumePage } = await import("../../src/pages/ResumePage");
+
+    render(
+      <MemoryRouter>
+        <ResumePage />
+      </MemoryRouter>,
+    );
+
+    const description = document
+      .querySelector('meta[name="description"]')
+      ?.getAttribute("content");
+    expect(description).not.toMatch(/being prepared/i);
+  });
+
   it("does not claim unsupported professional experience", async () => {
     mockManifest({ available: false, src: null });
     const { ResumePage } = await import("../../src/pages/ResumePage");
