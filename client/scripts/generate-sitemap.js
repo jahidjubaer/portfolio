@@ -21,6 +21,8 @@ const CLIENT_ROOT = join(__dirname, "..");
 const PROJECTS_FILE = join(CLIENT_ROOT, "src", "data", "projects.js");
 const SITEMAP_FILE = join(CLIENT_ROOT, "public", "sitemap.xml");
 const ROBOTS_FILE = join(CLIENT_ROOT, "public", "robots.txt");
+const INDEX_HTML_FILE = join(CLIENT_ROOT, "index.html");
+const OG_IMAGE_PATH = "/assets/og/og-default.svg";
 
 const STATIC_ROUTES = [
   "/",
@@ -63,13 +65,42 @@ export function buildRobots(siteUrl) {
   return `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`;
 }
 
+/**
+ * Rewrites index.html's static og:image/twitter:image fallback tags (read
+ * by crawlers that don't execute JavaScript, before usePageMeta's
+ * per-route absolute tags take over) to an absolute URL under the current
+ * siteUrl. Anchored to each specific meta tag, so it never touches any
+ * other relative path in the file, and is idempotent — safe to re-run
+ * against either the original relative value or a previously-absolutized
+ * one from an earlier build.
+ */
+export function absolutizeOgImage(html, siteUrl) {
+  const absoluteOgImage = `${siteUrl}${OG_IMAGE_PATH}`;
+  return html
+    .replace(
+      /(<meta\s+property="og:image"\s+content=")[^"]*(")/,
+      `$1${absoluteOgImage}$2`,
+    )
+    .replace(
+      /(<meta\s+name="twitter:image"\s+content=")[^"]*(")/,
+      `$1${absoluteOgImage}$2`,
+    );
+}
+
 function main() {
   const siteUrl = resolveSiteUrl();
   const slugs = readProjectSlugs();
   writeFileSync(SITEMAP_FILE, buildSitemap(siteUrl, slugs));
   writeFileSync(ROBOTS_FILE, buildRobots(siteUrl));
+
+  const indexHtml = readFileSync(INDEX_HTML_FILE, "utf8");
+  const updatedIndexHtml = absolutizeOgImage(indexHtml, siteUrl);
+  if (updatedIndexHtml !== indexHtml) {
+    writeFileSync(INDEX_HTML_FILE, updatedIndexHtml);
+  }
+
   console.log(
-    `[seo] wrote sitemap.xml (${STATIC_ROUTES.length + slugs.length} routes) and robots.txt (base ${siteUrl})`,
+    `[seo] wrote sitemap.xml (${STATIC_ROUTES.length + slugs.length} routes), robots.txt, and index.html OG image (base ${siteUrl})`,
   );
 }
 

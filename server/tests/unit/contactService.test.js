@@ -101,6 +101,13 @@ describe("deliverContactMessage", () => {
     // leak concern is application logs, not the authenticated request itself.
     expect(sentPayload.access_key).toBe("test-access-key");
     expect(sentPayload.email).toBe(MESSAGE.email);
+    // Web3Forms ties the recipient to the access key itself — there is no
+    // per-request override, so one must never be sent.
+    expect(sentPayload).not.toHaveProperty("to");
+    // Truthfully identifies our own origin, for access keys with Domain
+    // Restriction enabled — server-to-server fetch sets neither by default.
+    expect(requestInit.headers.Referer).toBe(env.clientOrigin);
+    expect(requestInit.headers.Origin).toBe(env.clientOrigin);
     expect(logSpy).not.toHaveBeenCalled();
     expect(errorSpy).not.toHaveBeenCalled();
   });

@@ -9,6 +9,15 @@ import { errorHandler } from "./middleware/errorHandler.js";
 
 export const app = express();
 
+// Exactly one hop: the Vercel edge proxy in front of this serverless
+// function. This makes Express derive req.ip from the single X-Forwarded-For
+// entry that Vercel itself appends (the real client), while ignoring any
+// earlier, client-supplied entries in that header — a client cannot spoof
+// its own rate-limit identity by prepending fake IPs. Locally (no proxy in
+// front of `node src/server.js`), there is no X-Forwarded-For header to
+// misinterpret, so this is a no-op there.
+app.set("trust proxy", 1);
+
 app.use(helmet());
 app.use(cors({ origin: env.clientOrigin }));
 app.use(express.json({ limit: "100kb" }));

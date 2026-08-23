@@ -31,6 +31,12 @@ function redactEmail(email) {
 /**
  * Submits the message to Web3Forms. Never logs the access key, the full
  * message body, or the sender's full email — only a resolved/thrown result.
+ *
+ * Sends `Referer`/`Origin` set to our own real production origin
+ * (env.clientOrigin) — server-to-server requests don't set these
+ * automatically, but Web3Forms access keys can have Domain Restriction
+ * enabled, which checks exactly these headers. This truthfully identifies
+ * the calling application; it does not spoof anything.
  * @param {{ name: string, email: string, subject: string, message: string }} contactMessage
  */
 async function sendViaWeb3Forms(contactMessage) {
@@ -43,14 +49,18 @@ async function sendViaWeb3Forms(contactMessage) {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        Referer: env.clientOrigin,
+        Origin: env.clientOrigin,
       },
       body: JSON.stringify({
+        // Web3Forms's public API ties the recipient to the access key
+        // itself — there is no per-request "to" override, so it is not
+        // sent here.
         access_key: env.web3formsAccessKey,
         subject: contactMessage.subject,
         from_name: contactMessage.name,
         email: contactMessage.email,
         message: contactMessage.message,
-        to: env.contactRecipientEmail,
       }),
       signal: controller.signal,
     });
