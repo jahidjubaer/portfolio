@@ -6,4 +6,5 @@ export const env = {
   clientOrigin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
   contactRecipientEmail: process.env.CONTACT_RECIPIENT_EMAIL || "",
   contactProvider: process.env.CONTACT_PROVIDER || "",
+  web3formsAccessKey: process.env.WEB3FORMS_ACCESS_KEY || "",
 };

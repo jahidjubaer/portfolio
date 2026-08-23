@@ -55,4 +55,75 @@ describe("deliverContactMessage", () => {
     });
     expect(errorSpy).toHaveBeenCalled();
   });
+
+  it("refuses to claim success when web3forms is selected but its access key is missing", async () => {
+    env.nodeEnv = "production";
+    env.contactProvider = "web3forms";
+    env.contactRecipientEmail = "recipient@example.com";
+    env.web3formsAccessKey = "";
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const result = await deliverContactMessage(MESSAGE);
+
+    expect(result).toEqual({
+      delivered: false,
+      simulated: false,
+      reason: "provider-unavailable",
+    });
+    // An incomplete configuration must never even attempt the request.
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("delivers via web3forms when fully configured, without logging the access key or message", async () => {
+    env.nodeEnv = "production";
+    env.contactProvider = "web3forms";
+    env.contactRecipientEmail = "recipient@example.com";
+    env.web3formsAccessKey = "test-access-key";
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(
+        new Response(JSON.stringify({ success: true }), { status: 200 }),
+      );
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const result = await deliverContactMessage(MESSAGE);
+
+    expect(result).toEqual({ delivered: true, simulated: false });
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "https://api.web3forms.com/submit",
+      expect.objectContaining({ method: "POST" }),
+    );
+    const [, requestInit] = fetchSpy.mock.calls[0];
+    const sentPayload = JSON.parse(requestInit.body);
+    // The access key belongs in the outbound request to the provider — the
+    // leak concern is application logs, not the authenticated request itself.
+    expect(sentPayload.access_key).toBe("test-access-key");
+    expect(sentPayload.email).toBe(MESSAGE.email);
+    expect(logSpy).not.toHaveBeenCalled();
+    expect(errorSpy).not.toHaveBeenCalled();
+  });
+
+  it("reports a controlled failure when web3forms rejects the submission", async () => {
+    env.nodeEnv = "production";
+    env.contactProvider = "web3forms";
+    env.contactRecipientEmail = "recipient@example.com";
+    env.web3formsAccessKey = "test-access-key";
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ success: false }), { status: 200 }),
+    );
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const result = await deliverContactMessage(MESSAGE);
+
+    expect(result).toEqual({
+      delivered: false,
+      simulated: false,
+      reason: "provider-error",
+    });
+    expect(errorSpy).toHaveBeenCalled();
+    // The failure log must never include the access key.
+    expect(errorSpy.mock.calls[0][0]).not.toContain("test-access-key");
+  });
 });
