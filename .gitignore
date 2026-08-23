@@ -17,3 +17,12 @@ Thumbs.db
 
 # Local Claude Code tool permissions (machine-specific)
 .claude/settings.local.json
+
+# Internal development documentation
+# Keep locally for development; do not publish to GitHub.
+**/*.md
+!/README.md
+/docs/
+
+# Claude local state
+/.claude/
