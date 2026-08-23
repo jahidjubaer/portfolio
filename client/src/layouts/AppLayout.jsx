@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { SiteHeader } from "../components/navigation/SiteHeader";
 import { SiteFooter } from "../components/layout/SiteFooter";
 import { SkipLink } from "../components/ui/SkipLink";
 import { StructuredData } from "../components/seo/StructuredData";
+import { RouteLoading } from "../components/feedback/RouteLoading";
 import { IdentityProvider } from "../features/identity-mode/IdentityProvider";
 import { PageTransition } from "../features/motion/PageTransition";
 
@@ -13,7 +15,9 @@ export function AppLayout() {
         <SkipLink targetId="main-content">Skip to main content</SkipLink>
         <SiteHeader />
         <main id="main-content" className="flex-1">
-          <PageTransition />
+          <Suspense fallback={<RouteLoading />}>
+            <PageTransition />
+          </Suspense>
         </main>
         <SiteFooter />
       </div>

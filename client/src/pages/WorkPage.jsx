@@ -54,6 +54,7 @@ export function WorkPage() {
                 index={index + 1}
                 headingLevel="h2"
                 showMeta
+                priorityImage={index === 0}
               />
             ))}
           </div>

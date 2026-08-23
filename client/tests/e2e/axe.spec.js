@@ -10,11 +10,21 @@ const STATIC_ROUTES = [
   "/resume",
 ];
 
+// Every secondary route is lazy-loaded (see route-config.jsx) and briefly
+// shows the RouteLoading fallback while its chunk downloads. Every route —
+// including error/not-found states — renders exactly one H1 once resolved,
+// so waiting for it here (rather than analyzing immediately after goto)
+// keeps these scans from racing the Suspense boundary.
+async function gotoAndWaitForContent(page, path) {
+  await page.goto(path);
+  await page.locator("h1").first().waitFor();
+}
+
 for (const path of STATIC_ROUTES) {
   test(`${path} has no automatically detectable accessibility violations`, async ({
     page,
   }) => {
-    await page.goto(path);
+    await gotoAndWaitForContent(page, path);
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
   });
@@ -23,7 +33,7 @@ for (const path of STATIC_ROUTES) {
 test("known project route has no automatically detectable accessibility violations", async ({
   page,
 }) => {
-  await page.goto("/work/sarabo");
+  await gotoAndWaitForContent(page, "/work/sarabo");
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });
@@ -31,7 +41,7 @@ test("known project route has no automatically detectable accessibility violatio
 test("known incomplete project route has no automatically detectable accessibility violations", async ({
   page,
 }) => {
-  await page.goto("/work/bang-learner");
+  await gotoAndWaitForContent(page, "/work/bang-learner");
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });
@@ -39,7 +49,7 @@ test("known incomplete project route has no automatically detectable accessibili
 test("Note Bank project overview route has no automatically detectable accessibility violations", async ({
   page,
 }) => {
-  await page.goto("/work/note-bank");
+  await gotoAndWaitForContent(page, "/work/note-bank");
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });
@@ -47,7 +57,7 @@ test("Note Bank project overview route has no automatically detectable accessibi
 test("unknown project route has no automatically detectable accessibility violations", async ({
   page,
 }) => {
-  await page.goto("/work/unknown-project");
+  await gotoAndWaitForContent(page, "/work/unknown-project");
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });
@@ -55,7 +65,7 @@ test("unknown project route has no automatically detectable accessibility violat
 test("unknown route has no automatically detectable accessibility violations", async ({
   page,
 }) => {
-  await page.goto("/this-route-does-not-exist");
+  await gotoAndWaitForContent(page, "/this-route-does-not-exist");
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });
@@ -64,7 +74,7 @@ test("open mobile menu has no automatically detectable accessibility violations"
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.goto("/");
+  await gotoAndWaitForContent(page, "/");
   await page.getByRole("button", { name: "Open menu" }).click();
   await expect(page.getByRole("navigation", { name: "Mobile" })).toBeVisible();
 
@@ -76,7 +86,7 @@ test("/beyond has no automatically detectable accessibility violations at a mobi
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.goto("/beyond");
+  await gotoAndWaitForContent(page, "/beyond");
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });
@@ -89,7 +99,7 @@ test("/beyond has no automatically detectable accessibility violations at a mobi
 test("/beyond photography viewer scan is skipped — no real photographs exist yet to open", async ({
   page,
 }) => {
-  await page.goto("/beyond");
+  await gotoAndWaitForContent(page, "/beyond");
   const galleryButtons = await page
     .getByRole("button", { name: /photography by Jahid Hasan/i })
     .count();

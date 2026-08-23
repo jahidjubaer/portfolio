@@ -4,34 +4,42 @@ import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routeConfig } from "../../src/routes/route-config";
 import { projects } from "../../src/data/projects";
 
+// WorkPage is lazy-loaded (see route-config.jsx), so every test below first
+// awaits an element to resolve the Suspense boundary before running further
+// synchronous queries.
+
 describe("WorkPage", () => {
-  it("derives its project count from the project data set", () => {
+  it("derives its project count from the project data set", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work"],
     });
     render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByText(new RegExp(`${projects.length} projects? shown below`)),
+      await screen.findByText(
+        new RegExp(`${projects.length} projects? shown below`),
+      ),
     ).toBeInTheDocument();
   });
 
-  it("lists Sarabo as the leading flagship case study", () => {
+  it("lists Sarabo as the leading flagship case study", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work"],
     });
     render(<RouterProvider router={router} />);
 
+    await screen.findByRole("heading", { level: 1 });
     const headings = screen.getAllByRole("heading", { level: 2 });
     expect(headings[0]).toHaveTextContent("Sarabo");
   });
 
-  it("renders every project from the data set", () => {
+  it("renders every project from the data set", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work"],
     });
     render(<RouterProvider router={router} />);
 
+    await screen.findByRole("heading", { level: 1 });
     projects.forEach((project) => {
       expect(
         screen.getByRole("link", { name: project.title }),
@@ -39,33 +47,34 @@ describe("WorkPage", () => {
     });
   });
 
-  it("does not render an empty archive section", () => {
+  it("does not render an empty archive section", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work"],
     });
     render(<RouterProvider router={router} />);
 
+    await screen.findByRole("heading", { level: 1 });
     expect(screen.queryByText("Archive")).not.toBeInTheDocument();
   });
 
-  it("shows the flagship project's role and timeline metadata", () => {
+  it("shows the flagship project's role and timeline metadata", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work"],
     });
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByText("Sole Developer")).toBeInTheDocument();
+    expect(await screen.findByText("Sole Developer")).toBeInTheDocument();
     expect(screen.getByText("July–August")).toBeInTheDocument();
   });
 
-  it("renders placeholder covers for supporting projects without a real cover image", () => {
+  it("renders placeholder covers for supporting projects without a real cover image", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work"],
     });
     render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByRole("img", { name: "Bang Learner project cover" }),
+      await screen.findByRole("img", { name: "Bang Learner project cover" }),
     ).toHaveAttribute(
       "src",
       "/assets/placeholders/project-cover-placeholder.svg",

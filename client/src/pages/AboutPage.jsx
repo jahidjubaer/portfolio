@@ -43,6 +43,7 @@ export function AboutPage() {
               alt="Portrait of Jahid Hasan"
               className="h-full w-full object-cover"
               loading="eager"
+              fetchPriority="high"
             />
           </div>
         </Reveal>

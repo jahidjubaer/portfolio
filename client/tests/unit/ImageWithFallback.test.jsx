@@ -45,4 +45,33 @@ describe("ImageWithFallback", () => {
     fireEvent.error(screen.getByRole("img"));
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
+
+  it("defaults to lazy loading with async decoding", () => {
+    render(
+      <ImageWithFallback
+        src="/assets/profile/profile-portrait.webp"
+        fallbackSrc="/assets/placeholders/profile-placeholder.svg"
+        alt="Portrait of Jahid Hasan"
+      />,
+    );
+    const image = screen.getByRole("img");
+    expect(image).toHaveAttribute("loading", "lazy");
+    expect(image).toHaveAttribute("decoding", "async");
+    expect(image).not.toHaveAttribute("fetchpriority");
+  });
+
+  it("passes fetchPriority through for a genuine LCP candidate", () => {
+    render(
+      <ImageWithFallback
+        src="/assets/profile/profile-portrait.webp"
+        fallbackSrc="/assets/placeholders/profile-placeholder.svg"
+        alt="Portrait of Jahid Hasan"
+        loading="eager"
+        fetchPriority="high"
+      />,
+    );
+    const image = screen.getByRole("img");
+    expect(image).toHaveAttribute("loading", "eager");
+    expect(image).toHaveAttribute("fetchpriority", "high");
+  });
 });

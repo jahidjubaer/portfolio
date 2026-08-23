@@ -8,12 +8,16 @@ import { ProjectMetaGrid } from "./ProjectMetaGrid";
 
 /**
  * Larger, numbered project presentation used for the homepage's headline
- * featured project and the Work page's flagship project.
+ * featured project and the Work page's flagship project. `priorityImage`
+ * should only be set by the caller whose cover is the likely LCP element
+ * for that route (the Work page's first flagship) — the homepage instance
+ * renders below the fold and should stay lazy.
  * @param {{
  *   project: import("../../data/projects").Project,
  *   index: number,
  *   headingLevel?: "h2" | "h3",
  *   showMeta?: boolean,
+ *   priorityImage?: boolean,
  * }} props
  */
 export function FeaturedProjectDossier({
@@ -21,6 +25,7 @@ export function FeaturedProjectDossier({
   index,
   headingLevel = "h3",
   showMeta = false,
+  priorityImage = false,
 }) {
   const HeadingTag = headingLevel;
   const detailHref = `/work/${project.slug}`;
@@ -61,7 +66,8 @@ export function FeaturedProjectDossier({
           fallbackSrc={cover.fallback}
           alt={`${project.title} project cover`}
           className="h-full w-full object-cover"
-          loading="lazy"
+          loading={priorityImage ? "eager" : "lazy"}
+          fetchPriority={priorityImage ? "high" : undefined}
         />
       </div>
     </article>

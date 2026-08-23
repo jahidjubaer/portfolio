@@ -12,6 +12,7 @@ import { cn } from "../../lib/cn";
  *   width?: number,
  *   height?: number,
  *   loading?: "eager" | "lazy",
+ *   fetchPriority?: "high" | "low" | "auto",
  * }} props
  */
 export function ImageWithFallback({
@@ -22,6 +23,7 @@ export function ImageWithFallback({
   width,
   height,
   loading = "lazy",
+  fetchPriority,
 }) {
   const [currentSrc, setCurrentSrc] = useState(src ?? fallbackSrc);
   const [fallbackFailed, setFallbackFailed] = useState(false);
@@ -59,6 +61,7 @@ export function ImageWithFallback({
       width={width}
       height={height}
       loading={loading}
+      fetchPriority={fetchPriority}
       decoding="async"
       onError={handleError}
     />

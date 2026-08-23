@@ -355,6 +355,9 @@ test("Résumé download action is visible on a mobile viewport", async ({
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/resume");
+  // ResumePage is lazy-loaded (see route-config.jsx) — wait past the
+  // RouteLoading fallback before checking which résumé state rendered.
+  await page.locator("h1").first().waitFor();
 
   const downloadLink = page.getByRole("link", { name: /download résumé/i });
   const preparingNotice = page.getByText(/being prepared/i);
