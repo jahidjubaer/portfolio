@@ -86,17 +86,27 @@ const CATEGORY_ORDER = ["Navigation", "Project", "External", "Action"];
 /**
  * Case-insensitive substring match against label and category — enough for
  * a short, hand-authored command list; no fuzzy-matching library needed.
+ * Diacritics are stripped before comparing (e.g. "resume" must still find
+ * "Résumé") since that's how most people actually type a quick search.
+ * @param {string} text
+ * @returns {string}
+ */
+function foldForSearch(text) {
+  return text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
+
+/**
  * @param {Command[]} commands
  * @param {string} query
  * @returns {Command[]}
  */
 export function filterCommands(commands, query) {
-  const normalized = query.trim().toLowerCase();
+  const normalized = foldForSearch(query.trim());
   if (!normalized) return commands;
   return commands.filter(
     (command) =>
-      command.label.toLowerCase().includes(normalized) ||
-      command.category.toLowerCase().includes(normalized),
+      foldForSearch(command.label).includes(normalized) ||
+      foldForSearch(command.category).includes(normalized),
   );
 }
 

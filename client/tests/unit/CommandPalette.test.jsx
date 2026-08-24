@@ -114,6 +114,21 @@ describe("CommandPalette", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("finds 'Résumé' when searching the unaccented 'resume'", async () => {
+    const user = userEvent.setup();
+    renderPalette();
+
+    await openWithCtrlK(user);
+    await user.type(
+      screen.getByRole("combobox", { name: "Search commands" }),
+      "resume",
+    );
+
+    expect(
+      screen.getByRole("option", { name: /^résumé$/i }),
+    ).toBeInTheDocument();
+  });
+
   it("shows an honest empty state for a query matching nothing", async () => {
     const user = userEvent.setup();
     renderPalette();
