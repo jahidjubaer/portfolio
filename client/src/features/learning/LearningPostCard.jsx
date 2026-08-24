@@ -5,6 +5,7 @@ import { Tag } from "../../components/ui/Tag";
 import { VisuallyHidden } from "../../components/ui/VisuallyHidden";
 import { ImageWithFallback } from "../../components/media/ImageWithFallback";
 import { cn } from "../../lib/cn";
+import { detectTextLanguage } from "../../lib/language";
 
 const LEARNING_PLACEHOLDER = "/assets/placeholders/learning-placeholder.svg";
 
@@ -67,20 +68,24 @@ export function LearningPostCard({
           href={post.url}
           target="_blank"
           rel="noopener noreferrer"
+          lang={detectTextLanguage(post.title)}
           className="hover:underline focus-visible:underline"
         >
           {post.title}
         </a>
       </HeadingTag>
 
-      <p className="body-sm mt-2 flex-1 text-(--color-text-secondary)">
+      <p
+        lang={detectTextLanguage(post.excerpt)}
+        className="body-sm mt-2 flex-1 text-(--color-text-secondary)"
+      >
         {post.excerpt}
       </p>
 
       {post.labels.length > 0 ? (
         <ul className="mt-4 flex flex-wrap gap-2">
           {post.labels.map((label) => (
-            <li key={label}>
+            <li key={label} lang={detectTextLanguage(label)}>
               <Tag>{label}</Tag>
             </li>
           ))}

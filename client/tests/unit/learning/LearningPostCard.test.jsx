@@ -73,4 +73,49 @@ describe("LearningPostCard", () => {
     expect(readLink).toHaveAttribute("href", post.url);
     expect(readLink).toHaveAttribute("rel", "noopener noreferrer");
   });
+
+  it("marks a Bengali title with lang='bn'", () => {
+    renderCard({ title: "জাভা স্ক্রিপ্ট পরিচিতি পর্ব" });
+    const titleLink = screen.getByRole("link", {
+      name: "জাভা স্ক্রিপ্ট পরিচিতি পর্ব",
+    });
+    expect(titleLink).toHaveAttribute("lang", "bn");
+  });
+
+  it("does not mark an English title with lang='bn'", () => {
+    renderCard();
+    const titleLink = screen.getByRole("link", { name: post.title });
+    expect(titleLink).not.toHaveAttribute("lang");
+  });
+
+  it("marks a Bengali excerpt with lang='bn'", () => {
+    renderCard({ excerpt: "আজকে আমরা শুরু করবো জাভা স্ক্রিপ্ট।" });
+    const excerpt = screen.getByText("আজকে আমরা শুরু করবো জাভা স্ক্রিপ্ট।");
+    expect(excerpt).toHaveAttribute("lang", "bn");
+  });
+
+  it("does not mark an English excerpt with lang='bn'", () => {
+    renderCard();
+    const excerpt = screen.getByText(post.excerpt);
+    expect(excerpt).not.toHaveAttribute("lang");
+  });
+
+  it("marks a Bengali label with lang='bn' while leaving an English label unmarked", () => {
+    renderCard({ labels: ["জাভা স্ক্রিপ্ট", "React"] });
+    const bengaliLabelItem = screen.getByText("জাভা স্ক্রিপ্ট").closest("li");
+    const englishLabelItem = screen.getByText("React").closest("li");
+    expect(bengaliLabelItem).toHaveAttribute("lang", "bn");
+    expect(englishLabelItem).not.toHaveAttribute("lang");
+  });
+
+  it("never marks the 'Read article' link or dates with lang='bn', even on a Bengali post", () => {
+    renderCard({
+      title: "জাভা স্ক্রিপ্ট পরিচিতি পর্ব",
+      excerpt: "আজকে আমরা শুরু করবো জাভা স্ক্রিপ্ট।",
+    });
+    const readLink = screen.getByRole("link", { name: /read article/i });
+    const time = screen.getByText("January 15, 2026");
+    expect(readLink).not.toHaveAttribute("lang");
+    expect(time).not.toHaveAttribute("lang");
+  });
 });

@@ -202,6 +202,29 @@ describe("LearningPage", () => {
     ).toBeInTheDocument();
   });
 
+  it("marks a Bengali filter label with lang='bn' but leaves 'All' unmarked", async () => {
+    getLearningPosts.mockResolvedValue({
+      success: true,
+      configured: true,
+      posts: [
+        { ...POST_A, labels: ["জাভা স্ক্রিপ্ট"] },
+        { ...POST_B, labels: ["TypeScript"] },
+      ],
+    });
+    renderPage();
+
+    await screen.findByRole("heading", { level: 2, name: POST_A.title });
+    expect(screen.getByRole("button", { name: "All" })).not.toHaveAttribute(
+      "lang",
+    );
+    expect(
+      screen.getByRole("button", { name: "জাভা স্ক্রিপ্ট" }),
+    ).toHaveAttribute("lang", "bn");
+    expect(
+      screen.getByRole("button", { name: "TypeScript" }),
+    ).not.toHaveAttribute("lang");
+  });
+
   it("hides the label filter when fewer than two distinct labels exist", async () => {
     getLearningPosts.mockResolvedValue({
       success: true,

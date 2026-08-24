@@ -4,6 +4,7 @@ import { Container } from "../components/ui/Container";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { TextLink } from "../components/ui/TextLink";
 import { cn } from "../lib/cn";
+import { detectTextLanguage } from "../lib/language";
 import { useLearningPosts } from "../features/learning/useLearningPosts";
 import { LearningPostGrid } from "../features/learning/LearningPostGrid";
 import { LearningPostsState } from "../features/learning/LearningPostsState";
@@ -75,6 +76,7 @@ export function LearningPage() {
               type="button"
               aria-pressed={selectedLabel === label}
               onClick={() => setSelectedLabel(label)}
+              lang={detectTextLanguage(label)}
               className={cn(
                 "rounded-(--radius-pill) border px-3 py-1 font-mono text-xs transition-colors",
                 selectedLabel === label
