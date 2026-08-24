@@ -43,10 +43,28 @@ function buildFeedUrl(blogUrl) {
   return `${base}${FEED_PATH}`;
 }
 
+/**
+ * Blogger's rich-text editor emits HTML entities (most commonly &nbsp;)
+ * inside post content — stripping tags alone leaves those literal entity
+ * codes in the "plain text" excerpt, so they're decoded here too.
+ */
+function decodeHtmlEntities(text) {
+  return text
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#0*39;|&apos;/gi, "'")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) =>
+      String.fromCharCode(parseInt(hex, 16)),
+    );
+}
+
 function stripHtml(html) {
   if (typeof html !== "string" || !html) return "";
-  return html
-    .replace(/<[^>]*>/g, " ")
+  return decodeHtmlEntities(html.replace(/<[^>]*>/g, " "))
     .replace(/\s+/g, " ")
     .trim();
 }

@@ -120,6 +120,26 @@ describe("getLearningPosts — normalization", () => {
     expect(post.excerpt).toBe("Line one. Line two with gaps.");
   });
 
+  it("decodes HTML entities left over after stripping tags (real-world Blogger content)", async () => {
+    // Discovered against the real jahider-notekhata.blogspot.com feed —
+    // Blogger's rich-text editor emits &nbsp; between words, which the tag
+    // regex alone doesn't remove.
+    env.bloggerBlogUrl = "https://jahid-notes.blogspot.com";
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      feedResponse([
+        entry({
+          summary:
+            "&nbsp; Today&nbsp;&nbsp;we&#39;ll learn &amp; build &lt;stuff&gt;.",
+        }),
+      ]),
+    );
+
+    const result = await getLearningPosts();
+
+    expect(result.posts[0].excerpt).toBe("Today we'll learn & build <stuff>.");
+    expect(result.posts[0].excerpt).not.toMatch(/&\w+;|&#\d+;/);
+  });
+
   it("truncates a long excerpt cleanly to roughly 140-220 characters", async () => {
     env.bloggerBlogUrl = "https://jahid-notes.blogspot.com";
     const longText = "word ".repeat(100).trim();
