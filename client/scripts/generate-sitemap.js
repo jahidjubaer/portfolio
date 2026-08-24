@@ -28,6 +28,7 @@ const STATIC_ROUTES = [
   "/",
   "/work",
   "/about",
+  "/learning",
   "/beyond",
   "/contact",
   "/resume",

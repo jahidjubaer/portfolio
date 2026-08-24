@@ -8,6 +8,7 @@ const EXPECTED_LINKS = [
   { label: "Home", href: "/" },
   { label: "Work", href: "/work" },
   { label: "About", href: "/about" },
+  { label: "Learning", href: "/learning" },
   { label: "Beyond", href: "/beyond" },
   { label: "Contact", href: "/contact" },
   { label: "Résumé", href: "/resume" },

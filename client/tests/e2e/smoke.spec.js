@@ -4,6 +4,7 @@ const routes = [
   { path: "/", heading: "I build clear interfaces for real product problems." },
   { path: "/work", heading: "Projects I've built" },
   { path: "/about", heading: "About Jahid" },
+  { path: "/learning", heading: "Blog / Learning" },
   { path: "/beyond", heading: "Beyond the code" },
   { path: "/contact", heading: "Get in touch" },
   { path: "/resume", heading: "Résumé" },
@@ -44,6 +45,25 @@ test("navigation to About works", async ({ page }) => {
     .click();
   await expect(
     page.getByRole("heading", { level: 1, name: "About Jahid" }),
+  ).toBeVisible();
+});
+
+test("navigation to Learning works", async ({ page }) => {
+  await page.goto("/");
+  await page
+    .getByRole("navigation", { name: "Primary" })
+    .getByRole("link", { name: "Learning" })
+    .click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Blog / Learning" }),
+  ).toBeVisible();
+});
+
+test("/blog redirects to /learning", async ({ page }) => {
+  await page.goto("/blog");
+  await expect(page).toHaveURL(/\/learning$/);
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Blog / Learning" }),
   ).toBeVisible();
 });
 
@@ -200,7 +220,14 @@ test("/beyond uses the STORY identity", async ({ page }) => {
 });
 
 test("professional routes use the SYSTEM identity", async ({ page }) => {
-  for (const path of ["/", "/work", "/about", "/contact", "/resume"]) {
+  for (const path of [
+    "/",
+    "/work",
+    "/about",
+    "/learning",
+    "/contact",
+    "/resume",
+  ]) {
     await page.goto(path);
     await expect(page.locator("html")).toHaveAttribute(
       "data-identity",
@@ -313,7 +340,7 @@ test("unknown route provides working recovery navigation", async ({ page }) => {
   ).toBeVisible();
 });
 
-for (const path of ["/about", "/work", "/resume", "/beyond"]) {
+for (const path of ["/about", "/work", "/resume", "/beyond", "/learning"]) {
   test(`no horizontal overflow on ${path} at 360px`, async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await page.goto(path);

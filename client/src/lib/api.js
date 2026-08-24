@@ -93,3 +93,52 @@ export async function submitContactMessage(payload) {
 
   return { success: true, message: "Your message has been received." };
 }
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   title: string,
+ *   url: string,
+ *   publishedAt: string | null,
+ *   updatedAt: string | null,
+ *   excerpt: string,
+ *   thumbnail: string | null,
+ *   labels: string[],
+ * }} LearningPost
+ */
+
+/**
+ * Fetches normalized Blogger posts through the same-origin API — the client
+ * never talks to Blogger directly.
+ * @returns {Promise<{ success: boolean, configured?: boolean, posts?: LearningPost[], message?: string }>}
+ */
+export async function getLearningPosts() {
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/blog/posts`);
+  } catch {
+    return {
+      success: false,
+      message: "Learning posts couldn't be loaded right now.",
+    };
+  }
+
+  let body;
+  try {
+    body = await response.json();
+  } catch {
+    return {
+      success: false,
+      message: "Learning posts couldn't be loaded right now.",
+    };
+  }
+
+  if (!response.ok || !body?.success) {
+    return {
+      success: false,
+      message: body?.message || "Learning posts couldn't be loaded right now.",
+    };
+  }
+
+  return body;
+}

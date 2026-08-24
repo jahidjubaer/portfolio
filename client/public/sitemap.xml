@@ -10,6 +10,9 @@
     <loc>http://localhost:5173/about</loc>
   </url>
   <url>
+    <loc>http://localhost:5173/learning</loc>
+  </url>
+  <url>
     <loc>http://localhost:5173/beyond</loc>
   </url>
   <url>

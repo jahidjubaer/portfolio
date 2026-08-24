@@ -21,7 +21,14 @@ describe("buildSitemap", () => {
   });
 
   it("includes every static route and derived project route", () => {
-    for (const path of ["/work", "/about", "/beyond", "/contact", "/resume"]) {
+    for (const path of [
+      "/work",
+      "/about",
+      "/learning",
+      "/beyond",
+      "/contact",
+      "/resume",
+    ]) {
       expect(xml).toContain(`<loc>https://example.com${path}</loc>`);
     }
     expect(xml).toContain("<loc>https://example.com/work/sarabo</loc>");
@@ -31,6 +38,10 @@ describe("buildSitemap", () => {
   it("never lists error or not-found routes", () => {
     expect(xml).not.toContain("/404");
     expect(xml).not.toContain("not-found");
+  });
+
+  it("does not list /blog — it is only a client-side redirect alias to /learning", () => {
+    expect(xml).not.toContain("<loc>https://example.com/blog</loc>");
   });
 });
 

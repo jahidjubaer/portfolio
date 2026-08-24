@@ -4,6 +4,7 @@ import { CredibilityStrip } from "../sections/home/CredibilityStrip";
 import { FeaturedProjectsPreview } from "../sections/home/FeaturedProjectsPreview";
 import { CapabilitiesPreview } from "../sections/home/CapabilitiesPreview";
 import { JourneyPreview } from "../sections/home/JourneyPreview";
+import { LearningPreview } from "../sections/home/LearningPreview";
 import { BeyondPortal } from "../sections/home/BeyondPortal";
 import { ContactCta } from "../sections/home/ContactCta";
 
@@ -21,6 +22,7 @@ export function HomePage() {
       <FeaturedProjectsPreview />
       <CapabilitiesPreview />
       <JourneyPreview />
+      <LearningPreview />
       <BeyondPortal />
       <ContactCta />
     </>

@@ -1,4 +1,5 @@
 import { lazy } from "react";
+import { Navigate } from "react-router-dom";
 import { AppLayout } from "../layouts/AppLayout";
 import { HomePage } from "../pages/HomePage";
 import { ErrorPage } from "../pages/ErrorPage";
@@ -27,6 +28,9 @@ const BeyondPage = lazy(() =>
 const ContactPage = lazy(() =>
   import("../pages/ContactPage").then((m) => ({ default: m.ContactPage })),
 );
+const LearningPage = lazy(() =>
+  import("../pages/LearningPage").then((m) => ({ default: m.LearningPage })),
+);
 const ResumePage = lazy(() =>
   import("../pages/ResumePage").then((m) => ({ default: m.ResumePage })),
 );
@@ -44,6 +48,10 @@ export const routeConfig = [
       { path: "work", element: <WorkPage /> },
       { path: "work/:slug", element: <ProjectDetailsPage /> },
       { path: "about", element: <AboutPage /> },
+      { path: "learning", element: <LearningPage /> },
+      // /blog is an alias, not a second page — it redirects so /learning
+      // stays the single canonical URL (see LearningPage's usePageMeta).
+      { path: "blog", element: <Navigate to="/learning" replace /> },
       { path: "beyond", element: <BeyondPage /> },
       { path: "contact", element: <ContactPage /> },
       { path: "resume", element: <ResumePage /> },
