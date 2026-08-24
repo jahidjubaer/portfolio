@@ -1,7 +1,7 @@
 /**
- * Hand-written contact-form validation — no React Hook Form/Zod. Mirrors
- * the limits in server/src/utils/contactValidation.js so client and server
- * never disagree about what counts as valid.
+ * Hand-written contact-form validation — no React Hook Form/Zod. The
+ * contact form submits directly to Web3Forms (see client/src/lib/api.js),
+ * so this is the only field-level validation the message passes through.
  */
 
 export const CONTACT_LIMITS = {

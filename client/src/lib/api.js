@@ -9,21 +9,56 @@ export async function getApiHealth() {
   return response.json();
 }
 
+const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+
 /**
+ * Submits the contact form directly to Web3Forms from the browser — this is
+ * Web3Forms's supported flow; their access keys are meant to be used
+ * client-side (server-side calls require a paid plan and IP safelisting and
+ * are otherwise rejected).
+ *
  * @param {{ name: string, email: string, subject: string, message: string, companyWebsite?: string }} payload
- * @returns {Promise<{ success: boolean, message: string, errors?: Record<string, string> }>}
+ * @returns {Promise<{ success: boolean, message: string }>}
  */
 export async function submitContactMessage(payload) {
+  // Honeypot: a bot fills this hidden field. Report success without ever
+  // contacting Web3Forms — telling it "rejected" would just teach it to
+  // remove the honeypot field first.
+  if (payload.companyWebsite) {
+    return { success: true, message: "Your message has been received." };
+  }
+
+  const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
+  if (!accessKey) {
+    return {
+      success: false,
+      message:
+        "The contact form is temporarily unavailable. Please email directly instead.",
+    };
+  }
+
   let response;
   try {
-    response = await fetch(`${API_BASE_URL}/api/contact`, {
+    response = await fetch(WEB3FORMS_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        access_key: accessKey,
+        name: payload.name,
+        email: payload.email,
+        subject: payload.subject,
+        message: payload.message,
+        // Web3Forms's own spam field, distinct from our honeypot above — a
+        // real submission always sends it empty.
+        botcheck: "",
+      }),
     });
   } catch {
-    // Network failure (offline, DNS, CORS, server down) — never surface the
-    // underlying error to the UI, just report that delivery didn't happen.
+    // Network failure (offline, DNS, CORS, Web3Forms down) — never surface
+    // the underlying error to the UI, just report that delivery didn't happen.
     return {
       success: false,
       message:
@@ -31,23 +66,30 @@ export async function submitContactMessage(payload) {
     };
   }
 
+  if (response.status === 429) {
+    return {
+      success: false,
+      message: "Too many messages sent. Please try again later.",
+    };
+  }
+
   let body;
   try {
     body = await response.json();
   } catch {
-    // Non-JSON response (proxy error page, 502, etc.) — don't leak it.
+    // Non-JSON response (gateway error page, etc.) — don't leak it.
     return {
       success: false,
       message: "Something went wrong. Please try again or email directly.",
     };
   }
 
-  if (!response.ok && !body?.message) {
+  if (!response.ok || !body?.success) {
     return {
       success: false,
       message: "Something went wrong. Please try again or email directly.",
     };
   }
 
-  return body;
+  return { success: true, message: "Your message has been received." };
 }

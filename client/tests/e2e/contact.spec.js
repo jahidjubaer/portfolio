@@ -17,15 +17,14 @@ async function fillContactForm(page) {
 }
 
 test("contact form submits and shows a success state", async ({ page }) => {
-  // Intercept the API so no real server or email is ever involved.
-  await page.route("**/api/contact", async (route) => {
+  // Intercept Web3Forms so no real submission or email is ever involved.
+  let requestBody = null;
+  await page.route("**/api.web3forms.com/submit", async (route) => {
+    requestBody = route.request().postDataJSON();
     await route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({
-        success: true,
-        message: "Your message has been received.",
-      }),
+      body: JSON.stringify({ success: true, message: "Email sent." }),
     });
   });
 
@@ -36,20 +35,25 @@ test("contact form submits and shows a success state", async ({ page }) => {
   await expect(page.getByText("Your message has been received.")).toBeVisible();
   // Form is cleared after success.
   await expect(contactForm(page).getByLabel("Name")).toHaveValue("");
+  // The access key and form fields were sent, never a "to"/recipient override.
+  expect(requestBody).toMatchObject({
+    access_key: "e2e-test-placeholder-key",
+    name: "Jane Doe",
+    email: "jane@example.com",
+    subject: "Project inquiry",
+    botcheck: "",
+  });
+  expect(requestBody).not.toHaveProperty("to");
 });
 
 test("contact form preserves input and offers email fallback on failure", async ({
   page,
 }) => {
-  await page.route("**/api/contact", async (route) => {
+  await page.route("**/api.web3forms.com/submit", async (route) => {
     await route.fulfill({
-      status: 503,
+      status: 200,
       contentType: "application/json",
-      body: JSON.stringify({
-        success: false,
-        message:
-          "The contact form is temporarily unavailable. Please email directly instead.",
-      }),
+      body: JSON.stringify({ success: false, message: "Rejected." }),
     });
   });
 
@@ -57,9 +61,7 @@ test("contact form preserves input and offers email fallback on failure", async 
   await fillContactForm(page);
   await page.getByRole("button", { name: /send message/i }).click();
 
-  await expect(page.getByRole("alert")).toContainText(
-    /temporarily unavailable/i,
-  );
+  await expect(page.getByRole("alert")).toContainText(/something went wrong/i);
   // Typed message is preserved.
   await expect(contactForm(page).getByLabel("Message")).toHaveValue(
     "I would love to discuss a frontend role with your team.",
@@ -75,7 +77,7 @@ test("contact form preserves input and offers email fallback on failure", async 
 
 test("contact form blocks submission of an empty form", async ({ page }) => {
   let apiCalled = false;
-  await page.route("**/api/contact", async (route) => {
+  await page.route("**/api.web3forms.com/submit", async (route) => {
     apiCalled = true;
     await route.fulfill({
       status: 200,
