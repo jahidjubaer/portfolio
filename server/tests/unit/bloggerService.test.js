@@ -168,6 +168,26 @@ describe("getLearningPosts — normalization", () => {
     );
   });
 
+  it("upsizes a thumbnail whose size segment includes explicit width/height (real-world Blogger shape)", async () => {
+    // Discovered against the real jahider-notekhata.blogspot.com feed —
+    // Blogger does not always emit the plain "s72-c" form.
+    env.bloggerBlogUrl = "https://jahid-notes.blogspot.com";
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      feedResponse([
+        entry({
+          thumbnail:
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj/s72-w400-h263-c/photo.png",
+        }),
+      ]),
+    );
+
+    const result = await getLearningPosts();
+
+    expect(result.posts[0].thumbnail).toBe(
+      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj/s640/photo.png",
+    );
+  });
+
   it("returns a null thumbnail when the entry has none", async () => {
     env.bloggerBlogUrl = "https://jahid-notes.blogspot.com";
     vi.spyOn(globalThis, "fetch").mockResolvedValue(

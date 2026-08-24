@@ -62,9 +62,11 @@ function truncate(text, max = 200) {
 function extractThumbnail(entry) {
   const raw = entry["media$thumbnail"]?.url;
   if (typeof raw !== "string" || !raw) return null;
-  // Blogger's feed thumbnail is a small crop (.../s72-c/...) — request a
-  // size large enough for a card cover instead of upscaling a tiny image.
-  return raw.replace(/\/s72-c\//, "/s640/");
+  // Blogger's feed thumbnail is a small crop, but the size segment's exact
+  // shape varies — plain "/s72-c/" on some posts, "/s72-w400-h263-c/" (with
+  // explicit width/height) on others. Match either so real posts don't
+  // silently keep their tiny original crop.
+  return raw.replace(/\/s\d+(?:-w\d+-h\d+)?-c\//, "/s640/");
 }
 
 /**
