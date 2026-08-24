@@ -396,6 +396,21 @@ test("Résumé download action is visible on a mobile viewport", async ({
 test("Beyond page renders its sections on a mobile viewport", async ({
   page,
 }) => {
+  // /api/photography doesn't really exist in this static-preview e2e
+  // server (no Express backend) — without this mock the real fetch would
+  // hit Vite preview's SPA fallback (200 + index.html) instead of a clean
+  // 404/JSON, which the client can't distinguish from a genuine upstream
+  // error. Mock the same "not configured" shape production returns before
+  // a Photography Blogger URL is set, so this test exercises the same
+  // honest empty state it always has.
+  await page.route("**/api/photography", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: true, configured: false, photos: [] }),
+    });
+  });
+
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/beyond");
 
@@ -408,4 +423,23 @@ test("Beyond page renders its sections on a mobile viewport", async ({
   await expect(
     page.getByText("A curated photography selection is being prepared."),
   ).toBeVisible();
+});
+
+test("About page renders the verified timeline with no horizontal overflow at 360px", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto("/about");
+
+  await expect(
+    page.getByRole("heading", { level: 2, name: "Timeline" }),
+  ).toBeVisible();
+  await expect(page.getByText("Graduation")).toBeVisible();
+
+  const hasOverflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth >
+      document.documentElement.clientWidth,
+  );
+  expect(hasOverflow).toBe(false);
 });

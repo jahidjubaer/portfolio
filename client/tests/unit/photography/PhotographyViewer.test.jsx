@@ -90,4 +90,40 @@ describe("PhotographyViewer", () => {
     renderViewer({ photograph: { ...photograph, title: "Street scene" } });
     expect(screen.getByText("Street scene")).toBeInTheDocument();
   });
+
+  it("marks a Bengali caption with lang='bn' but leaves an English caption unmarked", () => {
+    renderViewer({
+      photograph: { ...photograph, title: "ছবি: আমু বাগান, চুনারুঘাট" },
+    });
+    expect(screen.getByText("ছবি: আমু বাগান, চুনারুঘাট")).toHaveAttribute(
+      "lang",
+      "bn",
+    );
+
+    renderViewer({ photograph: { ...photograph, title: "Street scene" } });
+    expect(screen.getByText("Street scene")).not.toHaveAttribute("lang");
+  });
+
+  it("does not render a link to the original post when none is provided", () => {
+    renderViewer();
+    expect(
+      screen.queryByRole("link", { name: /view original post/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders an accessible link to the original Blogger post when provided", () => {
+    renderViewer({
+      photograph: {
+        ...photograph,
+        postUrl: "https://jahid-thecapturecrew.blogspot.com/2026/06/photo.html",
+      },
+    });
+    const link = screen.getByRole("link", { name: /view original post/i });
+    expect(link).toHaveAttribute(
+      "href",
+      "https://jahid-thecapturecrew.blogspot.com/2026/06/photo.html",
+    );
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  });
 });

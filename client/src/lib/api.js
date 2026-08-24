@@ -142,3 +142,53 @@ export async function getLearningPosts() {
 
   return body;
 }
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   src: string,
+ *   thumbnail: string,
+ *   title: string,
+ *   alt: string,
+ *   caption: string,
+ *   category: string,
+ *   postUrl: string,
+ *   publishedAt: string | null,
+ * }} BlogPhoto
+ */
+
+/**
+ * Fetches normalized Blogger photography through the same-origin API — the
+ * client never talks to Blogger directly.
+ * @returns {Promise<{ success: boolean, configured?: boolean, photos?: BlogPhoto[], message?: string }>}
+ */
+export async function getPhotographyPhotos() {
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/photography`);
+  } catch {
+    return {
+      success: false,
+      message: "Photography couldn't be loaded right now.",
+    };
+  }
+
+  let body;
+  try {
+    body = await response.json();
+  } catch {
+    return {
+      success: false,
+      message: "Photography couldn't be loaded right now.",
+    };
+  }
+
+  if (!response.ok || !body?.success) {
+    return {
+      success: false,
+      message: body?.message || "Photography couldn't be loaded right now.",
+    };
+  }
+
+  return body;
+}

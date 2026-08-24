@@ -4,6 +4,7 @@ import helmet from "helmet";
 import { env } from "./config/env.js";
 import { healthRouter } from "./routes/healthRoutes.js";
 import { blogRouter } from "./routes/blogRoutes.js";
+import { photographyRouter } from "./routes/photographyRoutes.js";
 import { apiNotFoundHandler } from "./middleware/notFound.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -24,6 +25,7 @@ app.get("/", (_req, res) => {
 
 app.use("/api", healthRouter);
 app.use("/api", blogRouter);
+app.use("/api", photographyRouter);
 app.use("/api", apiNotFoundHandler);
 
 app.use(errorHandler);

@@ -7,9 +7,9 @@ import { StatusIndicator } from "../components/ui/StatusIndicator";
 import { Reveal } from "../features/motion/Reveal";
 import { StaggerGroup, StaggerItem } from "../features/motion/StaggerGroup";
 import { ImageWithFallback } from "../components/media/ImageWithFallback";
+import { Timeline } from "../features/timeline/Timeline";
 import { profile } from "../data/profile";
 import { capabilityGroups } from "../data/capabilities";
-import { leadershipRoles } from "../data/leadership";
 import { assetManifest } from "../generated/asset-manifest";
 
 export function AboutPage() {
@@ -100,26 +100,21 @@ export function AboutPage() {
               </StaggerItem>
             ))}
           </StaggerGroup>
-
-          <h2 className="label mt-10 text-(--color-text-muted)">Leadership</h2>
-          <ul className="mt-6 space-y-6">
-            {leadershipRoles.map((role) => (
-              <li key={`${role.organization}-${role.role}-${role.dates}`}>
-                <p className="text-(--color-text-primary)">
-                  <span className="font-semibold">{role.role}</span> &mdash;{" "}
-                  {role.organization}{" "}
-                  <span className="mono-meta text-(--color-text-muted)">
-                    ({role.dates})
-                  </span>
-                </p>
-                <p className="body-sm mt-1 text-(--color-text-secondary)">
-                  {role.description}
-                </p>
-              </li>
-            ))}
-          </ul>
         </section>
       </div>
+
+      <Divider className="my-16" />
+
+      <section>
+        <h2 className="label text-(--color-text-muted)">Timeline</h2>
+        <p className="body-sm mt-3 max-w-prose text-(--color-text-secondary)">
+          Verified milestones — leadership roles, volunteering, and education —
+          in chronological order.
+        </p>
+        <div className="mt-8">
+          <Timeline />
+        </div>
+      </section>
 
       <Divider className="my-16" />
 

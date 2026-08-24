@@ -40,6 +40,26 @@ describe("photography-selectors", () => {
     expect(getAvailableCategories(fixture)).toEqual(["street", "nature"]);
   });
 
+  it("appends categories outside the fixed enum (e.g. Blogger labels) instead of dropping them", () => {
+    const withBloggerCategories = [
+      ...fixture,
+      {
+        id: "b-1",
+        src: "/d.jpg",
+        title: "D",
+        category: "StreetPhotography",
+        alt: "",
+      },
+      { id: "b-2", src: "/e.jpg", title: "E", category: "FEATURED", alt: "" },
+    ];
+    expect(getAvailableCategories(withBloggerCategories)).toEqual([
+      "street",
+      "nature",
+      "FEATURED",
+      "StreetPhotography",
+    ]);
+  });
+
   it("filters photographs by category", () => {
     expect(getPhotographsByCategory("nature", fixture)).toHaveLength(2);
     expect(getPhotographsByCategory("all", fixture)).toHaveLength(3);

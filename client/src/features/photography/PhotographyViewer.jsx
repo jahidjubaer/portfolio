@@ -1,10 +1,13 @@
 import { useEffect, useRef } from "react";
 import { motion } from "motion/react";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import { fadeVariants } from "../motion/motion-variants";
 import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 import { ImageWithFallback } from "../../components/media/ImageWithFallback";
 import { IconButton } from "../../components/ui/IconButton";
+import { TextLink } from "../../components/ui/TextLink";
+import { VisuallyHidden } from "../../components/ui/VisuallyHidden";
+import { detectTextLanguage } from "../../lib/language";
 
 function getFocusableElements(container) {
   if (!container) return [];
@@ -131,9 +134,24 @@ export function PhotographyViewer({
           loading="eager"
         />
         {photograph.title ? (
-          <figcaption className="body-sm mt-3 text-center text-white/80">
+          <figcaption
+            lang={detectTextLanguage(photograph.title)}
+            className="body-sm mt-3 text-center text-white/80"
+          >
             {photograph.title}
           </figcaption>
+        ) : null}
+        {photograph.postUrl ? (
+          <TextLink
+            href={photograph.postUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="body-sm mt-2 inline-flex items-center gap-1 text-white/60 hover:text-white"
+          >
+            View original post
+            <ArrowUpRight aria-hidden="true" size={14} />
+            <VisuallyHidden>(opens in a new tab, on Blogger)</VisuallyHidden>
+          </TextLink>
         ) : null}
       </figure>
     </motion.div>

@@ -6,6 +6,7 @@ import { StructuredData } from "../components/seo/StructuredData";
 import { RouteLoading } from "../components/feedback/RouteLoading";
 import { IdentityProvider } from "../features/identity-mode/IdentityProvider";
 import { PageTransition } from "../features/motion/PageTransition";
+import { CommandPalette } from "../features/command-palette/CommandPalette";
 
 export function AppLayout() {
   return (
@@ -21,6 +22,7 @@ export function AppLayout() {
         </main>
         <SiteFooter />
       </div>
+      <CommandPalette />
     </IdentityProvider>
   );
 }

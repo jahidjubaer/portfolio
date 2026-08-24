@@ -7,21 +7,9 @@
  * comes from the same-origin /api/blog/posts endpoint (see lib/api.js),
  * never fetched directly from Blogger by the client.
  */
+import { normalizeBlogUrl } from "../lib/blogUrl";
 
-const rawBlogUrl = import.meta.env.VITE_BLOGGER_BLOG_URL || "";
-
-function normalize(value) {
-  if (!value) return null;
-  try {
-    const parsed = new URL(value);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-      return null;
-    }
-    return value.replace(/\/+$/, "");
-  } catch {
-    return null;
-  }
-}
-
-export const BLOG_URL = normalize(rawBlogUrl);
+export const BLOG_URL = normalizeBlogUrl(
+  import.meta.env.VITE_BLOGGER_BLOG_URL || "",
+);
 export const isBlogConfigured = BLOG_URL !== null;

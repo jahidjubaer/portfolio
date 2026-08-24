@@ -1,11 +1,19 @@
+import { ArrowUpRight } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { Container } from "../components/ui/Container";
 import { SectionLabel } from "../components/ui/SectionLabel";
 import { ButtonLink } from "../components/ui/ButtonLink";
+import { TextLink } from "../components/ui/TextLink";
+import { VisuallyHidden } from "../components/ui/VisuallyHidden";
 import { Divider } from "../components/ui/Divider";
 import { Reveal } from "../features/motion/Reveal";
 import { PhotographyGallery } from "../features/photography/PhotographyGallery";
-import { getAllPhotographs } from "../features/photography/photography-selectors";
+import { PhotographyGalleryState } from "../features/photography/PhotographyGalleryState";
+import { usePhotographyPhotos } from "../features/photography/usePhotographyPhotos";
+import {
+  PHOTOGRAPHY_BLOG_URL,
+  isPhotographyBlogConfigured,
+} from "../config/photographyBlog";
 import { leadershipRoles } from "../data/leadership";
 
 // Verified sports involvement — see CONTENT_CHECKLIST.md section 10.
@@ -25,7 +33,12 @@ export function BeyondPage() {
       "Photography, sports, leadership, and volunteering by Jahid Hasan.",
   });
 
-  const photographs = getAllPhotographs();
+  const {
+    status: photographyStatus,
+    photographs,
+    message: photographyMessage,
+    retry: retryPhotography,
+  } = usePhotographyPhotos();
 
   return (
     <Container as="div" className="section-spacing">
@@ -42,8 +55,31 @@ export function BeyondPage() {
       </Reveal>
 
       <section className="mt-16">
-        <h2 className="heading-md text-(--color-text-primary)">Photography</h2>
-        {photographs.length > 0 ? (
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+          <h2 className="heading-md text-(--color-text-primary)">
+            Photography
+          </h2>
+          {isPhotographyBlogConfigured ? (
+            <TextLink
+              href={PHOTOGRAPHY_BLOG_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="body-sm inline-flex items-center gap-1"
+            >
+              View photography archive
+              <ArrowUpRight aria-hidden="true" size={14} />
+              <VisuallyHidden>(opens in a new tab, on Blogger)</VisuallyHidden>
+            </TextLink>
+          ) : null}
+        </div>
+
+        {photographyStatus === "loading" || photographyStatus === "error" ? (
+          <PhotographyGalleryState
+            status={photographyStatus}
+            message={photographyMessage}
+            onRetry={retryPhotography}
+          />
+        ) : photographs.length > 0 ? (
           <div className="mt-6">
             <PhotographyGallery photographs={photographs} />
           </div>

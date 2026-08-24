@@ -19,11 +19,19 @@ export function getAllPhotographs(list = defaultPhotographs) {
 
 /**
  * Categories actually present in `list`, in the fixed display order
- * (see PHOTOGRAPHY_CATEGORY_LABELS), not alphabetical.
+ * (see PHOTOGRAPHY_CATEGORY_LABELS) first, not alphabetical. Blogger
+ * photography categories are open-ended (whatever label Jahid used on the
+ * post) rather than the fixed local-asset enum, so any category present in
+ * the data but not in that fixed list is appended afterward, sorted
+ * alphabetically, instead of being silently dropped from the filter.
  */
 export function getAvailableCategories(list = defaultPhotographs) {
   const present = new Set(list.map((photo) => photo.category));
-  return CATEGORY_ORDER.filter((category) => present.has(category));
+  const known = CATEGORY_ORDER.filter((category) => present.has(category));
+  const unknown = Array.from(present)
+    .filter((category) => !CATEGORY_ORDER.includes(category))
+    .sort((a, b) => a.localeCompare(b));
+  return [...known, ...unknown];
 }
 
 export function getPhotographsByCategory(category, list = defaultPhotographs) {

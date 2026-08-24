@@ -78,6 +78,21 @@ describe("AboutPage", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders the verified timeline section", async () => {
+    const { AboutPage } = await import("../../src/pages/AboutPage");
+
+    render(
+      <MemoryRouter>
+        <AboutPage />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Timeline" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Graduation")).toBeInTheDocument();
+  });
+
   it("shows problem-solving evidence only from verified data", async () => {
     const { AboutPage } = await import("../../src/pages/AboutPage");
 

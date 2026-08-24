@@ -1,4 +1,11 @@
 import { env } from "../config/env.js";
+import {
+  parseConfiguredBlogUrl,
+  stripHtml,
+  truncate,
+  extractAlternateUrl,
+  resizeBloggerImageUrl,
+} from "./bloggerShared.js";
 
 /**
  * Fetches and normalizes published posts from a Blogger blog's public JSON
@@ -12,30 +19,13 @@ import { env } from "../config/env.js";
 const FEED_PATH = "/feeds/posts/default?alt=json&max-results=20";
 const FETCH_TIMEOUT_MS = 8000;
 const CACHE_TTL_MS = 15 * 60 * 1000;
+const THUMBNAIL_SIZE = 640;
 
 /** @type {{ posts: Array<object>, fetchedAt: number } | null} */
 let cache = null;
 
-/**
- * Validates the configured Blogger URL and returns its parsed form, or null
- * if it is missing, malformed, or not http/https.
- * @returns {URL | null}
- */
-function parseConfiguredBlogUrl() {
-  if (!env.bloggerBlogUrl) return null;
-  try {
-    const parsed = new URL(env.bloggerBlogUrl);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-      return null;
-    }
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
 export function isBlogConfigured() {
-  return parseConfiguredBlogUrl() !== null;
+  return parseConfiguredBlogUrl(env.bloggerBlogUrl) !== null;
 }
 
 function buildFeedUrl(blogUrl) {
@@ -43,70 +33,10 @@ function buildFeedUrl(blogUrl) {
   return `${base}${FEED_PATH}`;
 }
 
-/**
- * Blogger's rich-text editor emits HTML entities (most commonly &nbsp;)
- * inside post content — stripping tags alone leaves those literal entity
- * codes in the "plain text" excerpt, so they're decoded here too.
- */
-function decodeHtmlEntities(text) {
-  return text
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&quot;/gi, '"')
-    .replace(/&#0*39;|&apos;/gi, "'")
-    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
-    .replace(/&#x([0-9a-f]+);/gi, (_, hex) =>
-      String.fromCharCode(parseInt(hex, 16)),
-    );
-}
-
-function stripHtml(html) {
-  if (typeof html !== "string" || !html) return "";
-  return decodeHtmlEntities(html.replace(/<[^>]*>/g, " "))
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function truncate(text, max = 200) {
-  if (text.length <= max) return text;
-  const clipped = text.slice(0, max);
-  const lastSpace = clipped.lastIndexOf(" ");
-  const cut = lastSpace > 40 ? clipped.slice(0, lastSpace) : clipped;
-  return `${cut.trim()}…`;
-}
-
 function extractThumbnail(entry) {
   const raw = entry["media$thumbnail"]?.url;
   if (typeof raw !== "string" || !raw) return null;
-  // Blogger's feed thumbnail is a small crop, but the size segment's exact
-  // shape varies — plain "/s72-c/" on some posts, "/s72-w400-h263-c/" (with
-  // explicit width/height) on others. Match either so real posts don't
-  // silently keep their tiny original crop.
-  return raw.replace(/\/s\d+(?:-w\d+-h\d+)?-c\//, "/s640/");
-}
-
-/**
- * Only accepts an article permalink that is a real http/https URL on the
- * exact configured Blogger origin — never a feed-provided URL on another
- * domain or protocol.
- */
-function extractUrl(entry, blogOrigin) {
-  const links = Array.isArray(entry.link) ? entry.link : [];
-  const alternate = links.find(
-    (link) => link?.rel === "alternate" && link?.type === "text/html",
-  );
-  const href = alternate?.href;
-  if (typeof href !== "string" || !/^https?:\/\//.test(href)) return null;
-
-  try {
-    const parsed = new URL(href);
-    if (parsed.origin !== blogOrigin) return null;
-    return href;
-  } catch {
-    return null;
-  }
+  return resizeBloggerImageUrl(raw, THUMBNAIL_SIZE);
 }
 
 function extractLabels(entry) {
@@ -119,7 +49,7 @@ function extractLabels(entry) {
  *   safe, verifiable article URL (in which case it is dropped, not shown).
  */
 function normalizeEntry(entry, blogOrigin) {
-  const url = extractUrl(entry, blogOrigin);
+  const url = extractAlternateUrl(entry, blogOrigin);
   if (!url) return null;
 
   const title = entry.title?.$t?.trim() || "Untitled post";
@@ -142,7 +72,7 @@ function normalizeEntry(entry, blogOrigin) {
  * @returns {Promise<{ ok: true, posts: Array<object> } | { ok: false, reason: "not-configured" | "upstream-error" }>}
  */
 export async function getLearningPosts() {
-  const blogUrl = parseConfiguredBlogUrl();
+  const blogUrl = parseConfiguredBlogUrl(env.bloggerBlogUrl);
   if (!blogUrl) {
     return { ok: false, reason: "not-configured" };
   }
