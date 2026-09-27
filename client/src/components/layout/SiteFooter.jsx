@@ -1,17 +1,11 @@
-import { ArrowUpRight, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { Container } from "../ui/Container";
-import { Divider } from "../ui/Divider";
+import { GitHubIcon, LinkedInIcon } from "../icons/BrandIcons";
 import { profile } from "../../data/profile";
 
-/*
- * lucide-react (current major) no longer ships brand/logo icons like
- * Github/Linkedin — only generic glyphs remain. ArrowUpRight paired with
- * the visible label communicates "external profile" without relying on a
- * brand mark.
- */
 const SOCIAL_LINKS = [
-  { label: "GitHub", href: profile.github, icon: ArrowUpRight },
-  { label: "LinkedIn", href: profile.linkedin, icon: ArrowUpRight },
+  { label: "GitHub", href: profile.github, icon: GitHubIcon },
+  { label: "LinkedIn", href: profile.linkedin, icon: LinkedInIcon },
   { label: "Email", href: `mailto:${profile.email}`, icon: Mail },
 ];
 
@@ -19,9 +13,8 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-auto">
-      <Divider />
-      <Container className="flex flex-col gap-8 py-12 sm:flex-row sm:items-start sm:justify-between">
+    <footer className="mt-auto border-t border-(--color-border) bg-(--color-canvas-subtle)/50">
+      <Container className="flex flex-col gap-8 py-12 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="font-mono text-sm font-semibold text-(--color-text-primary)">
             {profile.monogram} {profile.name}
@@ -29,12 +22,12 @@ export function SiteFooter() {
           <p className="body-sm mt-1 text-(--color-text-secondary)">
             {profile.title}
           </p>
-          <p className="mono-meta mt-3 text-(--color-text-muted)">
+          <p className="mono-meta mt-2 text-(--color-text-muted)">
             {profile.location}
           </p>
         </div>
 
-        <nav aria-label="Social" className="flex gap-3">
+        <nav aria-label="Social" className="flex flex-wrap items-center gap-3">
           {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
             <a
               key={label}
@@ -42,9 +35,10 @@ export function SiteFooter() {
               target={href.startsWith("mailto:") ? undefined : "_blank"}
               rel={href.startsWith("mailto:") ? undefined : "noreferrer"}
               aria-label={label}
-              className="inline-flex min-touch-target items-center justify-center rounded-(--radius-md) border border-(--color-border) text-(--color-text-secondary) transition-colors duration-(--duration-quick) hover:border-(--color-accent-primary) hover:text-(--color-accent-primary)"
+              className="inline-flex min-h-11 items-center gap-2 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface) px-4 py-2 text-xs font-medium text-(--color-text-secondary) transition-all duration-(--duration-quick) hover:border-(--color-accent-primary) hover:text-(--color-accent-primary) hover:shadow-sm"
             >
-              <Icon aria-hidden="true" size={18} />
+              <Icon size={16} />
+              <span>{label}</span>
             </a>
           ))}
         </nav>

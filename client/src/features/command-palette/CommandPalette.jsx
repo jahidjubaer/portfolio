@@ -34,9 +34,6 @@ export function CommandPalette() {
       const isShortcut =
         (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
       if (!isShortcut) return;
-      // Never hijack the shortcut while the user is typing anywhere,
-      // including inside the palette's own search field — Escape already
-      // closes it, so this is never a dead end.
       if (isEditableTarget(event.target)) return;
 
       event.preventDefault();
@@ -45,8 +42,18 @@ export function CommandPalette() {
       setOpen((current) => !current);
     }
 
+    function handleOpenEvent() {
+      triggerRef.current = document.activeElement;
+      setEverOpened(true);
+      setOpen(true);
+    }
+
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("open-command-palette", handleOpenEvent);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("open-command-palette", handleOpenEvent);
+    };
   }, []);
 
   function close() {

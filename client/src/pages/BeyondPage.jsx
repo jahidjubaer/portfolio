@@ -1,10 +1,18 @@
-import { ArrowUpRight } from "lucide-react";
+import {
+  ArrowUpRight,
+  Camera,
+  Trophy,
+  Heart,
+  Users,
+  Sparkles,
+} from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { Container } from "../components/ui/Container";
-import { SectionLabel } from "../components/ui/SectionLabel";
 import { ButtonLink } from "../components/ui/ButtonLink";
 import { TextLink } from "../components/ui/TextLink";
 import { VisuallyHidden } from "../components/ui/VisuallyHidden";
+import { Surface } from "../components/ui/Surface";
+import { Tag } from "../components/ui/Tag";
 import { Divider } from "../components/ui/Divider";
 import { Reveal } from "../features/motion/Reveal";
 import { PhotographyGallery } from "../features/photography/PhotographyGallery";
@@ -15,16 +23,7 @@ import {
   isPhotographyBlogConfigured,
 } from "../config/photographyBlog";
 import { leadershipRoles } from "../data/leadership";
-
-// Verified sports involvement — see CONTENT_CHECKLIST.md section 10.
-// Kept as a small list rather than invented statistics, trophies, or dates.
-const SPORTS_HIGHLIGHTS = [
-  "Organizing and umpiring university cricket, football, and indoor sports competitions with the Metropolitan University Sports Club.",
-];
-
-// Verified volunteering — see CONTENT_CHECKLIST.md section 10. Kept
-// compact since exact responsibilities and outcomes are not yet confirmed.
-const VOLUNTEERING_HIGHLIGHTS = ["Red Crescent Youth (RCY), 2019–2021."];
+import { sportsHighlights, volunteeringHighlights } from "../data/beyond";
 
 export function BeyondPage() {
   usePageMeta({
@@ -41,32 +40,40 @@ export function BeyondPage() {
   } = usePhotographyPhotos();
 
   return (
-    <Container as="div" className="section-spacing">
+    <Container as="div" className="section-spacing max-w-5xl">
       <Reveal>
-        <SectionLabel>Beyond the Code</SectionLabel>
-        <h1 className="display-lg mt-3 text-(--color-text-primary)">
-          Beyond the code
+        <div className="inline-flex items-center gap-2 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-soft) px-3.5 py-1 text-xs font-mono text-(--color-accent-secondary)">
+          <Sparkles size={13} />
+          <span>STORY / BEYOND THE CODE</span>
+        </div>
+
+        <h1 className="heading-xl mt-3 text-(--color-text-primary)">
+          Beyond the code.
         </h1>
-        <p className="body-lg mt-6 max-w-prose text-(--color-text-secondary)">
-          Outside of engineering, I&apos;m involved in photography, cricket and
-          sports leadership, university club organisation, and volunteering.
-          Here&apos;s an honest look at what&apos;s confirmed today.
+        <p className="body-lg mt-4 max-w-2xl text-(--color-text-secondary)">
+          Outside of software engineering, I&apos;m passionate about visual
+          storytelling through photography, leading campus sports tournaments,
+          and active community volunteering.
         </p>
       </Reveal>
 
-      <section className="mt-16">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-          <h2 className="heading-md text-(--color-text-primary)">
-            Photography
-          </h2>
+      {/* Photography Section */}
+      <section className="mt-14">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-(--color-border) pb-4">
+          <div className="flex items-center gap-2 text-(--color-text-primary)">
+            <Camera size={20} className="text-(--color-accent-primary)" />
+            <h2 className="heading-md text-(--color-text-primary)">
+              Photography Showcase
+            </h2>
+          </div>
           {isPhotographyBlogConfigured ? (
             <TextLink
               href={PHOTOGRAPHY_BLOG_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="body-sm inline-flex items-center gap-1"
+              className="body-sm inline-flex items-center gap-1 font-medium"
             >
-              View photography archive
+              View complete archive
               <ArrowUpRight aria-hidden="true" size={14} />
               <VisuallyHidden>(opens in a new tab, on Blogger)</VisuallyHidden>
             </TextLink>
@@ -84,79 +91,135 @@ export function BeyondPage() {
             <PhotographyGallery photographs={photographs} />
           </div>
         ) : (
-          <div className="mt-6 flex flex-col items-center gap-4 rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-10 text-center">
-            <img
-              src="/assets/placeholders/photography-placeholder.svg"
-              alt=""
-              aria-hidden="true"
-              className="h-20 w-20 opacity-70"
-            />
-            <p className="body-md max-w-prose text-(--color-text-secondary)">
+          <Surface variant="raised" className="mt-6 p-10 text-center">
+            <Camera size={36} className="mx-auto text-(--color-text-muted)" />
+            <p className="body-md mt-3 text-(--color-text-secondary)">
               A curated photography selection is being prepared.
             </p>
-          </div>
+          </Surface>
         )}
       </section>
 
-      <Divider className="my-16" />
+      <Divider className="my-14" />
 
+      {/* Sports & Campus Activities */}
       <section>
-        <h2 className="heading-md text-(--color-text-primary)">Sports</h2>
-        <ul className="mt-4 space-y-3">
-          {SPORTS_HIGHLIGHTS.map((item) => (
-            <li key={item} className="body-sm text-(--color-text-secondary)">
-              {item}
-            </li>
+        <div className="flex items-center gap-2 border-b border-(--color-border) pb-4">
+          <Trophy size={20} className="text-(--color-accent-secondary)" />
+          <h2 className="heading-md text-(--color-text-primary)">
+            Sports & Athletics Leadership
+          </h2>
+        </div>
+        <div className="mt-6 grid gap-5 sm:grid-cols-1">
+          {sportsHighlights.map((item) => (
+            <Surface key={item.title} variant="raised" className="p-6">
+              <h3 className="heading-md text-(--color-text-primary)">
+                {item.title}
+              </h3>
+              <p className="body-sm mt-2 text-(--color-text-secondary)">
+                {item.description}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {item.tags.map((tag) => (
+                  <Tag key={tag}>{tag}</Tag>
+                ))}
+              </div>
+            </Surface>
           ))}
-        </ul>
+        </div>
       </section>
 
-      <section className="mt-16">
-        <h2 className="heading-md text-(--color-text-primary)">Leadership</h2>
-        <ul className="mt-6 space-y-6">
+      <Divider className="my-14" />
+
+      {/* Club Leadership */}
+      <section>
+        <div className="flex items-center gap-2 border-b border-(--color-border) pb-4">
+          <Users size={20} className="text-(--color-accent-primary)" />
+          <h2 className="heading-md text-(--color-text-primary)">
+            University Club Leadership
+          </h2>
+        </div>
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
           {leadershipRoles.map((role) => (
-            <li key={`${role.organization}-${role.role}-${role.dates}`}>
-              <p className="text-(--color-text-primary)">
-                <span className="font-semibold">{role.role}</span> &mdash;{" "}
-                {role.organization}{" "}
-                <span className="mono-meta text-(--color-text-muted)">
-                  ({role.dates})
-                </span>
+            <Surface
+              key={`${role.organization}-${role.role}`}
+              variant="default"
+              className="p-6 transition-all hover:border-(--color-accent-primary)/50"
+            >
+              <span className="mono-meta text-xs text-(--color-accent-primary)">
+                {role.dates}
+              </span>
+              <h3 className="heading-md mt-1 text-(--color-text-primary)">
+                {role.role}
+              </h3>
+              <p className="body-sm font-medium text-(--color-text-secondary)">
+                {role.organization}
               </p>
-              <p className="body-sm mt-1 text-(--color-text-secondary)">
+              <p className="body-sm mt-3 text-(--color-text-muted)">
                 {role.description}
               </p>
-            </li>
+            </Surface>
           ))}
-        </ul>
-      </section>
-
-      <section className="mt-16">
-        <h2 className="heading-md text-(--color-text-primary)">Volunteering</h2>
-        <ul className="mt-4 space-y-3">
-          {VOLUNTEERING_HIGHLIGHTS.map((item) => (
-            <li key={item} className="body-sm text-(--color-text-secondary)">
-              {item}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <Divider className="my-16" />
-
-      <Reveal as="section" className="text-center">
-        <h2 className="heading-md text-(--color-text-primary)">
-          Interested in connecting?
-        </h2>
-        <p className="body-sm mx-auto mt-3 max-w-prose text-(--color-text-secondary)">
-          I&apos;m open to conversations about frontend and software engineering
-          opportunities, as well as photography and sports collaborations.
-        </p>
-        <div className="mt-6">
-          <ButtonLink to="/contact" variant="secondary">
-            Get in touch
-          </ButtonLink>
         </div>
+      </section>
+
+      <Divider className="my-14" />
+
+      {/* Volunteering & Community */}
+      <section>
+        <div className="flex items-center gap-2 border-b border-(--color-border) pb-4">
+          <Heart size={20} className="text-(--color-danger)" />
+          <h2 className="heading-md text-(--color-text-primary)">
+            Volunteering & Social Impact
+          </h2>
+        </div>
+        <div className="mt-6 grid gap-5 sm:grid-cols-1">
+          {volunteeringHighlights.map((item) => (
+            <Surface key={item.organization} variant="raised" className="p-6">
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                <h3 className="heading-md text-(--color-text-primary)">
+                  {item.organization}
+                </h3>
+                <span className="mono-meta text-xs text-(--color-text-muted)">
+                  {item.period}
+                </span>
+              </div>
+              <p className="body-sm mt-2 text-(--color-text-secondary)">
+                {item.description}
+              </p>
+              {item.tags.length > 0 ? (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {item.tags.map((tag) => (
+                    <Tag key={tag}>{tag}</Tag>
+                  ))}
+                </div>
+              ) : null}
+            </Surface>
+          ))}
+        </div>
+      </section>
+
+      <Divider className="my-14" />
+
+      {/* Connect CTA */}
+      <Reveal as="section">
+        <Surface
+          variant="raised"
+          className="p-8 text-center border border-(--color-border)"
+        >
+          <h2 className="heading-md text-(--color-text-primary)">
+            Interested in collaborating?
+          </h2>
+          <p className="body-sm mx-auto mt-3 max-w-prose text-(--color-text-secondary)">
+            Whether it&apos;s frontend engineering, creative photography
+            projects, or sports initiatives — let&apos;s get in touch.
+          </p>
+          <div className="mt-6">
+            <ButtonLink to="/contact" variant="primary">
+              Get in touch
+            </ButtonLink>
+          </div>
+        </Surface>
       </Reveal>
     </Container>
   );

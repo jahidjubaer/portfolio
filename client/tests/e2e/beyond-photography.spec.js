@@ -116,7 +116,7 @@ test("includes the restrained archive link out to Blogger", async ({
 
   await page.goto("/beyond");
   const archiveLink = page.getByRole("link", {
-    name: /view photography archive/i,
+    name: /view complete archive/i,
   });
   await expect(archiveLink).toBeVisible();
   await expect(archiveLink).toHaveAttribute("target", "_blank");

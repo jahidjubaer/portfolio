@@ -1,7 +1,7 @@
 import { cn } from "../../lib/cn";
 
 const FIELD_CLASSES =
-  "w-full min-h-11 rounded-(--radius-md) border border-(--color-border) bg-(--color-surface) px-4 py-2.5 text-(--color-text-primary) placeholder:text-(--color-text-muted)";
+  "w-full min-h-11 rounded-(--radius-md) border border-(--color-border) bg-(--color-surface-soft)/40 px-4 py-2.5 text-(--color-text-primary) placeholder:text-(--color-text-muted) transition-all duration-200 focus:border-(--color-accent-primary) focus:bg-(--color-surface)";
 
 /**
  * A labeled contact-form field (input or textarea) with an always-visible

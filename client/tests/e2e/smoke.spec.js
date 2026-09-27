@@ -6,8 +6,8 @@ const routes = [
   { path: "/about", heading: "About Jahid" },
   { path: "/learning", heading: "Blog / Learning" },
   { path: "/beyond", heading: "Beyond the code" },
-  { path: "/contact", heading: "Get in touch" },
-  { path: "/resume", heading: "Résumé" },
+  { path: "/contact", heading: "Let's build something together." },
+  { path: "/resume", heading: "Jahid Hasan" },
 ];
 
 for (const { path, heading } of routes) {
@@ -85,7 +85,10 @@ test("navigation to Contact works", async ({ page }) => {
     .getByRole("link", { name: "Contact" })
     .click();
   await expect(
-    page.getByRole("heading", { level: 1, name: "Get in touch" }),
+    page.getByRole("heading", {
+      level: 1,
+      name: "Let's build something together.",
+    }),
   ).toBeVisible();
 });
 
@@ -386,7 +389,7 @@ test("Résumé download action is visible on a mobile viewport", async ({
   // RouteLoading fallback before checking which résumé state rendered.
   await page.locator("h1").first().waitFor();
 
-  const downloadLink = page.getByRole("link", { name: /download résumé/i });
+  const downloadLink = page.getByRole("link", { name: /download pdf/i });
   const preparingNotice = page.getByText(/being prepared/i);
   const hasDownload = await downloadLink.isVisible().catch(() => false);
   const hasNotice = await preparingNotice.isVisible().catch(() => false);
@@ -418,7 +421,7 @@ test("Beyond page renders its sections on a mobile viewport", async ({
     page.getByRole("heading", { level: 2, name: "Photography" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { level: 2, name: "Leadership" }),
+    page.getByRole("heading", { level: 2, name: "University Club Leadership" }),
   ).toBeVisible();
   await expect(
     page.getByText("A curated photography selection is being prepared."),

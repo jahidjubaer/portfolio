@@ -3,141 +3,215 @@ import { Container } from "../components/ui/Container";
 import { SectionLabel } from "../components/ui/SectionLabel";
 import { ButtonLink } from "../components/ui/ButtonLink";
 import { StatusIndicator } from "../components/ui/StatusIndicator";
+import { Surface } from "../components/ui/Surface";
+import { Tag } from "../components/ui/Tag";
+import { Divider } from "../components/ui/Divider";
 import { Reveal } from "../features/motion/Reveal";
 import { profile } from "../data/profile";
 import { capabilityGroups } from "../data/capabilities";
 import { leadershipRoles } from "../data/leadership";
 import { ProjectStack } from "../features/projects/ProjectStack";
 import { getFeaturedProjects } from "../features/projects/project-selectors";
+import { Download, FileText, Code2, ExternalLink } from "lucide-react";
 
 export function ResumePage() {
   usePageMeta({
     title: "Résumé — Jahid Hasan",
     description: profile.resume.available
       ? "Résumé summary and downloadable PDF for Jahid Hasan, a CSE graduate and frontend developer / junior software engineer."
-      : "Résumé summary of Jahid Hasan, a CSE graduate and frontend developer / junior software engineer. The downloadable PDF is being prepared.",
+      : "Résumé summary of Jahid Hasan, a CSE graduate and frontend developer / junior software engineer.",
   });
 
   const featuredProjects = getFeaturedProjects();
 
   return (
-    <Container as="div" className="section-spacing">
+    <Container as="div" className="section-spacing max-w-4xl">
       <Reveal>
-        <SectionLabel>Résumé</SectionLabel>
-        <h1 className="heading-xl mt-3 text-(--color-text-primary)">Résumé</h1>
-
-        <section className="mt-6">
-          <p className="body-lg font-medium text-(--color-text-primary)">
-            {profile.name}
-          </p>
-          <p className="body-md text-(--color-text-secondary)">
-            {profile.title}
-          </p>
-          <p className="body-sm mt-1 text-(--color-text-muted)">
-            {profile.location}
-          </p>
-          <StatusIndicator tone="positive" className="mt-3">
-            {profile.availabilityStatement}
-          </StatusIndicator>
-          <p className="body-md mt-4 max-w-prose text-(--color-text-secondary)">
-            {profile.heroSupport}
-          </p>
-        </section>
-
-        {profile.resume.available ? (
-          <div className="mt-8">
-            <ButtonLink
-              href={profile.resume.url}
-              download={profile.resume.filename}
-              variant="primary"
-            >
-              Download résumé PDF
-            </ButtonLink>
-            <p className="body-sm mt-3 max-w-prose text-(--color-text-muted)">
-              A concise portfolio résumé overview is shown below. The
-              downloadable PDF contains the current formatted résumé.
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <SectionLabel>Résumé</SectionLabel>
+            <h1 className="heading-xl mt-2 text-(--color-text-primary)">
+              {profile.name}
+            </h1>
+            <p className="body-md mt-1 font-medium text-(--color-accent-primary)">
+              {profile.title}
+            </p>
+            <p className="body-sm mt-1 text-(--color-text-muted)">
+              {profile.location} &middot; {profile.email}
             </p>
           </div>
-        ) : (
-          <p className="body-md mt-6 max-w-prose text-(--color-text-secondary)">
-            The downloadable résumé PDF is being prepared. In the meantime,
-            here&apos;s a summary of my education and current capabilities.
-          </p>
-        )}
 
-        <section className="mt-14">
-          <h2 className="label text-(--color-text-muted)">Education</h2>
-          <p className="body-md mt-3 text-(--color-text-primary)">
-            {profile.education.degree}
-          </p>
-          <p className="body-sm text-(--color-text-secondary)">
-            {profile.education.university} &middot;{" "}
-            {profile.education.graduation}
-          </p>
-        </section>
+          {profile.resume.available && (
+            <div className="shrink-0 flex flex-wrap items-center gap-3">
+              <ButtonLink
+                href={profile.resume.url}
+                download={profile.resume.filename}
+                variant="primary"
+                size="lg"
+                leadingIcon={<Download size={18} />}
+              >
+                Download PDF
+              </ButtonLink>
+              <a
+                href={profile.resume.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-(--color-text-secondary) hover:text-(--color-accent-primary)"
+              >
+                Preview
+                <ExternalLink size={14} />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            </div>
+          )}
+        </div>
 
-        <section className="mt-14">
-          <h2 className="label text-(--color-text-muted)">Key skills</h2>
-          <div className="mt-6 grid gap-8 sm:grid-cols-3">
+        {/* Status Callout Card */}
+        <Surface variant="raised" className="mt-8 p-6 relative overflow-hidden">
+          <div
+            className="absolute inset-y-0 left-0 w-1 bg-(--color-accent-primary)"
+            aria-hidden="true"
+          />
+          {/* The résumé's last-updated date is TODO_CONTENT (see
+              CONTENT_CHECKLIST.md section 5) and is not shown until confirmed. */}
+          <StatusIndicator tone="positive">
+            {profile.availabilityStatement}
+          </StatusIndicator>
+          <p className="body-md mt-3 text-(--color-text-secondary)">
+            {profile.heroSupport}
+          </p>
+        </Surface>
+
+        <Divider className="my-12" />
+
+        {/* Education & Problem Solving Grid */}
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Education Card */}
+          <Surface variant="default" className="p-6">
+            <div className="flex items-center gap-2.5 text-(--color-accent-primary)">
+              <FileText size={18} />
+              <h2 className="label text-(--color-text-muted) uppercase">
+                Education
+              </h2>
+            </div>
+            <h3 className="heading-md mt-3 text-(--color-text-primary)">
+              {profile.education.degree}
+            </h3>
+            <p className="body-sm mt-1 font-medium text-(--color-text-secondary)">
+              {profile.education.university}
+            </p>
+            <p className="mono-meta mt-2 text-(--color-text-muted)">
+              Graduation: {profile.education.graduation}
+            </p>
+          </Surface>
+
+          {/* Problem Solving Card */}
+          <Surface variant="default" className="p-6">
+            <div className="flex items-center gap-2.5 text-(--color-accent-primary)">
+              <Code2 size={18} />
+              <h2 className="label text-(--color-text-muted) uppercase">
+                Problem Solving
+              </h2>
+            </div>
+            <h3 className="heading-md mt-3 text-(--color-text-primary)">
+              {profile.problemSolving.total}
+            </h3>
+            <p className="body-sm mt-1 text-(--color-text-secondary)">
+              Primary Language:{" "}
+              <span className="font-mono text-(--color-text-primary)">
+                {profile.problemSolving.primaryLanguage}
+              </span>
+            </p>
+            <p className="mono-meta mt-2 text-(--color-text-muted)">
+              Platforms: {profile.problemSolving.platforms}
+            </p>
+          </Surface>
+        </div>
+
+        <Divider className="my-12" />
+
+        {/* Key Skills */}
+        <section>
+          <h2 className="label text-(--color-text-muted) uppercase tracking-wider">
+            Technical Capabilities
+          </h2>
+          <div className="mt-6 grid gap-5 sm:grid-cols-3">
             {capabilityGroups.map((group) => (
-              <div key={group.id}>
-                <h3 className="text-sm font-semibold text-(--color-text-primary)">
+              <Surface key={group.id} variant="raised" className="p-5">
+                <h3 className="text-sm font-semibold text-(--color-accent-primary)">
                   {group.title}
                 </h3>
-                <ul className="mt-3 space-y-2 text-sm text-(--color-text-secondary)">
+                <p className="mt-1 text-xs text-(--color-text-muted)">
+                  {group.description}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-1.5">
                   {group.items.map((item) => (
-                    <li key={item}>{item}</li>
+                    <Tag key={item}>{item}</Tag>
                   ))}
-                </ul>
-              </div>
+                </div>
+              </Surface>
             ))}
           </div>
         </section>
 
-        <section className="mt-14">
-          <h2 className="label text-(--color-text-muted)">Selected projects</h2>
-          <ul className="mt-6 space-y-6">
+        <Divider className="my-12" />
+
+        {/* Featured Projects */}
+        <section>
+          <h2 className="label text-(--color-text-muted) uppercase tracking-wider">
+            Featured Engineering Projects
+          </h2>
+          <div className="mt-6 space-y-4">
             {featuredProjects.map((project) => (
-              <li key={project.slug}>
-                <p className="font-semibold text-(--color-text-primary)">
-                  {project.title}
-                </p>
-                <p className="body-sm mt-1 text-(--color-text-secondary)">
+              <Surface key={project.slug} variant="default" className="p-6">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+                  <h3 className="heading-md text-(--color-text-primary)">
+                    {project.title}
+                  </h3>
+                  <span className="mono-meta text-(--color-accent-primary)">
+                    {project.context}
+                  </span>
+                </div>
+                <p className="body-sm mt-2 text-(--color-text-secondary)">
                   {project.summary}
                 </p>
-                <ProjectStack stack={project.stack} className="mt-2" />
-              </li>
+                <ProjectStack stack={project.stack} className="mt-4" />
+              </Surface>
             ))}
-          </ul>
+          </div>
         </section>
 
-        <section className="mt-14">
-          <h2 className="label text-(--color-text-muted)">Leadership</h2>
-          <ul className="mt-6 space-y-6">
+        <Divider className="my-12" />
+
+        {/* Leadership & Involvement */}
+        <section>
+          <h2 className="label text-(--color-text-muted) uppercase tracking-wider">
+            Leadership & Community
+          </h2>
+          <div className="mt-6 space-y-4">
             {leadershipRoles.map((role) => (
-              <li key={`${role.organization}-${role.role}-${role.dates}`}>
-                <p className="text-(--color-text-primary)">
-                  <span className="font-semibold">{role.role}</span> &mdash;{" "}
-                  {role.organization}{" "}
+              <Surface
+                key={`${role.organization}-${role.role}-${role.dates}`}
+                variant="raised"
+                className="p-6"
+              >
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                  <h3 className="text-base font-semibold text-(--color-text-primary)">
+                    {role.role}{" "}
+                    <span className="font-normal text-(--color-text-secondary)">
+                      at {role.organization}
+                    </span>
+                  </h3>
                   <span className="mono-meta text-(--color-text-muted)">
-                    ({role.dates})
+                    {role.dates}
                   </span>
-                </p>
-                <p className="body-sm mt-1 text-(--color-text-secondary)">
+                </div>
+                <p className="body-sm mt-2 text-(--color-text-secondary)">
                   {role.description}
                 </p>
-              </li>
+              </Surface>
             ))}
-          </ul>
-        </section>
-
-        <section className="mt-14">
-          <h2 className="label text-(--color-text-muted)">Problem solving</h2>
-          <p className="body-sm mt-3 text-(--color-text-secondary)">
-            {profile.problemSolving.total}, primarily in{" "}
-            {profile.problemSolving.primaryLanguage}, across{" "}
-            {profile.problemSolving.platforms}.
-          </p>
+          </div>
         </section>
       </Reveal>
     </Container>

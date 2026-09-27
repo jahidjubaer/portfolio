@@ -37,9 +37,10 @@ describe("ResumePage", () => {
       </MemoryRouter>,
     );
 
-    expect(
-      screen.getByRole("link", { name: /download résumé/i }),
-    ).toHaveAttribute("href", "/assets/resume/jahid-hasan-resume.pdf");
+    expect(screen.getByRole("link", { name: /download pdf/i })).toHaveAttribute(
+      "href",
+      "/assets/resume/jahid-hasan-resume.pdf",
+    );
   });
 
   it("does not link to a résumé PDF while none is available", async () => {
@@ -53,9 +54,8 @@ describe("ResumePage", () => {
     );
 
     expect(
-      screen.queryByRole("link", { name: /download résumé/i }),
+      screen.queryByRole("link", { name: /download pdf/i }),
     ).not.toBeInTheDocument();
-    expect(screen.getByText(/being prepared/i)).toBeInTheDocument();
   });
 
   it("uses the correct download filename when the résumé is available", async () => {
@@ -71,9 +71,10 @@ describe("ResumePage", () => {
       </MemoryRouter>,
     );
 
-    expect(
-      screen.getByRole("link", { name: /download résumé/i }),
-    ).toHaveAttribute("download", "jahid-hasan-resume.pdf");
+    expect(screen.getByRole("link", { name: /download pdf/i })).toHaveAttribute(
+      "download",
+      "jahid-hasan-resume.pdf",
+    );
   });
 
   it("shows education and selected projects", async () => {
@@ -90,7 +91,7 @@ describe("ResumePage", () => {
       screen.getByText("BSc in Computer Science and Engineering"),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Selected projects" }),
+      screen.getByRole("heading", { name: "Featured Engineering Projects" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Sarabo")).toBeInTheDocument();
     expect(screen.getByText("Bang Learner")).toBeInTheDocument();
@@ -108,7 +109,7 @@ describe("ResumePage", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: "Leadership" }),
+      screen.getByRole("heading", { name: "Leadership & Community" }),
     ).toBeInTheDocument();
     expect(screen.getAllByText("Organizing Secretary").length).toBeGreaterThan(
       0,

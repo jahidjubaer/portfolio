@@ -12,7 +12,7 @@ export function AppLayout() {
   return (
     <IdentityProvider>
       <StructuredData />
-      <div className="flex min-h-screen flex-col">
+      <div className="relative flex min-h-screen flex-col">
         <SkipLink targetId="main-content">Skip to main content</SkipLink>
         <SiteHeader />
         <main id="main-content" className="flex-1">

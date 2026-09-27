@@ -4,12 +4,14 @@
  * "Current strengths" is used in production today, "Engineering foundations"
  * underpins it, "Currently expanding" is being learned and must never be
  * presented as expert-level.
- * @type {Array<{ id: string, title: string, items: string[] }>}
+ * @type {Array<{ id: string, title: string, description: string, accent: "primary" | "secondary" | "muted", items: string[] }>}
  */
 export const capabilityGroups = [
   {
     id: "current-strengths",
     title: "Current strengths",
+    description: "Technologies and tools I build with today.",
+    accent: "primary",
     items: [
       "HTML",
       "CSS",
@@ -17,12 +19,14 @@ export const capabilityGroups = [
       "React",
       "Tailwind CSS",
       "Responsive UI",
-      "Git and GitHub",
+      "Git & GitHub",
     ],
   },
   {
     id: "engineering-foundations",
     title: "Engineering foundations",
+    description: "Core CS fundamentals that underpin every system I build.",
+    accent: "secondary",
     items: [
       "Data Structures",
       "Algorithms",
@@ -34,12 +38,14 @@ export const capabilityGroups = [
   {
     id: "currently-expanding",
     title: "Currently expanding",
+    description: "Areas I'm actively learning — not expert-level yet.",
+    accent: "muted",
     items: [
       "Node.js",
       "Express.js",
       "MongoDB",
-      "Full-stack application architecture",
-      "AI-enabled product development",
+      "Full-stack architecture",
+      "AI-enabled products",
     ],
   },
 ];

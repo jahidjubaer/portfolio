@@ -17,7 +17,7 @@
   /* Text */
   --color-text-primary: #f4f1e8;
   --color-text-secondary: #b4bdc8;
-  --color-text-muted: #7f8995;
+  --color-text-muted: #8b95a3;
 
   /* Borders */
   --color-border: rgba(255, 255, 255, 0.12);
@@ -50,7 +50,7 @@
 
   --color-text-primary: #eee8dc;
   --color-text-secondary: #c8bdac;
-  --color-text-muted: #968b7c;
+  --color-text-muted: #a09486;
 
   --color-border: rgba(238, 232, 220, 0.14);
   --color-border-strong: rgba(238, 232, 220, 0.24);

@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { motion } from "motion/react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import { Container } from "../ui/Container";
 import { IconButton } from "../ui/IconButton";
+import { ButtonLink } from "../ui/ButtonLink";
 import { MobileMenu } from "./MobileMenu";
 import { cn } from "../../lib/cn";
 import { useScrolled } from "../../hooks/useScrolled";
@@ -64,56 +65,84 @@ export function SiteHeader() {
             {profile.monogram}
           </Link>
 
-          <nav
-            aria-label="Primary"
-            className="hidden items-center gap-1 sm:flex"
-          >
-            {NAV_ITEMS.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === "/"}
-                className="relative rounded-(--radius-pill) px-3 py-2 text-sm font-medium"
-              >
-                {({ isActive }) => (
-                  <>
-                    {isActive ? (
-                      <motion.span
-                        layoutId={NAV_ACTIVE_LAYOUT_ID}
-                        className="absolute inset-0 rounded-(--radius-pill) bg-(--color-accent-primary-soft)"
-                        transition={{
-                          duration: 0.28,
-                          ease: [0.22, 1, 0.36, 1],
-                        }}
-                      />
-                    ) : null}
-                    <span
-                      className={cn(
-                        "relative z-10 transition-colors duration-(--duration-quick)",
-                        isActive
-                          ? "text-(--color-accent-primary)"
-                          : "text-(--color-text-secondary) hover:text-(--color-text-primary)",
-                      )}
-                    >
-                      {item.label}
-                    </span>
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </nav>
+          <div className="flex items-center gap-2">
+            <nav
+              aria-label="Primary"
+              className="hidden items-center gap-1 sm:flex"
+            >
+              {NAV_ITEMS.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.to === "/"}
+                  className="relative rounded-(--radius-pill) px-3 py-2 text-sm font-medium"
+                >
+                  {({ isActive }) => (
+                    <>
+                      {isActive ? (
+                        <motion.span
+                          layoutId={NAV_ACTIVE_LAYOUT_ID}
+                          className="absolute inset-0 rounded-(--radius-pill) bg-(--color-accent-primary-soft)"
+                          transition={{
+                            duration: 0.28,
+                            ease: [0.22, 1, 0.36, 1],
+                          }}
+                        />
+                      ) : null}
+                      <span
+                        className={cn(
+                          "relative z-10 transition-colors duration-(--duration-quick)",
+                          isActive
+                            ? "text-(--color-accent-primary)"
+                            : "text-(--color-text-secondary) hover:text-(--color-text-primary)",
+                        )}
+                      >
+                        {item.label}
+                      </span>
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </nav>
 
-          <IconButton
-            ref={menuButtonRef}
-            variant="secondary"
-            label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            aria-controls={MOBILE_MENU_ID}
-            className="sm:hidden"
-            onClick={() => setMenuOpen((current) => !current)}
-          >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
-          </IconButton>
+            {/* Command Palette Trigger Button */}
+            <button
+              type="button"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("open-command-palette"));
+              }}
+              className="hidden sm:inline-flex items-center gap-2 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-soft)/70 px-3 py-1.5 text-xs text-(--color-text-muted) transition-colors hover:border-(--color-accent-primary) hover:text-(--color-text-primary)"
+              aria-label="Open Command Palette"
+              aria-keyshortcuts="Meta+K"
+            >
+              <Search size={14} />
+              <span>Search...</span>
+              <kbd className="rounded border border-(--color-border) bg-(--color-canvas) px-1.5 py-0.5 text-[10px] font-mono">
+                ⌘K
+              </kbd>
+            </button>
+
+            <ButtonLink
+              to="/contact"
+              variant="primary"
+              size="sm"
+              className="hidden md:inline-flex"
+            >
+              Contact
+            </ButtonLink>
+
+            <IconButton
+              ref={menuButtonRef}
+              variant="secondary"
+              label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              aria-controls={MOBILE_MENU_ID}
+              className="sm:hidden"
+              onClick={() => setMenuOpen((current) => !current)}
+            >
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            </IconButton>
+          </div>
         </Container>
       </header>
 

@@ -39,7 +39,7 @@ function altForCategory(category) {
  */
 export function buildPhotographs(manifest = assetManifest) {
   const categories = manifest.beyond?.photography?.categories ?? {};
-  return Object.keys(categories).flatMap((category) =>
+  const manifestPhotos = Object.keys(categories).flatMap((category) =>
     categories[category].map((image, index) => ({
       id: `${category}-${index + 1}`,
       src: image.src,
@@ -48,6 +48,11 @@ export function buildPhotographs(manifest = assetManifest) {
       alt: altForCategory(category),
     })),
   );
+
+  // No fallback content: when the manifest has no photographs, the gallery
+  // shows its honest empty state. Stock or sample images must never stand
+  // in for Jahid's own work — see CONTENT_CHECKLIST.md section 11.
+  return manifestPhotos;
 }
 
 export const photographs = buildPhotographs();

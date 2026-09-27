@@ -79,7 +79,9 @@ describe("BeyondPage", () => {
   it("renders the Sports section with verified content", async () => {
     renderBeyond();
     expect(
-      await screen.findByRole("heading", { name: "Sports" }),
+      await screen.findByRole("heading", {
+        name: "Sports & Athletics Leadership",
+      }),
     ).toBeInTheDocument();
     expect(screen.getAllByText(/cricket/i).length).toBeGreaterThan(0);
   });
@@ -95,7 +97,9 @@ describe("BeyondPage", () => {
   it("renders the Volunteering section with verified content", async () => {
     renderBeyond();
     expect(
-      await screen.findByRole("heading", { name: "Volunteering" }),
+      await screen.findByRole("heading", {
+        name: "Volunteering & Social Impact",
+      }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Red Crescent Youth/)).toBeInTheDocument();
   });

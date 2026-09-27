@@ -7,9 +7,9 @@ const routes = [
   { path: "/", heading: "I build clear interfaces for real product problems." },
   { path: "/work", heading: "Projects I've built" },
   { path: "/about", heading: "About Jahid" },
-  { path: "/beyond", heading: "Beyond the code" },
-  { path: "/contact", heading: "Get in touch" },
-  { path: "/resume", heading: "Résumé" },
+  { path: "/beyond", heading: "Beyond the code." },
+  { path: "/contact", heading: "Let's build something together." },
+  { path: "/resume", heading: "Jahid Hasan" },
 ];
 
 describe("Main application routes", () => {

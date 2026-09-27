@@ -11,6 +11,7 @@ import { ProjectWorkflow } from "../features/projects/ProjectWorkflow";
 import { ProjectArchitecture } from "../features/projects/ProjectArchitecture";
 import { ProjectMediaGallery } from "../features/projects/ProjectMediaGallery";
 import { RelatedProjects } from "../features/projects/RelatedProjects";
+import { CaseStudyPager } from "../features/projects/CaseStudyPager";
 import { CaseStudyUnavailable } from "../features/projects/CaseStudyUnavailable";
 import {
   getProjectBySlug,
@@ -132,11 +133,11 @@ function CompleteCaseStudy({ project, relatedProjects }) {
 
       <div className="mt-10 space-y-14">
         <ProjectSection id="overview" heading="Overview">
-          <p className="body-md text-(--color-text-secondary)">
+          <p className="prose-body text-(--color-text-secondary)">
             {caseStudy.overview}
           </p>
           {caseStudy.responsibility ? (
-            <p className="body-md mt-3 text-(--color-text-secondary)">
+            <p className="prose-body mt-3 text-(--color-text-secondary)">
               {caseStudy.responsibility}
             </p>
           ) : null}
@@ -164,7 +165,7 @@ function CompleteCaseStudy({ project, relatedProjects }) {
 
         <ProjectSection id="workflow" heading="Workflow">
           {typeof caseStudy.workflow === "string" && caseStudy.workflow ? (
-            <p className="body-md text-(--color-text-secondary)">
+            <p className="prose-body text-(--color-text-secondary)">
               {caseStudy.workflow}
             </p>
           ) : null}
@@ -214,7 +215,7 @@ function CompleteCaseStudy({ project, relatedProjects }) {
               {caseStudy.decisions.map((decision) => (
                 <li
                   key={decision}
-                  className="body-sm text-(--color-text-secondary)"
+                  className="prose-body text-(--color-text-secondary)"
                 >
                   {decision}
                 </li>
@@ -230,7 +231,7 @@ function CompleteCaseStudy({ project, relatedProjects }) {
           {hasReflectionContent ? (
             <div className="space-y-4">
               {caseStudy.challenge ? (
-                <p className="body-sm text-(--color-text-secondary)">
+                <p className="prose-body text-(--color-text-secondary)">
                   <strong className="text-(--color-text-primary)">
                     Challenge:{" "}
                   </strong>
@@ -238,7 +239,7 @@ function CompleteCaseStudy({ project, relatedProjects }) {
                 </p>
               ) : null}
               {caseStudy.outcome ? (
-                <p className="body-sm text-(--color-text-secondary)">
+                <p className="prose-body text-(--color-text-secondary)">
                   <strong className="text-(--color-text-primary)">
                     Outcome:{" "}
                   </strong>
@@ -246,7 +247,7 @@ function CompleteCaseStudy({ project, relatedProjects }) {
                 </p>
               ) : null}
               {caseStudy.reflection ? (
-                <p className="body-sm text-(--color-text-secondary)">
+                <p className="prose-body text-(--color-text-secondary)">
                   <strong className="text-(--color-text-primary)">
                     Reflection:{" "}
                   </strong>
@@ -261,6 +262,8 @@ function CompleteCaseStudy({ project, relatedProjects }) {
       </div>
 
       <RelatedProjectsSection relatedProjects={relatedProjects} />
+
+      <CaseStudyPager slug={project.slug} />
 
       <div className="mt-10">
         <ButtonLink to="/work" variant="secondary">
