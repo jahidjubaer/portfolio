@@ -226,21 +226,96 @@ const rawProjects = [
         type: "repository",
       },
     ],
-    caseStudyStatus: "in-preparation",
-    caseStudy: null,
+    caseStudyStatus: "complete",
+    // Role and timeline confirmed by Jahid (2026-09-29, intake Q7).
+    // Challenge/outcome wording delegated by Jahid and restricted to
+    // claims verifiable from the repository and the live deployment —
+    // no invented struggles, metrics, or results.
+    caseStudy: {
+      overview:
+        "Bang Learner is a responsive skill-exchange platform where people offer, learn, and trade skills within their local area. Visitors browse skills across categories such as music, language, technology, fitness, and the arts; registered users unlock skill details and book sessions with providers.",
+      role: "Sole Developer",
+      timeline: "March–April 2025",
+      responsibility:
+        "End-to-end design, implementation, and deployment as a solo project.",
+      roles: [
+        {
+          name: "Visitor",
+          description:
+            "Browses the skill catalog with provider ratings and pricing across every category.",
+        },
+        {
+          name: "Registered learner",
+          description:
+            "Signs in with email/password or Google to open skill details, book sessions, and manage a profile.",
+        },
+      ],
+      workflow:
+        "Built as a project-based learning build: interface and routing first, then Firebase authentication and route protection, then the booking flow — deployed continuously to Firebase Hosting.",
+      capabilities: [
+        "Responsive UI",
+        "Firebase authentication (email/password and Google)",
+        "Password reset and protected routes",
+        "Skill browsing and session booking",
+        "Profile management",
+      ],
+      architecture: [
+        {
+          name: "React client",
+          description:
+            "The browsing, booking, and account interfaces, built with React Router and styled with Tailwind CSS and DaisyUI.",
+        },
+        {
+          name: "Firebase Authentication",
+          description:
+            "Email/password and Google sign-in with password reset and persistent sessions, gating the protected detail and booking routes.",
+        },
+        {
+          name: "Firebase Hosting",
+          description: "Serves the production deployment.",
+        },
+      ],
+      decisions: [
+        "Client-side password validation enforces the registration rules in real time and blocks sign-up until every criterion is met.",
+        "Protected routes keep skill details and booking behind authentication, while persistent login keeps returning users signed in across sessions.",
+        "Google sign-in is offered alongside email/password registration to lower sign-up friction.",
+      ],
+      challenge:
+        "The most involved part of the build was the authentication and access-control layer: combining email/password registration with real-time password validation, Google sign-in, and password reset, while protecting the detail and booking routes so they are only reachable signed in — without losing the session on a page reload.",
+      outcome:
+        "The project shipped as a working, publicly deployed platform: visitors browse the skill catalog and registered users book sessions with providers, all running on Firebase in production. Quantitative usage outcomes are not tracked.",
+      gallery: [
+        {
+          file: "screenshot-01.webp",
+          caption: "Browsing the skill catalog by category",
+        },
+        {
+          file: "screenshot-02.webp",
+          caption: "Signing in with email/password or Google",
+        },
+        {
+          file: "screenshot-03.webp",
+          caption: "Account registration with validated passwords",
+        },
+      ],
+      sections: [
+        { id: "overview", heading: "Overview" },
+        { id: "roles", heading: "Roles" },
+        { id: "workflow", heading: "Workflow" },
+        { id: "capabilities", heading: "Capabilities" },
+        { id: "gallery", heading: "Gallery" },
+        { id: "architecture", heading: "Architecture" },
+        { id: "decisions", heading: "Implementation approach" },
+        { id: "reflection", heading: "Challenge, outcome and reflection" },
+      ],
+    },
     relatedSlugs: ["sarabo"],
     seo: {
-      title: "Bang Learner — Jahid Hasan",
+      title: "Bang Learner — Case study — Jahid Hasan",
       description:
-        "Bang Learner is a responsive skill-exchange platform built with React, Tailwind CSS, and Firebase. Full case-study evidence is still in preparation.",
+        "How Bang Learner, a responsive skill-exchange platform, handles Firebase authentication, protected routes, and session booking — a solo React project by Jahid Hasan.",
     },
-    missingContent: [
-      "exact role",
-      "timeline",
-      "technical decisions",
-      "challenges",
-      "outcomes",
-    ],
+    missingContent: ["reflection", "optional demo video"],
   },
   {
     // Replaced Note Bank as the third featured project on Jahid's

@@ -112,6 +112,21 @@ describe("Project detail route", () => {
 
   it("renders a preparation state for a known incomplete project", async () => {
     const router = createMemoryRouter(routeConfig, {
+      initialEntries: ["/work/bangladesh-landscape"],
+    });
+    render(<RouterProvider router={router} />);
+
+    expect(
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Bangladesh Landscape",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/still in preparation/)).toBeInTheDocument();
+  });
+
+  it("renders the complete Bang Learner case study structure", async () => {
+    const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work/bang-learner"],
     });
     render(<RouterProvider router={router} />);
@@ -119,38 +134,28 @@ describe("Project detail route", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: "Bang Learner" }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/still in preparation/)).toBeInTheDocument();
-  });
-
-  it("shows Bang Learner's verified capabilities on its project-overview page", async () => {
-    const router = createMemoryRouter(routeConfig, {
-      initialEntries: ["/work/bang-learner"],
-    });
-    render(<RouterProvider router={router} />);
-
+    // Confirmed role and timeline (intake Q7, 2026-09-29).
+    expect(screen.getByText("Sole Developer")).toBeInTheDocument();
+    expect(screen.getByText("March–April 2025")).toBeInTheDocument();
+    // Complete case-study sections, including the captioned gallery.
+    for (const heading of [
+      "Overview",
+      "Roles",
+      "Capabilities",
+      "Gallery",
+      "Architecture",
+      "Implementation approach",
+      "Challenge, outcome and reflection",
+    ]) {
+      expect(
+        screen.getAllByRole("heading", { name: heading }).length,
+      ).toBeGreaterThan(0);
+    }
     expect(
-      await screen.findByRole("heading", { name: "Known capabilities" }),
+      screen.getByAltText("Browsing the skill catalog by category"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Responsive UI")).toBeInTheDocument();
-    expect(
-      screen.getByText("Firebase authentication (email/password and Google)"),
-    ).toBeInTheDocument();
-  });
-
-  it("renders real product screenshots on Bang Learner's in-preparation page", async () => {
-    const router = createMemoryRouter(routeConfig, {
-      initialEntries: ["/work/bang-learner"],
-    });
-    render(<RouterProvider router={router} />);
-
-    expect(
-      await screen.findByRole("heading", { name: "Screenshots" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByAltText("Bang Learner interface preview 1"),
-    ).toBeInTheDocument();
-    // The narrative sections stay honestly unavailable until confirmed.
-    expect(screen.getByText(/still in preparation/)).toBeInTheDocument();
+    expect(screen.getByText(/publicly deployed platform/)).toBeInTheDocument();
+    expect(screen.queryByText(/still in preparation/)).not.toBeInTheDocument();
   });
 
   it("shows Bangladesh Landscape's verified capabilities and repositories on its project-overview page", async () => {

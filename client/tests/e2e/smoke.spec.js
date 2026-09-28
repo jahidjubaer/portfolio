@@ -246,9 +246,9 @@ test("known project route renders project details", async ({ page }) => {
 test("known incomplete project route renders a preparation state", async ({
   page,
 }) => {
-  await page.goto("/work/bang-learner");
+  await page.goto("/work/bangladesh-landscape");
   await expect(
-    page.getByRole("heading", { level: 1, name: "Bang Learner" }),
+    page.getByRole("heading", { level: 1, name: "Bangladesh Landscape" }),
   ).toBeVisible();
   await expect(page.getByText(/still in preparation/)).toBeVisible();
 });

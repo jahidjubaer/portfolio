@@ -57,14 +57,16 @@ describe("WorkPage", () => {
     expect(screen.queryByText("Archive")).not.toBeInTheDocument();
   });
 
-  it("shows the flagship project's role and timeline metadata", async () => {
+  it("shows role and timeline metadata for the case-study projects", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work"],
     });
     render(<RouterProvider router={router} />);
 
-    expect(await screen.findByText("Sole Developer")).toBeInTheDocument();
+    // Sarabo and Bang Learner are both solo case studies now.
+    expect(await screen.findAllByText("Sole Developer")).toHaveLength(2);
     expect(screen.getByText("July–August")).toBeInTheDocument();
+    expect(screen.getByText("March–April 2025")).toBeInTheDocument();
   });
 
   it("renders a real cover when available and a placeholder otherwise", async () => {

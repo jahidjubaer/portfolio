@@ -39,7 +39,7 @@ test("known project route has no automatically detectable accessibility violatio
   expect(results.violations).toEqual([]);
 });
 
-test("known incomplete project route has no automatically detectable accessibility violations", async ({
+test("Bang Learner case-study route has no automatically detectable accessibility violations", async ({
   page,
 }) => {
   await gotoAndWaitForContent(page, "/work/bang-learner");
