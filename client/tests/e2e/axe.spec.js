@@ -47,10 +47,10 @@ test("known incomplete project route has no automatically detectable accessibili
   expect(results.violations).toEqual([]);
 });
 
-test("Note Bank project overview route has no automatically detectable accessibility violations", async ({
+test("Bangladesh Landscape project overview route has no automatically detectable accessibility violations", async ({
   page,
 }) => {
-  await gotoAndWaitForContent(page, "/work/note-bank");
+  await gotoAndWaitForContent(page, "/work/bangladesh-landscape");
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });

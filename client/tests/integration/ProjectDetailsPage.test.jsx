@@ -137,19 +137,32 @@ describe("Project detail route", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows Note Bank's verified role context and capabilities on its project-overview page", async () => {
+  it("shows Bangladesh Landscape's verified capabilities and repositories on its project-overview page", async () => {
     const router = createMemoryRouter(routeConfig, {
-      initialEntries: ["/work/note-bank"],
+      initialEntries: ["/work/bangladesh-landscape"],
     });
     render(<RouterProvider router={router} />);
 
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Note Bank" }),
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Bangladesh Landscape",
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Frontend designer\/contributor in an academic team/),
+      screen.getByText("Verified guide and partner bookings"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Note requests")).toBeInTheDocument();
+    // Links appear in both the hero and body, and related-project cards
+    // contribute their own repository links — assert by href membership.
+    const hrefs = screen
+      .getAllByRole("link")
+      .map((link) => link.getAttribute("href"));
+    expect(hrefs).toContain(
+      "https://github.com/jahidjubaer/bangladesh-landscape-client",
+    );
+    expect(hrefs).toContain(
+      "https://github.com/jahidjubaer/bangladesh-landscape-server",
+    );
   });
 
   it("shows related projects on the Sarabo case study", async () => {

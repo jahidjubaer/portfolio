@@ -180,7 +180,7 @@ const rawProjects = [
         { id: "reflection", heading: "Challenge, outcome and reflection" },
       ],
     },
-    relatedSlugs: ["bang-learner", "note-bank"],
+    relatedSlugs: ["bang-learner", "bangladesh-landscape"],
     seo: {
       title: "Sarabo — Case study — Jahid Hasan",
       description:
@@ -210,8 +210,9 @@ const rawProjects = [
     capabilities: [
       "Responsive UI",
       "Firebase authentication (email/password and Google)",
-      "Protected routes",
+      "Password reset and protected routes",
       "Skill browsing and session booking",
+      "Profile management",
     ],
     links: [
       {
@@ -243,40 +244,59 @@ const rawProjects = [
     ],
   },
   {
-    slug: "note-bank",
-    title: "Note Bank",
+    // Replaced Note Bank as the third featured project on Jahid's
+    // instruction (2026-09-29). Summary, stack, and capabilities are
+    // verified against the two public repositories' READMEs and
+    // package.json files; no live deployment is confirmed yet, so none
+    // is linked.
+    slug: "bangladesh-landscape",
+    title: "Bangladesh Landscape",
     summary:
-      "An academic resource platform where students can find notes and previous questions, request missing notes, and access teacher information.",
-    projectType: "Web application",
+      "A district-by-district travel portal for Bangladesh with AI-assisted tour plans, verified local guides, blogs, and stay and transport bookings — Bangla-first with full English support.",
+    projectType: "Full-stack web application",
     status: "repository-available",
     featured: true,
-    stack: ["React", "JavaScript"],
-    capabilities: [
-      "Notes and question discovery",
-      "Note requests",
-      "Teacher information",
+    stack: [
+      "React",
+      "Tailwind CSS",
+      "TanStack Query",
+      "Node.js",
+      "Express",
+      "MongoDB",
     ],
-    // The previously linked github.com/jahidjubaer/note-bank no longer
-    // exists (404, verified 2026-09-29). The team's actual repositories
-    // live under a collaborator's account and are not linked until that
-    // attribution is approved — see CONTENT_CHECKLIST.md section 7.
-    links: [],
+    capabilities: [
+      "AI-assisted tour planning (Claude/Gemini with a deterministic mock fallback)",
+      "Verified guide and partner bookings",
+      "Interactive district maps (Leaflet with marker clustering)",
+      "Moderated blogs with rich-text editing",
+      "JWT cookie authentication and admin operations",
+      "Bangla-first bilingual interface",
+    ],
+    links: [
+      {
+        label: "Client repository",
+        url: "https://github.com/jahidjubaer/bangladesh-landscape-client",
+        type: "repository",
+      },
+      {
+        label: "Server repository",
+        url: "https://github.com/jahidjubaer/bangladesh-landscape-server",
+        type: "repository",
+      },
+    ],
     caseStudyStatus: "in-preparation",
     caseStudy: null,
-    roleContext:
-      "Frontend designer/contributor in an academic team project — contributed responsive UI, ideas, and feature design.",
     relatedSlugs: ["sarabo"],
     seo: {
-      title: "Note Bank — Jahid Hasan",
+      title: "Bangladesh Landscape — Jahid Hasan",
       description:
-        "Note Bank is an academic resource platform built with React and JavaScript. Full case-study evidence is still in preparation.",
+        "Bangladesh Landscape is a Bangla-first travel portal for Bangladesh with AI-assisted tour plans, verified guides, and bookings, built with React, Express, and MongoDB. Full case-study evidence is in preparation.",
     },
     missingContent: [
-      "repository links (team repositories pending attribution approval)",
-      "live URL",
-      "team size",
-      "dates",
-      "exact ownership",
+      "live URL (deployments not yet confirmed reachable)",
+      "exact role and team context",
+      "timeline",
+      "current status detail",
       "challenges",
       "outcomes",
       "visual assets",

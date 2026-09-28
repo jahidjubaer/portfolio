@@ -95,7 +95,7 @@ describe("ResumePage", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Sarabo")).toBeInTheDocument();
     expect(screen.getByText("Bang Learner")).toBeInTheDocument();
-    expect(screen.getByText("Note Bank")).toBeInTheDocument();
+    expect(screen.getByText("Bangladesh Landscape")).toBeInTheDocument();
   });
 
   it("shows verified leadership roles", async () => {

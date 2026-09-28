@@ -18,12 +18,12 @@ const liveProject = {
 
 const staticProject = {
   ...liveProject,
-  slug: "note-bank",
-  title: "Note Bank",
+  slug: "bangladesh-landscape",
+  title: "Bangladesh Landscape",
   links: [
     {
-      label: "Repository",
-      url: "https://github.com/jahidjubaer/note-bank",
+      label: "Client repository",
+      url: "https://github.com/jahidjubaer/bangladesh-landscape-client",
       type: "repository",
     },
   ],
@@ -115,7 +115,9 @@ describe("ProjectPreviewModal", () => {
 
     const dialog = await openPreview(user);
 
-    expect(dialog).toHaveAccessibleName("Note Bank — Project Snapshot");
+    expect(dialog).toHaveAccessibleName(
+      "Bangladesh Landscape — Project Snapshot",
+    );
     expect(dialog.querySelector("iframe")).not.toBeInTheDocument();
     expect(screen.getByText(/static snapshot/i)).toBeInTheDocument();
     expect(screen.getByText("Static")).toBeInTheDocument();

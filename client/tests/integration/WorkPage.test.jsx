@@ -80,7 +80,7 @@ describe("WorkPage", () => {
       "/assets/placeholders/project-cover-placeholder.svg",
     );
     expect(
-      screen.getByRole("img", { name: "Note Bank project cover" }),
+      screen.getByRole("img", { name: "Bangladesh Landscape project cover" }),
     ).toHaveAttribute(
       "src",
       "/assets/placeholders/project-cover-placeholder.svg",

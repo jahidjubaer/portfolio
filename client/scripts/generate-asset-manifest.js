@@ -169,7 +169,7 @@ function buildManifest() {
   const projectSlugDirs = {
     sarabo: "sarabo",
     bangLearner: "bang-learner",
-    noteBank: "note-bank",
+    bangladeshLandscape: "bangladesh-landscape",
   };
 
   const projects = Object.fromEntries(
