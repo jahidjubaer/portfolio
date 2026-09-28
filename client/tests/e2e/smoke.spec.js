@@ -48,12 +48,13 @@ test("navigation to About works", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("navigation to Learning works", async ({ page }) => {
+test("navigation to Learning works via the More disclosure", async ({
+  page,
+}) => {
   await page.goto("/");
-  await page
-    .getByRole("navigation", { name: "Primary" })
-    .getByRole("link", { name: "Learning" })
-    .click();
+  const nav = page.getByRole("navigation", { name: "Primary" });
+  await nav.getByRole("button", { name: "More" }).click();
+  await nav.getByRole("link", { name: "Learning" }).click();
   await expect(
     page.getByRole("heading", { level: 1, name: "Blog / Learning" }),
   ).toBeVisible();
@@ -67,23 +68,19 @@ test("/blog redirects to /learning", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("navigation to Beyond works", async ({ page }) => {
+test("navigation to Beyond works via the More disclosure", async ({ page }) => {
   await page.goto("/");
-  await page
-    .getByRole("navigation", { name: "Primary" })
-    .getByRole("link", { name: "Beyond" })
-    .click();
+  const nav = page.getByRole("navigation", { name: "Primary" });
+  await nav.getByRole("button", { name: "More" }).click();
+  await nav.getByRole("link", { name: "Beyond" }).click();
   await expect(
     page.getByRole("heading", { level: 1, name: "Beyond the code" }),
   ).toBeVisible();
 });
 
-test("navigation to Contact works", async ({ page }) => {
+test("navigation to Contact works via the header action", async ({ page }) => {
   await page.goto("/");
-  await page
-    .getByRole("navigation", { name: "Primary" })
-    .getByRole("link", { name: "Contact" })
-    .click();
+  await page.getByRole("banner").getByRole("link", { name: "Contact" }).click();
   await expect(
     page.getByRole("heading", {
       level: 1,

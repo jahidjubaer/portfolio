@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import { motion } from "motion/react";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X, Search, ChevronDown } from "lucide-react";
 import { Container } from "../ui/Container";
 import { IconButton } from "../ui/IconButton";
 import { ButtonLink } from "../ui/ButtonLink";
@@ -9,6 +9,21 @@ import { MobileMenu } from "./MobileMenu";
 import { cn } from "../../lib/cn";
 import { useScrolled } from "../../hooks/useScrolled";
 import { profile } from "../../data/profile";
+
+// Desktop nav is grouped by audience priority: recruiter-critical routes
+// stay visible, the rest sit behind a "More" disclosure. The mobile menu
+// deliberately keeps the full flat list (NAV_ITEMS).
+const NAV_PRIMARY = [
+  { to: "/", label: "Home" },
+  { to: "/work", label: "Work" },
+  { to: "/about", label: "About" },
+];
+
+const NAV_SECONDARY = [
+  { to: "/learning", label: "Learning" },
+  { to: "/beyond", label: "Beyond" },
+  { to: "/resume", label: "Résumé" },
+];
 
 const NAV_ITEMS = [
   { to: "/", label: "Home" },
@@ -19,6 +34,8 @@ const NAV_ITEMS = [
   { to: "/contact", label: "Contact" },
   { to: "/resume", label: "Résumé" },
 ];
+
+const MORE_MENU_ID = "site-header-more-menu";
 
 const MOBILE_MENU_ID = "mobile-nav";
 const NAV_ACTIVE_LAYOUT_ID = "site-header-active-pill";
@@ -31,9 +48,43 @@ const IS_APPLE_PLATFORM =
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const scrolled = useScrolled();
   const menuButtonRef = useRef(null);
   const wasOpenRef = useRef(false);
+  const moreRef = useRef(null);
+  const moreButtonRef = useRef(null);
+  const { pathname } = useLocation();
+
+  const isSecondaryActive = NAV_SECONDARY.some(
+    (item) => pathname === item.to || pathname.startsWith(`${item.to}/`),
+  );
+
+  // The "More" disclosure closes on navigation, on Escape (returning focus
+  // to its trigger), and on any interaction outside it.
+  useEffect(() => {
+    setMoreOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!moreOpen) return undefined;
+
+    function handleKeyDown(event) {
+      if (event.key !== "Escape") return;
+      setMoreOpen(false);
+      moreButtonRef.current?.focus();
+    }
+    function handlePointerDown(event) {
+      if (!moreRef.current?.contains(event.target)) setMoreOpen(false);
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [moreOpen]);
 
   // Return focus to the trigger button whenever the menu closes without
   // the user having clicked the trigger itself (e.g. Escape, or a nav
@@ -76,7 +127,7 @@ export function SiteHeader() {
               aria-label="Primary"
               className="hidden items-center gap-1 sm:flex"
             >
-              {NAV_ITEMS.map((item) => (
+              {NAV_PRIMARY.map((item) => (
                 <NavLink
                   key={item.to}
                   to={item.to}
@@ -109,6 +160,58 @@ export function SiteHeader() {
                   )}
                 </NavLink>
               ))}
+
+              {/* Secondary routes behind a disclosure (APG disclosure
+                  navigation pattern — no menu roles needed). */}
+              <div ref={moreRef} className="relative">
+                <button
+                  ref={moreButtonRef}
+                  type="button"
+                  aria-expanded={moreOpen}
+                  aria-controls={MORE_MENU_ID}
+                  onClick={() => setMoreOpen((current) => !current)}
+                  className={cn(
+                    "flex items-center gap-1 rounded-(--radius-pill) px-3 py-2 text-sm font-medium transition-colors duration-(--duration-quick)",
+                    isSecondaryActive
+                      ? "text-(--color-accent-primary)"
+                      : "text-(--color-text-secondary) hover:text-(--color-text-primary)",
+                  )}
+                >
+                  More
+                  <ChevronDown
+                    aria-hidden="true"
+                    size={14}
+                    className={cn(
+                      "transition-transform duration-(--duration-quick)",
+                      moreOpen && "rotate-180",
+                    )}
+                  />
+                </button>
+                {moreOpen ? (
+                  <ul
+                    id={MORE_MENU_ID}
+                    className="absolute right-0 top-full z-(--z-header) mt-2 w-44 rounded-(--radius-md) border border-(--color-border) bg-(--color-surface-raised) p-1.5 shadow-(--shadow-md)"
+                  >
+                    {NAV_SECONDARY.map((item) => (
+                      <li key={item.to}>
+                        <NavLink
+                          to={item.to}
+                          className={({ isActive }) =>
+                            cn(
+                              "block rounded-(--radius-sm) px-3 py-2.5 text-sm font-medium transition-colors duration-(--duration-quick)",
+                              isActive
+                                ? "bg-(--color-accent-primary-soft) text-(--color-accent-primary)"
+                                : "text-(--color-text-secondary) hover:bg-(--color-surface-soft) hover:text-(--color-text-primary)",
+                            )
+                          }
+                        >
+                          {item.label}
+                        </NavLink>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
             </nav>
 
             {/* Command Palette Trigger Button */}

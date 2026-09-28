@@ -131,10 +131,9 @@ test("navigating to Learning from the primary nav shows real posts", async ({
   });
 
   await page.goto("/");
-  await page
-    .getByRole("navigation", { name: "Primary" })
-    .getByRole("link", { name: "Learning" })
-    .click();
+  const nav = page.getByRole("navigation", { name: "Primary" });
+  await nav.getByRole("button", { name: "More" }).click();
+  await nav.getByRole("link", { name: "Learning" }).click();
 
   await expect(
     page.getByRole("heading", { level: 1, name: "Blog / Learning" }),
