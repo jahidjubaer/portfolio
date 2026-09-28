@@ -21,7 +21,8 @@ export const siteConfig = {
   jobTitle: "Frontend Developer & Junior Software Engineer",
   locale: "en_US",
   twitterCard: "summary_large_image",
-  defaultOgImage: "/assets/og/og-default.svg",
+  // A raster image — most social platforms will not render an SVG preview.
+  defaultOgImage: "/assets/og/og-default.png",
   // Verified public profiles only (mirrors client/src/data/profile.js).
   sameAs: [
     "https://github.com/jahidjubaer",

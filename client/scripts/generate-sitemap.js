@@ -15,6 +15,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveSiteUrl } from "./site-url.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLIENT_ROOT = join(__dirname, "..");
@@ -22,7 +23,7 @@ const PROJECTS_FILE = join(CLIENT_ROOT, "src", "data", "projects.js");
 const SITEMAP_FILE = join(CLIENT_ROOT, "public", "sitemap.xml");
 const ROBOTS_FILE = join(CLIENT_ROOT, "public", "robots.txt");
 const INDEX_HTML_FILE = join(CLIENT_ROOT, "index.html");
-const OG_IMAGE_PATH = "/assets/og/og-default.svg";
+const OG_IMAGE_PATH = "/assets/og/og-default.png";
 
 const STATIC_ROUTES = [
   "/",
@@ -33,11 +34,6 @@ const STATIC_ROUTES = [
   "/contact",
   "/resume",
 ];
-
-function resolveSiteUrl() {
-  const raw = process.env.VITE_SITE_URL || "http://localhost:5173";
-  return raw.replace(/\/+$/, "");
-}
 
 function readProjectSlugs() {
   const source = readFileSync(PROJECTS_FILE, "utf8");

@@ -33,7 +33,7 @@ describe("usePageMeta", () => {
       "http://localhost:5173/contact",
     );
     expect(meta('meta[property="og:image"]')).toBe(
-      "http://localhost:5173/assets/og/og-default.svg",
+      "http://localhost:5173/assets/og/og-default.png",
     );
     expect(meta('meta[name="twitter:card"]')).toBe("summary_large_image");
     expect(meta('meta[name="robots"]')).toBe("index, follow");

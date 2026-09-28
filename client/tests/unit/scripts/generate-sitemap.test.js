@@ -56,17 +56,17 @@ describe("buildRobots", () => {
 
 describe("absolutizeOgImage", () => {
   const relativeHtml = `
-    <meta property="og:image" content="/assets/og/og-default.svg" />
-    <meta name="twitter:image" content="/assets/og/og-default.svg" />
+    <meta property="og:image" content="/assets/og/og-default.png" />
+    <meta name="twitter:image" content="/assets/og/og-default.png" />
   `;
 
   it("makes both og:image and twitter:image absolute under the given site URL", () => {
     const updated = absolutizeOgImage(relativeHtml, "https://example.com");
     expect(updated).toContain(
-      '<meta property="og:image" content="https://example.com/assets/og/og-default.svg" />',
+      '<meta property="og:image" content="https://example.com/assets/og/og-default.png" />',
     );
     expect(updated).toContain(
-      '<meta name="twitter:image" content="https://example.com/assets/og/og-default.svg" />',
+      '<meta name="twitter:image" content="https://example.com/assets/og/og-default.png" />',
     );
   });
 
@@ -77,7 +77,7 @@ describe("absolutizeOgImage", () => {
       "https://staging.example.com",
     );
     expect(secondPass).toContain(
-      '<meta property="og:image" content="https://staging.example.com/assets/og/og-default.svg" />',
+      '<meta property="og:image" content="https://staging.example.com/assets/og/og-default.png" />',
     );
     expect(secondPass).not.toContain("https://example.com/assets");
   });
@@ -88,18 +88,18 @@ describe("absolutizeOgImage", () => {
     const multiLineHtml = `
     <meta
       property="og:image"
-      content="/assets/og/og-default.svg"
+      content="/assets/og/og-default.png"
     />
     <meta
       name="twitter:image"
-      content="/assets/og/og-default.svg"
+      content="/assets/og/og-default.png"
     />
   `;
     const updated = absolutizeOgImage(multiLineHtml, "https://example.com");
     expect(updated).toContain(
-      'content="https://example.com/assets/og/og-default.svg"',
+      'content="https://example.com/assets/og/og-default.png"',
     );
-    expect(updated).not.toContain('content="/assets/og/og-default.svg"');
+    expect(updated).not.toContain('content="/assets/og/og-default.png"');
   });
 
   it("does not touch unrelated tags", () => {
