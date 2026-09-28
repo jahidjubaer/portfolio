@@ -15,6 +15,14 @@ const INITIAL_VALUES = {
   companyWebsite: "",
 };
 
+// Quick-select shortcuts that pre-fill (never lock) the subject field.
+const SUBJECT_SUGGESTIONS = [
+  "Job opportunity",
+  "Freelance project",
+  "Collaboration",
+  "Just saying hi",
+];
+
 /**
  * Professional contact form: client + server validation, a honeypot field,
  * and loading/success/failure states. Typed content is preserved on
@@ -112,6 +120,23 @@ export function ContactForm() {
           error={errors.subject}
           maxLength={CONTACT_LIMITS.subject.max}
         />
+        <div
+          role="group"
+          aria-label="Suggested topics"
+          className="mt-2.5 flex flex-wrap gap-2"
+        >
+          {SUBJECT_SUGGESTIONS.map((suggestion) => (
+            <button
+              key={suggestion}
+              type="button"
+              onClick={() => updateField("subject", suggestion)}
+              aria-pressed={values.subject === suggestion}
+              className="min-touch-target rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-soft)/60 px-3 text-xs text-(--color-text-secondary) transition-colors hover:border-(--color-accent-primary) hover:text-(--color-text-primary) aria-pressed:border-(--color-accent-primary) aria-pressed:text-(--color-accent-primary)"
+            >
+              {suggestion}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="mt-6">

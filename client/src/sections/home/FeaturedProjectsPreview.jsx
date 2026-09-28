@@ -11,7 +11,10 @@ export function FeaturedProjectsPreview() {
   const [featured, ...rest] = getFeaturedProjects();
 
   return (
-    <section className="section-spacing border-b border-(--color-border)">
+    <section
+      id="featured-work"
+      className="section-spacing scroll-mt-(--header-height) border-b border-(--color-border)"
+    >
       <Container>
         <SectionHeader
           label="Selected Work"

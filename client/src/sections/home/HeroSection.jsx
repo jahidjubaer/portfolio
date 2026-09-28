@@ -67,16 +67,19 @@ export function HeroSection() {
             </TextLink>
           </div>
 
-          {profile.resume.available && (
-            <div className="mt-3">
+          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1">
+            {profile.resume.available && (
               <TextLink href={profile.resume.url} className="text-sm">
                 <span className="inline-flex items-center gap-1">
                   Preview résumé
-                  <ExternalLink size={12} />
+                  <ExternalLink aria-hidden="true" size={12} />
                 </span>
               </TextLink>
-            </div>
-          )}
+            )}
+            <TextLink href="#featured-work" className="text-sm">
+              Skip to case studies ↓
+            </TextLink>
+          </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
             <StatusIndicator tone="positive">

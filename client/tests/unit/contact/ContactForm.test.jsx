@@ -107,4 +107,21 @@ describe("ContactForm", () => {
     expect(honeypot).toHaveAttribute("tabindex", "-1");
     expect(honeypot.closest("[aria-hidden='true']")).not.toBeNull();
   });
+
+  it("fills the subject from a suggestion chip while keeping it editable", async () => {
+    const user = userEvent.setup();
+    render(<ContactForm />);
+
+    const chips = screen.getByRole("group", { name: "Suggested topics" });
+    await user.click(screen.getByRole("button", { name: "Job opportunity" }));
+
+    const subject = screen.getByLabelText(/subject/i);
+    expect(subject).toHaveValue("Job opportunity");
+    expect(chips).toBeInTheDocument();
+
+    // The chip is a shortcut, not a lock — the field stays editable.
+    await user.clear(subject);
+    await user.type(subject, "Senior React role");
+    expect(subject).toHaveValue("Senior React role");
+  });
 });

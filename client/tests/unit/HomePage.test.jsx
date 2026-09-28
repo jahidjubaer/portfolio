@@ -14,4 +14,15 @@ describe("HomePage", () => {
       "I build clear interfaces for real product problems.",
     );
   });
+
+  it("offers a skip-to-case-studies link that targets the featured section", () => {
+    const router = createMemoryRouter(routeConfig, { initialEntries: ["/"] });
+    const { container } = render(<RouterProvider router={router} />);
+
+    const skipLink = screen.getByRole("link", {
+      name: /skip to case studies/i,
+    });
+    expect(skipLink).toHaveAttribute("href", "#featured-work");
+    expect(container.querySelector("#featured-work")).not.toBeNull();
+  });
 });

@@ -13,6 +13,8 @@ import { ProjectMediaGallery } from "../features/projects/ProjectMediaGallery";
 import { RelatedProjects } from "../features/projects/RelatedProjects";
 import { CaseStudyPager } from "../features/projects/CaseStudyPager";
 import { CaseStudyUnavailable } from "../features/projects/CaseStudyUnavailable";
+import { ReadingProgressBar } from "../features/projects/ReadingProgressBar";
+import { StickyContactFab } from "../features/projects/StickyContactFab";
 import {
   getProjectBySlug,
   getRelatedProjects,
@@ -297,13 +299,25 @@ export function ProjectDetailsPage() {
     return <ProjectNotFound slug={slug} />;
   }
 
-  if (project.caseStudyStatus === "complete" && project.caseStudy) {
-    return (
-      <CompleteCaseStudy project={project} relatedProjects={relatedProjects} />
-    );
-  }
+  const isCompleteCaseStudy =
+    project.caseStudyStatus === "complete" && Boolean(project.caseStudy);
 
   return (
-    <ProjectInPreparation project={project} relatedProjects={relatedProjects} />
+    <>
+      {/* Route-specific reading aids — deliberately not in AppLayout. */}
+      {isCompleteCaseStudy ? <ReadingProgressBar /> : null}
+      <StickyContactFab />
+      {isCompleteCaseStudy ? (
+        <CompleteCaseStudy
+          project={project}
+          relatedProjects={relatedProjects}
+        />
+      ) : (
+        <ProjectInPreparation
+          project={project}
+          relatedProjects={relatedProjects}
+        />
+      )}
+    </>
   );
 }
