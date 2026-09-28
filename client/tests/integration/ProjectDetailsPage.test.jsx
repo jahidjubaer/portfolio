@@ -132,7 +132,9 @@ describe("Project detail route", () => {
       await screen.findByRole("heading", { name: "Known capabilities" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Responsive UI")).toBeInTheDocument();
-    expect(screen.getByText("User authentication")).toBeInTheDocument();
+    expect(
+      screen.getByText("Firebase authentication (email/password and Google)"),
+    ).toBeInTheDocument();
   });
 
   it("shows Note Bank's verified role context and capabilities on its project-overview page", async () => {

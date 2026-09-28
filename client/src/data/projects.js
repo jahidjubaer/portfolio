@@ -95,6 +95,14 @@ const rawProjects = [
         url: "https://sarabo-server.vercel.app",
         type: "live",
       },
+      {
+        // Public repository verified 2026-09-29 (source: Jahid's résumé +
+        // GitHub API). The server repository is not public, so it is not
+        // linked.
+        label: "Client repository",
+        url: "https://github.com/jahidjubaer/sarabo-client",
+        type: "repository",
+      },
     ],
     caseStudyStatus: "complete",
     caseStudy: {
@@ -179,8 +187,7 @@ const rawProjects = [
         "How Sarabo, a multi-role electronics-repair service platform, handles authentication, repair-request tracking, technician assignment, and payments across customer, technician, and administrator roles.",
     },
     missingContent: [
-      "client repository URL",
-      "server repository URL",
+      "server repository URL (repository exists but is not public)",
       "public documentation URL",
       "current status detail",
       "validation challenge solution",
@@ -190,14 +197,28 @@ const rawProjects = [
   {
     slug: "bang-learner",
     title: "Bang Learner",
+    // Summary, stack, and capabilities verified 2026-09-29 against the
+    // public repository (README + package.json) and the live deployment.
+    // The previously listed MongoDB was not present in the repository's
+    // dependencies — persistence and auth run on Firebase.
     summary:
-      "A responsive skill-learning platform designed to help users discover suitable courses.",
+      "A responsive React platform for offering, learning, and trading skills locally, with Firebase authentication and session booking.",
     projectType: "Web application",
-    status: "repository-available",
+    status: "live",
     featured: true,
-    stack: ["React", "Tailwind CSS", "MongoDB"],
-    capabilities: ["Responsive UI", "User authentication"],
+    stack: ["React", "React Router", "Tailwind CSS", "DaisyUI", "Firebase"],
+    capabilities: [
+      "Responsive UI",
+      "Firebase authentication (email/password and Google)",
+      "Protected routes",
+      "Skill browsing and session booking",
+    ],
     links: [
+      {
+        label: "Live site",
+        url: "https://bang-learner.web.app",
+        type: "live",
+      },
       {
         label: "Repository",
         url: "https://github.com/jahidjubaer/bang-learner",
@@ -210,13 +231,11 @@ const rawProjects = [
     seo: {
       title: "Bang Learner — Jahid Hasan",
       description:
-        "Bang Learner is a responsive skill-learning platform built with React, Tailwind CSS, and MongoDB. Full case-study evidence is still in preparation.",
+        "Bang Learner is a responsive skill-exchange platform built with React, Tailwind CSS, and Firebase. Full case-study evidence is still in preparation.",
     },
     missingContent: [
-      "live URL",
       "exact role",
       "timeline",
-      "verified features",
       "technical decisions",
       "challenges",
       "outcomes",
@@ -237,13 +256,11 @@ const rawProjects = [
       "Note requests",
       "Teacher information",
     ],
-    links: [
-      {
-        label: "Repository",
-        url: "https://github.com/jahidjubaer/note-bank",
-        type: "repository",
-      },
-    ],
+    // The previously linked github.com/jahidjubaer/note-bank no longer
+    // exists (404, verified 2026-09-29). The team's actual repositories
+    // live under a collaborator's account and are not linked until that
+    // attribution is approved — see CONTENT_CHECKLIST.md section 7.
+    links: [],
     caseStudyStatus: "in-preparation",
     caseStudy: null,
     roleContext:
@@ -255,11 +272,11 @@ const rawProjects = [
         "Note Bank is an academic resource platform built with React and JavaScript. Full case-study evidence is still in preparation.",
     },
     missingContent: [
+      "repository links (team repositories pending attribution approval)",
       "live URL",
       "team size",
       "dates",
       "exact ownership",
-      "verified stack (Django backend unverified)",
       "challenges",
       "outcomes",
       "visual assets",

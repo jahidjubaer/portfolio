@@ -18,8 +18,11 @@ export const volunteeringHighlights = [
   {
     organization: "Red Crescent Youth (RCY)",
     period: "2019 – 2021",
+    // Verified against Jahid's résumé (2026-09-29): participation in
+    // social and community-service activities and first-aid training
+    // with the Bangladesh Red Crescent Society.
     description:
-      "Community youth volunteering. Detailed responsibilities and outcomes are still being confirmed, so they aren't listed here yet.",
-    tags: [],
+      "Participated in social and community-service activities and first-aid training with the Bangladesh Red Crescent Society.",
+    tags: ["Community Service", "First Aid Training"],
   },
 ];
