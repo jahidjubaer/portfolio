@@ -116,6 +116,10 @@ function CommandPalettePanel({ onClose, triggerRef }) {
       exit="hidden"
       onMouseDown={handleBackdropClick}
     >
+      {/* The dialog-level keydown implements the combobox/listbox keyboard
+          pattern (arrows, Enter, Escape) for the input it contains — this is
+          an interactive composite widget, not a static element. */}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
         role="dialog"
         aria-modal="true"

@@ -107,8 +107,8 @@ export function ProjectPreviewModal({ project, onClose }) {
       animate="visible"
       className="fixed inset-0 z-(--z-overlay) flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
       onClick={(event) => {
-        // Backdrop click only — clicks inside the panel don't bubble here
-        // because the panel stops propagation below.
+        // Backdrop click only — clicks inside the panel bubble here with a
+        // different target, so they never match and never close.
         if (event.target === event.currentTarget) onClose();
       }}
     >
@@ -118,7 +118,6 @@ export function ProjectPreviewModal({ project, onClose }) {
         aria-modal="true"
         aria-labelledby={titleId}
         className="flex h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-(--radius-lg) border border-(--color-border) bg-(--color-canvas) shadow-2xl"
-        onClick={(event) => event.stopPropagation()}
       >
         {/* Top Control Bar */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-(--color-border) bg-(--color-surface) px-4 py-2">
