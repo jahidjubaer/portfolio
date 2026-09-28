@@ -23,6 +23,12 @@ const NAV_ITEMS = [
 const MOBILE_MENU_ID = "mobile-nav";
 const NAV_ACTIVE_LAYOUT_ID = "site-header-active-pill";
 
+// Show the shortcut hint the user's platform actually uses (the palette
+// itself accepts both Meta+K and Ctrl+K — see CommandPalette.jsx).
+const IS_APPLE_PLATFORM =
+  typeof navigator !== "undefined" &&
+  /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const scrolled = useScrolled();
@@ -111,14 +117,14 @@ export function SiteHeader() {
               onClick={() => {
                 window.dispatchEvent(new CustomEvent("open-command-palette"));
               }}
-              className="hidden sm:inline-flex items-center gap-2 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-soft)/70 px-3 py-1.5 text-xs text-(--color-text-muted) transition-colors hover:border-(--color-accent-primary) hover:text-(--color-text-primary)"
-              aria-label="Open Command Palette"
-              aria-keyshortcuts="Meta+K"
+              className="hidden min-h-11 items-center gap-2 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-soft)/70 px-3 text-xs text-(--color-text-muted) transition-colors hover:border-(--color-accent-primary) hover:text-(--color-text-primary) sm:inline-flex"
+              aria-label="Search — open command palette"
+              aria-keyshortcuts="Meta+K Control+K"
             >
-              <Search size={14} />
-              <span>Search...</span>
-              <kbd className="rounded border border-(--color-border) bg-(--color-canvas) px-1.5 py-0.5 text-[10px] font-mono">
-                ⌘K
+              <Search aria-hidden="true" size={14} />
+              <span>Search</span>
+              <kbd className="rounded border border-(--color-border) bg-(--color-canvas) px-1.5 py-0.5 font-mono text-[10px]">
+                {IS_APPLE_PLATFORM ? "⌘K" : "Ctrl K"}
               </kbd>
             </button>
 

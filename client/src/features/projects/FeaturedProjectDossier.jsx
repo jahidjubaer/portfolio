@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Link } from "react-router-dom";
 import { Play } from "lucide-react";
 import { ImageWithFallback } from "../../components/media/ImageWithFallback";
@@ -7,7 +7,13 @@ import { ProjectStack } from "./ProjectStack";
 import { ProjectStatus } from "./ProjectStatus";
 import { ProjectLinks } from "./ProjectLinks";
 import { ProjectMetaGrid } from "./ProjectMetaGrid";
-import { ProjectPreviewModal } from "./ProjectPreviewModal";
+
+// Lazy so the dialog stays out of the home bundle until a preview opens.
+const ProjectPreviewModal = lazy(() =>
+  import("./ProjectPreviewModal").then((module) => ({
+    default: module.ProjectPreviewModal,
+  })),
+);
 
 export function FeaturedProjectDossier({
   project,
@@ -52,16 +58,18 @@ export function FeaturedProjectDossier({
             <button
               type="button"
               onClick={() => setShowPreview(true)}
-              className="inline-flex items-center gap-1.5 text-xs text-(--color-text-muted) hover:text-(--color-accent-primary) transition-colors"
+              className="inline-flex min-h-11 items-center gap-1.5 text-xs text-(--color-text-muted) transition-colors hover:text-(--color-accent-primary)"
             >
-              <Play size={13} />
-              <span>Sandbox</span>
+              <Play aria-hidden="true" size={13} />
+              <span>Preview</span>
             </button>
           </div>
         </div>
-        <div
+        <button
+          type="button"
           onClick={() => setShowPreview(true)}
-          className="group relative cursor-pointer aspect-video overflow-hidden rounded-(--radius-md) border border-(--color-border) lg:aspect-square"
+          aria-label={`Open ${project.title} preview`}
+          className="group relative aspect-video cursor-pointer overflow-hidden rounded-(--radius-md) border border-(--color-border) lg:aspect-square"
         >
           <ImageWithFallback
             src={cover.src}
@@ -71,19 +79,21 @@ export function FeaturedProjectDossier({
             loading={priorityImage ? "eager" : "lazy"}
             fetchPriority={priorityImage ? "high" : undefined}
           />
-          <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+          <span className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
             <span className="rounded-full bg-(--color-accent-primary) px-4 py-2 text-xs font-semibold text-(--color-on-accent-primary) shadow-lg">
-              Launch Sandbox Preview
+              Open Preview
             </span>
-          </div>
-        </div>
+          </span>
+        </button>
       </article>
 
       {showPreview && (
-        <ProjectPreviewModal
-          project={project}
-          onClose={() => setShowPreview(false)}
-        />
+        <Suspense fallback={null}>
+          <ProjectPreviewModal
+            project={project}
+            onClose={() => setShowPreview(false)}
+          />
+        </Suspense>
       )}
     </>
   );

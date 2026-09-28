@@ -21,13 +21,15 @@ export function ProjectLinks({ links, className = "" }) {
         <li>
           <ButtonLink
             href={primaryLink.url}
+            target="_blank"
+            rel="noopener noreferrer"
             variant="primary"
             size="sm"
-            trailingIcon={<ArrowUpRight size={14} />}
+            trailingIcon={<ArrowUpRight aria-hidden="true" size={14} />}
           >
             {primaryLink.label}
+            <VisuallyHidden>(opens in a new tab)</VisuallyHidden>
           </ButtonLink>
-          <VisuallyHidden>(opens in a new tab)</VisuallyHidden>
         </li>
       ) : null}
       {(!isLivePrimary ? [primaryLink, ...secondaryLinks] : secondaryLinks).map(

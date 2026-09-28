@@ -92,6 +92,46 @@ test("/beyond has no automatically detectable accessibility violations at a mobi
   expect(results.violations).toEqual([]);
 });
 
+// The preview dialog embeds the project's real deployment in an iframe.
+// Both tests stub that external origin so they stay deterministic and
+// offline-safe, and so Axe's frame-aware scan doesn't pick up landmarks
+// from a third-party page we don't control.
+async function stubPreviewIframe(page) {
+  await page.route(/^https?:\/\/(?!localhost)/, (route) =>
+    route.fulfill({
+      contentType: "text/html",
+      body: "<!doctype html><html><head><title>Preview stub</title></head><body><p>Stubbed live preview</p></body></html>",
+    }),
+  );
+}
+
+test("open project preview dialog has no automatically detectable accessibility violations", async ({
+  page,
+}) => {
+  await stubPreviewIframe(page);
+  await gotoAndWaitForContent(page, "/");
+  await page.getByRole("button", { name: "Preview" }).first().click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations).toEqual([]);
+});
+
+test("project preview dialog closes with Escape and returns focus to its trigger", async ({
+  page,
+}) => {
+  await stubPreviewIframe(page);
+  await gotoAndWaitForContent(page, "/");
+  const trigger = page.getByRole("button", { name: "Preview" }).first();
+  await trigger.click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+
+  await page.keyboard.press("Escape");
+
+  await expect(page.getByRole("dialog")).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+});
+
 // The photography viewer is a modal dialog that only mounts once a real
 // photograph is clicked. No real photography assets exist yet (the page
 // correctly shows its honest empty state instead), so there is nothing to
