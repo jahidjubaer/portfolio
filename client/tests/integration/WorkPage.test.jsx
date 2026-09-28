@@ -67,18 +67,16 @@ describe("WorkPage", () => {
     expect(screen.getByText("July–August")).toBeInTheDocument();
   });
 
-  it("renders placeholder covers for supporting projects without a real cover image", async () => {
+  it("renders a real cover when available and a placeholder otherwise", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work"],
     });
     render(<RouterProvider router={router} />);
 
+    // Bang Learner gained real product screenshots (2026-09-29).
     expect(
       await screen.findByRole("img", { name: "Bang Learner project cover" }),
-    ).toHaveAttribute(
-      "src",
-      "/assets/placeholders/project-cover-placeholder.svg",
-    );
+    ).toHaveAttribute("src", "/assets/projects/bang-learner/cover.webp");
     expect(
       screen.getByRole("img", { name: "Bangladesh Landscape project cover" }),
     ).toHaveAttribute(

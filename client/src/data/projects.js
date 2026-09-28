@@ -240,7 +240,6 @@ const rawProjects = [
       "technical decisions",
       "challenges",
       "outcomes",
-      "visual assets",
     ],
   },
   {

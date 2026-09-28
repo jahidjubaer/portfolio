@@ -62,11 +62,24 @@ export const assetManifest = {
     },
     bangLearner: {
       cover: {
-        available: false,
-        src: null,
+        available: true,
+        src: "/assets/projects/bang-learner/cover.webp",
         fallback: "/assets/placeholders/project-cover-placeholder.svg",
       },
-      gallery: [],
+      gallery: [
+        {
+          file: "screenshot-01.webp",
+          src: "/assets/projects/bang-learner/screenshot-01.webp",
+        },
+        {
+          file: "screenshot-02.webp",
+          src: "/assets/projects/bang-learner/screenshot-02.webp",
+        },
+        {
+          file: "screenshot-03.webp",
+          src: "/assets/projects/bang-learner/screenshot-03.webp",
+        },
+      ],
     },
     bangladeshLandscape: {
       cover: {

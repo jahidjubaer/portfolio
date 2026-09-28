@@ -51,7 +51,7 @@ describe("ProjectCard", () => {
   it("uses the project cover placeholder when a project has no cover image", () => {
     render(
       <MemoryRouter>
-        <ProjectCard project={{ ...project, slug: "bang-learner" }} />
+        <ProjectCard project={{ ...project, slug: "bangladesh-landscape" }} />
       </MemoryRouter>,
     );
     expect(screen.getByRole("img")).toHaveAttribute(

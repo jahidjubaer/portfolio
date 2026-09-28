@@ -62,6 +62,11 @@ function RelatedProjectsSection({ relatedProjects }) {
 }
 
 function ProjectInPreparation({ project, relatedProjects }) {
+  // Manifest-tracked screenshots render even before the written case
+  // study exists — real product imagery is verified evidence, while the
+  // narrative sections stay honestly "in preparation" until confirmed.
+  const { gallery: galleryImages } = getProjectMedia(project.slug);
+
   return (
     <Container as="div" className="section-spacing">
       <Reveal>
@@ -92,6 +97,19 @@ function ProjectInPreparation({ project, relatedProjects }) {
                 </li>
               ))}
             </ul>
+          </div>
+        ) : null}
+
+        {galleryImages.length > 0 ? (
+          <div className="mt-10">
+            <h2 className="label text-(--color-text-muted)">Screenshots</h2>
+            <div className="mt-4">
+              <ProjectMediaGallery
+                title={project.title}
+                images={galleryImages}
+                captionsByFile={{}}
+              />
+            </div>
           </div>
         ) : null}
 

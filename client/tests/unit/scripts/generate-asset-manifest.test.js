@@ -27,9 +27,9 @@ describe("generate-asset-manifest", () => {
 
   it("gives a missing image the expected placeholder fallback", () => {
     const manifest = buildManifest();
-    expect(manifest.projects.bangLearner.cover.available).toBe(false);
-    expect(manifest.projects.bangLearner.cover.src).toBeNull();
-    expect(manifest.projects.bangLearner.cover.fallback).toBe(
+    expect(manifest.projects.bangladeshLandscape.cover.available).toBe(false);
+    expect(manifest.projects.bangladeshLandscape.cover.src).toBeNull();
+    expect(manifest.projects.bangladeshLandscape.cover.fallback).toBe(
       "/assets/placeholders/project-cover-placeholder.svg",
     );
   });

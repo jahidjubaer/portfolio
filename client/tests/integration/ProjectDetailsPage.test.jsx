@@ -137,6 +137,22 @@ describe("Project detail route", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders real product screenshots on Bang Learner's in-preparation page", async () => {
+    const router = createMemoryRouter(routeConfig, {
+      initialEntries: ["/work/bang-learner"],
+    });
+    render(<RouterProvider router={router} />);
+
+    expect(
+      await screen.findByRole("heading", { name: "Screenshots" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByAltText("Bang Learner interface preview 1"),
+    ).toBeInTheDocument();
+    // The narrative sections stay honestly unavailable until confirmed.
+    expect(screen.getByText(/still in preparation/)).toBeInTheDocument();
+  });
+
   it("shows Bangladesh Landscape's verified capabilities and repositories on its project-overview page", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work/bangladesh-landscape"],
