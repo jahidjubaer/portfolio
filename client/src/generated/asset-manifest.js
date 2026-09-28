@@ -68,7 +68,7 @@ export const assetManifest = {
       },
       gallery: [],
     },
-    noteBank: {
+    bangladeshLandscape: {
       cover: {
         available: false,
         src: null,
