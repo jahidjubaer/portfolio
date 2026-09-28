@@ -38,5 +38,8 @@ export const profile = {
     available: assetManifest.resume.available,
     filename: "jahid-hasan-resume.pdf",
     url: assetManifest.resume.available ? assetManifest.resume.src : null,
+    // Matches the "Updated" line printed inside the PDF itself
+    // (regenerated 2026-09-29 from checklist-verified content).
+    updatedLabel: "Updated September 2026",
   },
 };

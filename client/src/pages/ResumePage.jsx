@@ -72,11 +72,16 @@ export function ResumePage() {
             className="absolute inset-y-0 left-0 w-1 bg-(--color-accent-primary)"
             aria-hidden="true"
           />
-          {/* The résumé's last-updated date is TODO_CONTENT (see
-              CONTENT_CHECKLIST.md section 5) and is not shown until confirmed. */}
-          <StatusIndicator tone="positive">
-            {profile.availabilityStatement}
-          </StatusIndicator>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <StatusIndicator tone="positive">
+              {profile.availabilityStatement}
+            </StatusIndicator>
+            {profile.resume.available && profile.resume.updatedLabel ? (
+              <span className="font-mono text-xs text-(--color-text-muted)">
+                {profile.resume.updatedLabel}
+              </span>
+            ) : null}
+          </div>
           <p className="body-md mt-3 text-(--color-text-secondary)">
             {profile.heroSupport}
           </p>
