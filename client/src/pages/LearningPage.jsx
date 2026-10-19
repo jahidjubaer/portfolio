@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../routes/route-meta";
 import { Container } from "../components/ui/Container";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { TextLink } from "../components/ui/TextLink";
@@ -23,11 +24,7 @@ export function LearningPage() {
   const { status, configured, posts, message, retry } = useLearningPosts();
   const [selectedLabel, setSelectedLabel] = useState("All");
 
-  usePageMeta({
-    title: "Learning — Jahid Hasan",
-    description:
-      "An index of Jahid Hasan's learning notes and technical writing — engineering notes, project lessons, and problem-solving reflections, published on Blogger.",
-  });
+  usePageMeta(PAGE_META["/learning"]);
 
   const displayState = deriveDisplayState({ status, configured, posts });
 

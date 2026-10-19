@@ -7,6 +7,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../routes/route-meta";
 import { Container } from "../components/ui/Container";
 import { ButtonLink } from "../components/ui/ButtonLink";
 import { TextLink } from "../components/ui/TextLink";
@@ -27,11 +28,7 @@ import { sportsHighlights, volunteeringHighlights } from "../data/beyond";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
 
 export function BeyondPage() {
-  usePageMeta({
-    title: "Beyond the Code — Jahid Hasan",
-    description:
-      "Photography, sports, leadership, and volunteering by Jahid Hasan.",
-  });
+  usePageMeta(PAGE_META["/beyond"]);
 
   const {
     status: photographyStatus,

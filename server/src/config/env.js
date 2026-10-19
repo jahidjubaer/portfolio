@@ -38,4 +38,8 @@ export const env = {
   // Vercel Cron sends `Authorization: Bearer <CRON_SECRET>`. Blank → the
   // cron endpoint answers 503 instead of running unauthenticated.
   cronSecret: process.env.CRON_SECRET || "",
+  // Publish (R7): a Vercel Deploy Hook URL (Project → Settings → Git →
+  // Deploy Hooks). Anyone with the URL can trigger a build, so it's a
+  // secret. Blank → the admin's Publish button answers 503.
+  deployHookUrl: process.env.VERCEL_DEPLOY_HOOK_URL || "",
 };

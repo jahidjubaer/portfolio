@@ -1,5 +1,6 @@
 import { Mail } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../routes/route-meta";
 import { PageHeader } from "../components/layout/PageHeader";
 import { ButtonLink } from "../components/ui/ButtonLink";
 import { ImageWithFallback } from "../components/media/ImageWithFallback";
@@ -19,11 +20,7 @@ const PROFILE_TABS = [
 ];
 
 export function HomePage() {
-  usePageMeta({
-    title: "Jahid Hasan — Frontend Developer & Junior Software Engineer",
-    description:
-      "Portfolio of Jahid Hasan, a CSE graduate and React-focused frontend developer building modern web products and expanding into full-stack and AI-enabled engineering.",
-  });
+  usePageMeta(PAGE_META["/"]);
   const portrait = assetManifest.profile.portraitSquare;
 
   return (
@@ -54,9 +51,11 @@ export function HomePage() {
           <p className="truncate text-[1.0625rem] font-semibold tracking-[-0.01em] text-(--color-text-primary)">
             {profile.name}
           </p>
-          <p className="truncate text-[0.8125rem] text-(--color-text-muted)">
-            {githubSnapshot.publicRepos} public repositories on GitHub
-          </p>
+          {githubSnapshot.publicRepos > 0 ? (
+            <p className="truncate text-[0.8125rem] text-(--color-text-muted)">
+              {githubSnapshot.publicRepos} public repositories on GitHub
+            </p>
+          ) : null}
         </div>
       </PageHeader>
       <ProfileBanner />

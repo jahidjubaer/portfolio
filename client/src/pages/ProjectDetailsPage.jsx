@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Mail } from "lucide-react";
 import { PageHeader } from "../components/layout/PageHeader";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { projectMeta } from "../routes/route-meta";
 import { Container } from "../components/ui/Container";
 import { ButtonLink } from "../components/ui/ButtonLink";
 import { Divider } from "../components/ui/Divider";
@@ -226,10 +227,7 @@ export function ProjectDetailsPage() {
 
   usePageMeta(
     project
-      ? {
-          title: project.seo.title,
-          description: project.seo.description,
-        }
+      ? projectMeta(project)
       : {
           title: "Project not found — Jahid Hasan",
           description:

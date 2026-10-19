@@ -11,6 +11,7 @@ import {
   skillGroupSchema,
 } from "../schemas/content.js";
 import { deleteUpload } from "./uploadService.js";
+import { markEdited } from "./publishService.js";
 
 const HIDE_ID = { projection: { _id: 0 } };
 
@@ -61,6 +62,7 @@ export async function replaceSingleton(name, input) {
   await db
     .collection(COLLECTIONS[name])
     .replaceOne({ _id: SINGLETON_ID }, document, { upsert: true });
+  await markEdited();
   return document;
 }
 
@@ -89,6 +91,7 @@ export async function createItem(name, input) {
     }
     throw error;
   }
+  await markEdited();
   return document;
 }
 
@@ -113,6 +116,7 @@ export async function updateItem(name, key, input) {
     order: existing.order,
   });
   await collection.replaceOne({ [keyField]: key }, document);
+  await markEdited();
   return document;
 }
 
@@ -127,6 +131,7 @@ export async function deleteItem(name, key) {
     .collection(COLLECTIONS[name])
     .findOneAndDelete({ [KEY_FIELDS[name]]: key });
   if (!deleted) throw httpError(404, "Item not found.");
+  await markEdited();
   if (name === "photos") await deleteUpload(deleted.image?.url);
 }
 
@@ -157,4 +162,5 @@ export async function reorderItems(name, keys) {
       updateOne: { filter: { [keyField]: key }, update: { $set: { order } } },
     })),
   );
+  await markEdited();
 }

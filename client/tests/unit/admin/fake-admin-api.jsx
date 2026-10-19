@@ -27,13 +27,18 @@ function json(status, body) {
 /**
  * Stubs fetch with an in-memory admin API (session, content, and the
  * write endpoints) so admin pages run end to end in jsdom.
- * @param {{ signedIn?: boolean, withProjects?: boolean, repositories?: object, syncResult?: { status: number, body: object } }} [options]
+ * @param {{ signedIn?: boolean, withProjects?: boolean, repositories?: object, syncResult?: { status: number, body: object }, publishing?: object, publishResult?: { status: number, body: object } }} [options]
  */
 export function installFakeAdminApi({
   signedIn = true,
   withProjects = false,
   repositories = {},
   syncResult = { status: 200, body: { success: true, data: { repoCount: 0 } } },
+  publishing = {},
+  publishResult = {
+    status: 200,
+    body: { success: true, data: { at: "2026-10-19T08:00:00Z", ok: true } },
+  },
 } = {}) {
   const { resume, ...profileFields } = profile;
   const state = {
@@ -70,6 +75,14 @@ export function installFakeAdminApi({
         warnings: [],
         ...repositories,
       },
+      publishing: {
+        configured: true,
+        lastEditAt: null,
+        lastPublishAt: null,
+        hasUnpublishedChanges: false,
+        history: [],
+        ...publishing,
+      },
     },
     requests: [],
   };
@@ -96,6 +109,16 @@ export function installFakeAdminApi({
       return json(200, { success: true, data: structuredClone(state.content) });
     }
 
+    if (path === "/admin/publish" && method === "POST") {
+      if (publishResult.status === 200) {
+        state.content.publishing = {
+          ...state.content.publishing,
+          hasUnpublishedChanges: false,
+          lastPublishAt: publishResult.body.data.at,
+        };
+      }
+      return json(publishResult.status, publishResult.body);
+    }
     if (path === "/admin/github/sync" && method === "POST") {
       return json(syncResult.status, syncResult.body);
     }

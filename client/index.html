@@ -32,6 +32,10 @@
         root.setAttribute("data-font", font);
       })();
     </script>
+    <!-- route-meta -->
+    <!-- Head tags for "/". scripts/prerender.js rewrites this block in every
+         built route's HTML (absolute URLs, per-route title/description), and
+         usePageMeta keeps it in sync during client-side navigation. -->
     <title>
       Jahid Hasan — Frontend Developer &amp; Junior Software Engineer
     </title>
@@ -39,9 +43,6 @@
       name="description"
       content="Portfolio of Jahid Hasan, a CSE graduate and React-focused frontend developer building modern web products and expanding into full-stack and AI-enabled engineering."
     />
-    <!-- Route-level canonical/OG/Twitter/robots tags are managed per page by
-         usePageMeta; these defaults cover the initial paint and crawlers that
-         do not execute JavaScript. -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Jahid Hasan" />
     <meta
@@ -52,17 +53,12 @@
       property="og:description"
       content="Portfolio of Jahid Hasan, a CSE graduate and React-focused frontend developer building modern web products and expanding into full-stack and AI-enabled engineering."
     />
-    <meta
-      property="og:image"
-      content="http://localhost:5173/assets/og/og-default.png"
-    />
+    <meta property="og:image" content="/assets/og/og-default.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:image"
-      content="http://localhost:5173/assets/og/og-default.png"
-    />
+    <meta name="twitter:image" content="/assets/og/og-default.png" />
+    <!-- /route-meta -->
   </head>
   <body>
     <div id="root"></div>

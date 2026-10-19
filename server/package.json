@@ -8,7 +8,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "seed": "vite-node scripts/seed.js --",
-    "migrate": "vite-node scripts/migrate.js --"
+    "migrate": "vite-node scripts/migrate.js --",
+    "content:export": "node scripts/export-content.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.2",

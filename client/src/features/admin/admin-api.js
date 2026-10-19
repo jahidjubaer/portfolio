@@ -128,3 +128,12 @@ export async function requestUploadToken(kind, filename, contentType) {
 export async function syncGitHub() {
   return (await adminRequest("POST", "/admin/github/sync")).data;
 }
+
+/**
+ * Starts a rebuild of the public site from the database (Vercel Deploy
+ * Hook). The site shows the changes when the build finishes.
+ * @returns {Promise<{ at: string, by: string, ok: boolean, jobId: string | null }>}
+ */
+export async function publishSite() {
+  return (await adminRequest("POST", "/admin/publish")).data;
+}

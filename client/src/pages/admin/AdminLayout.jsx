@@ -16,6 +16,7 @@ import {
 } from "../../features/admin/admin-api";
 import { AdminContext } from "../../features/admin/admin-context";
 import { ADMIN_SECTIONS } from "../../features/admin/admin-collections";
+import { PublishButton } from "../../features/admin/PublishButton";
 
 function CenteredCard({ children }) {
   return (
@@ -165,6 +166,12 @@ export function AdminLayout() {
           <span className="hidden text-sm text-(--color-text-secondary) sm:inline">
             @{admin.login}
           </span>
+          {content ? (
+            <PublishButton
+              publishing={content.publishing}
+              onPublished={reload}
+            />
+          ) : null}
           <ButtonLink
             href="/"
             target="_blank"
@@ -172,6 +179,7 @@ export function AdminLayout() {
             variant="ghost"
             size="sm"
             trailingIcon={<ExternalLink size={14} />}
+            className="hidden sm:inline-flex"
           >
             View site
           </ButtonLink>

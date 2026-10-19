@@ -1,4 +1,5 @@
 import { usePageMeta } from "../hooks/usePageMeta";
+import { resumeMeta } from "../routes/route-meta";
 import { Container } from "../components/ui/Container";
 import { SectionLabel } from "../components/ui/SectionLabel";
 import { ButtonLink } from "../components/ui/ButtonLink";
@@ -16,12 +17,7 @@ import { Download, FileText, Code2, ExternalLink } from "lucide-react";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
 
 export function ResumePage() {
-  usePageMeta({
-    title: "Resume — Jahid Hasan",
-    description: profile.resume.available
-      ? "Resume summary and downloadable PDF for Jahid Hasan, a CSE graduate and frontend developer / junior software engineer."
-      : "Resume summary of Jahid Hasan, a CSE graduate and frontend developer / junior software engineer.",
-  });
+  usePageMeta(resumeMeta(profile.resume.available));
 
   const featuredProjects = getFeaturedProjects();
 

@@ -1,4 +1,5 @@
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../routes/route-meta";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
 import { StaggerGroup, StaggerItem } from "../features/motion/StaggerGroup";
 import { ProjectCard } from "../features/projects/ProjectCard";
@@ -13,11 +14,7 @@ export function WorkPage() {
     (project) => project.status === "archived",
   );
 
-  usePageMeta({
-    title: "Projects — Jahid Hasan",
-    description:
-      "Projects by Jahid Hasan: multi-role web platforms, React interfaces, and full-stack products built with React, Express, and MongoDB.",
-  });
+  usePageMeta(PAGE_META["/work"]);
 
   return (
     <>

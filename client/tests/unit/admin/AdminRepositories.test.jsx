@@ -131,8 +131,9 @@ describe("admin GitHub repos", { timeout: 20_000 }, () => {
 
     expect(await screen.findByText(/The last sync .* failed/)).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Sync now" }));
+    const main = screen.getByRole("main");
     await waitFor(() =>
-      expect(screen.getByRole("status")).toHaveTextContent(
+      expect(within(main).getByRole("status")).toHaveTextContent(
         "GitHub's rate limit is used up.",
       ),
     );

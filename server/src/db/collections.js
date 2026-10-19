@@ -16,6 +16,9 @@ export const COLLECTIONS = {
   // GitHub's numeric id, plus a singleton with the last sync's result.
   githubRepos: "githubRepos",
   githubSync: "githubSync",
+  // Publish (R7): when content last changed (singleton) and each publish.
+  siteState: "siteState",
+  publishLog: "publishLog",
 };
 
 export const SINGLETON_ID = "main";

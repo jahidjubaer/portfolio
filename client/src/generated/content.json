@@ -1,0 +1,558 @@
+{
+  "profile": {
+    "name": "Jahid Hasan",
+    "monogram": "JH.",
+    "title": "Frontend Developer & Junior Software Engineer",
+    "supportingDirection": "React-focused engineer expanding into full-stack systems and AI-enabled products.",
+    "location": "Sylhet, Bangladesh",
+    "targetRoles": [
+      "Frontend Developer",
+      "Junior Software Engineer",
+      "Management Trainee Officer (MTO)",
+      "Technical management roles"
+    ],
+    "availabilityStatement": "Open to frontend developer, junior software engineer, MTO, and technical management roles.",
+    "availabilityDetail": "Frontend developer and junior software engineer roles, plus MTO and technical management tracks. Based in Sylhet, Bangladesh.",
+    "about": [
+      "I'm Jahid Hasan, a React-focused frontend developer and junior software engineer from Sylhet, building accessible, responsive interfaces while expanding into full-stack systems and AI-enabled products.",
+      "I've built multi-role products end to end, including Sarabo, an electronics-repair service platform, and ICT Crack, a Bangla-first learning platform for HSC students. Outside code, I've held leadership roles in my university's sports club and photographic society."
+    ],
+    "heroHeadline": "I build clear interfaces for real product problems.",
+    "heroSupport": "I'm Jahid Hasan, a React-focused frontend developer and junior software engineer from Sylhet, building accessible, responsive interfaces while expanding into full-stack systems and AI-enabled products.",
+    "email": "jahidhasan.metro@gmail.com",
+    "github": "https://github.com/jahidjubaer",
+    "linkedin": "https://www.linkedin.com/in/jahidjubaer/",
+    "codeforces": "https://codeforces.com/profile/jahidjubaer17",
+    "leetcode": "https://leetcode.com/u/jahidjubaer/",
+    "education": {
+      "degree": "BSc in Computer Science and Engineering",
+      "university": "Metropolitan University, Sylhet",
+      "graduation": "August 2026"
+    },
+    "problemSolving": {
+      "total": "250+ programming problems solved",
+      "primaryLanguage": "C++",
+      "platforms": "VJudge, Codeforces, Dimik OJ, and LeetCode"
+    },
+    "resume": {
+      "filename": "jahid-hasan-resume.pdf",
+      "url": "/assets/resume/jahid-hasan-resume.pdf",
+      "updatedLabel": "Updated September 2026"
+    },
+    "socialProfiles": [
+      {
+        "id": "github",
+        "label": "GitHub",
+        "handle": "@jahidjubaer",
+        "url": "https://github.com/jahidjubaer"
+      },
+      {
+        "id": "linkedin",
+        "label": "LinkedIn",
+        "handle": "in/jahidjubaer",
+        "url": "https://www.linkedin.com/in/jahidjubaer/"
+      },
+      {
+        "id": "codeforces",
+        "label": "Codeforces",
+        "handle": "jahidjubaer17",
+        "url": "https://codeforces.com/profile/jahidjubaer17"
+      },
+      {
+        "id": "leetcode",
+        "label": "LeetCode",
+        "handle": "jahidjubaer",
+        "url": "https://leetcode.com/u/jahidjubaer/"
+      }
+    ]
+  },
+  "projects": [
+    {
+      "slug": "sarabo",
+      "order": 0,
+      "title": "Sarabo",
+      "summary": "A multi-role electronics-repair service platform that helps customers request repairs and track service progress while technicians and administrators manage the repair lifecycle.",
+      "projectType": "Full-stack web application",
+      "status": "live",
+      "featured": true,
+      "stack": [
+        "React",
+        "Node.js",
+        "Express",
+        "MongoDB",
+        "Firebase",
+        "Stripe"
+      ],
+      "capabilities": [
+        "Authentication and role-based access",
+        "Repair-request lifecycle tracking",
+        "Technician assignment",
+        "Quotation management",
+        "Notifications",
+        "Customer reviews",
+        "Stripe payment flow"
+      ],
+      "links": [
+        {
+          "label": "Live client",
+          "url": "https://sarabo-jahid.web.app",
+          "type": "live"
+        },
+        {
+          "label": "Live API",
+          "url": "https://sarabo-server.vercel.app",
+          "type": "live"
+        },
+        {
+          "label": "Client repository",
+          "url": "https://github.com/jahidjubaer/sarabo-client",
+          "type": "repository"
+        },
+        {
+          "label": "Server repository",
+          "url": "https://github.com/jahidjubaer/sarabo-server",
+          "type": "repository"
+        }
+      ],
+      "caseStudyStatus": "complete",
+      "caseStudy": {
+        "role": "Sole Developer",
+        "timeline": "July–August",
+        "sections": [
+          {
+            "id": "overview",
+            "heading": "Overview",
+            "type": "text",
+            "body": "Sarabo is a multi-role electronics-repair service platform. Customers submit repair requests and track progress; technicians manage assigned repairs; administrators oversee accounts, requests, and technician assignment across the platform.\n\nThis was a solo project. Jahid was responsible for the end-to-end development of the client and server applications."
+          },
+          {
+            "id": "roles",
+            "heading": "Roles",
+            "type": "text",
+            "body": "- **Customer** — Submits repair requests, tracks progress, reviews quotations, pays through Stripe, and leaves reviews.\n- **Technician** — Receives assigned repair requests and updates their progress through the repair lifecycle.\n- **Administrator** — Manages accounts and repair requests, and assigns technicians across the platform."
+          },
+          {
+            "id": "workflow",
+            "heading": "Workflow",
+            "type": "text",
+            "body": "Sarabo supports a repair-request lifecycle covering service selection, request submission, quotation and review, assignment-related handling, progress tracking and payment-related states."
+          },
+          {
+            "id": "capabilities",
+            "heading": "Capabilities",
+            "type": "text",
+            "body": "- Authentication and role-based access\n- Repair-request lifecycle tracking\n- Technician assignment\n- Quotation management\n- Notifications\n- Customer reviews\n- Stripe payment flow"
+          },
+          {
+            "id": "gallery",
+            "heading": "Gallery",
+            "type": "gallery"
+          },
+          {
+            "id": "architecture",
+            "heading": "Architecture",
+            "type": "text",
+            "body": "- **React client** — The customer, technician, and administrator interfaces.\n- **Firebase authentication** — Handles sign-in and role-based access across the client.\n- **Express API** — A Node.js and Express API deployed separately from the client, handling repair-request, quotation, and role logic.\n- **MongoDB** — Persists repair requests, quotations, roles, and reviews.\n- **Stripe** — Processes customer payments for completed quotations."
+          },
+          {
+            "id": "decisions",
+            "heading": "Implementation approach",
+            "type": "text",
+            "body": "- The React client and the Express API are deployed separately — the client via Firebase Hosting, the API on its own deployment.\n- Firebase handles authentication while a custom Express and MongoDB API manages repair-request, quotation, and role data."
+          },
+          {
+            "id": "reflection",
+            "heading": "Challenge, outcome and reflection",
+            "type": "text",
+            "body": "**Challenge:** Validation was one of the main implementation challenges during development. Detailed notes about the specific validation cases and the final solution are still being documented.\n\n**Outcome:** The project resulted in a working full-stack service platform that demonstrates role-based workflows, repair-request management, authentication, tracking and payment-related integration. Quantitative product outcomes and usage metrics are not currently available.\n\n**Reflection:** Building Sarabo as a solo project provided practical experience managing a full-stack application from client-side flows through server-side functionality. Validation emerged as an important area for further refinement and documentation."
+          }
+        ],
+        "gallery": [
+          {
+            "file": "screenshot-01.webp",
+            "caption": "Sarabo administrator dashboard"
+          },
+          {
+            "file": "screenshot-02.webp",
+            "caption": "Sarabo home interface"
+          },
+          {
+            "file": "screenshot-03.webp",
+            "caption": "Sarabo mobile view"
+          },
+          {
+            "file": "screenshot-04.webp",
+            "caption": "Sarabo payment interface"
+          },
+          {
+            "file": "screenshot-05.webp",
+            "caption": "Sarabo repair-request flow"
+          },
+          {
+            "file": "screenshot-06.webp",
+            "caption": "Sarabo technician dashboard"
+          },
+          {
+            "file": "screenshot-07.webp",
+            "caption": "Sarabo tracking interface"
+          },
+          {
+            "file": "screenshot-08.webp",
+            "caption": "Sarabo customer dashboard"
+          }
+        ]
+      },
+      "relatedSlugs": [
+        "ict-crack",
+        "bangladesh-landscape"
+      ],
+      "seo": {
+        "title": "Sarabo — Case study — Jahid Hasan",
+        "description": "How Sarabo, a multi-role electronics-repair service platform, handles authentication, repair-request tracking, technician assignment, and payments across customer, technician, and administrator roles."
+      },
+      "missingContent": [
+        "public documentation URL",
+        "current status detail",
+        "validation challenge solution",
+        "optional demo video"
+      ]
+    },
+    {
+      "slug": "ict-crack",
+      "order": 1,
+      "title": "ICT Crack",
+      "summary": "A Bangla-first learning platform for HSC ICT students with chapter-based interactive lessons and labs, MCQ and creative-question exams, and AI-assisted answer evaluation.",
+      "projectType": "Full-stack web application",
+      "status": "live",
+      "featured": true,
+      "stack": [
+        "React",
+        "TanStack Query",
+        "Tailwind CSS",
+        "Node.js",
+        "Express",
+        "MongoDB",
+        "Zod"
+      ],
+      "capabilities": [
+        "Chapter-based lessons following the NCTB HSC ICT textbook",
+        "In-browser interactive labs, including logic gates, number systems, a SQL playground, and a C code tracer",
+        "Separate MCQ and creative-question exams with model tests",
+        "AI-assisted grading of creative answers (Gemini or Anthropic, configurable)",
+        "Subscription plans with a free trial period",
+        "Study plans, badges, and daily activity tracking",
+        "Installable progressive web app"
+      ],
+      "links": [
+        {
+          "label": "Live site",
+          "url": "https://hsc-ict-creck-client.vercel.app",
+          "type": "live"
+        },
+        {
+          "label": "Client repository",
+          "url": "https://github.com/jahidjubaer/hsc-ict-creck-client",
+          "type": "repository"
+        },
+        {
+          "label": "Server repository",
+          "url": "https://github.com/jahidjubaer/hsc-ict-creck-server",
+          "type": "repository"
+        }
+      ],
+      "caseStudyStatus": "in-preparation",
+      "caseStudy": null,
+      "relatedSlugs": [
+        "sarabo",
+        "bangladesh-landscape"
+      ],
+      "seo": {
+        "title": "ICT Crack — Jahid Hasan",
+        "description": "ICT Crack is a Bangla-first HSC ICT learning platform with interactive lessons and labs, MCQ and creative-question exams, and AI-assisted answer evaluation, built with React, Express, and MongoDB."
+      },
+      "missingContent": [
+        "exact role and team context",
+        "timeline",
+        "challenges",
+        "outcomes",
+        "screenshots"
+      ]
+    },
+    {
+      "slug": "bangladesh-landscape",
+      "order": 2,
+      "title": "Bangladesh Landscape",
+      "summary": "A district-by-district travel portal for Bangladesh with AI-assisted tour plans, verified local guides, blogs, and stay and transport bookings — Bangla-first with full English support.",
+      "projectType": "Full-stack web application",
+      "status": "private",
+      "featured": true,
+      "stack": [
+        "React",
+        "Tailwind CSS",
+        "TanStack Query",
+        "Node.js",
+        "Express",
+        "MongoDB"
+      ],
+      "capabilities": [
+        "AI-assisted tour planning (Claude/Gemini with a deterministic mock fallback)",
+        "Verified guide and partner bookings",
+        "Interactive district maps (Leaflet with marker clustering)",
+        "Moderated blogs with rich-text editing",
+        "JWT cookie authentication and admin operations",
+        "Bangla-first bilingual interface"
+      ],
+      "links": [],
+      "caseStudyStatus": "in-preparation",
+      "caseStudy": null,
+      "relatedSlugs": [
+        "sarabo",
+        "ict-crack"
+      ],
+      "seo": {
+        "title": "Bangladesh Landscape — Jahid Hasan",
+        "description": "Bangladesh Landscape is a Bangla-first travel portal for Bangladesh with AI-assisted tour plans, verified guides, and bookings, built with React, Express, and MongoDB. Full case-study evidence is in preparation."
+      },
+      "missingContent": [
+        "live URL (deployments not yet confirmed reachable)",
+        "exact role and team context",
+        "timeline",
+        "current status detail",
+        "challenges",
+        "outcomes",
+        "visual assets"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "id": "rcy-volunteering",
+      "order": 0,
+      "date": "2019–2021",
+      "sortYear": 2019,
+      "category": "community",
+      "title": "Volunteer",
+      "organization": "Red Crescent Youth (RCY)",
+      "description": "Community volunteering with Red Crescent Youth."
+    },
+    {
+      "id": "sports-club-joint-secretary",
+      "order": 1,
+      "date": "2023–2024",
+      "sortYear": 2023,
+      "category": "leadership",
+      "title": "Joint Office Secretary",
+      "organization": "Metropolitan University Sports Club",
+      "description": "Supported event planning and team leadership across university sports programs.",
+      "details": "Supported event planning and team leadership across university sports programs."
+    },
+    {
+      "id": "sports-club-organizing-secretary",
+      "order": 2,
+      "date": "2024–2025",
+      "sortYear": 2024,
+      "category": "leadership",
+      "title": "Organizing Secretary",
+      "organization": "Metropolitan University Sports Club",
+      "description": "Coordinated university cricket, football, indoor games, and badminton leagues.",
+      "details": "Coordinated university sports events including the Metropolitan University Premier League (cricket), League M (football), Indoor Games, CLC, Futsal, and Badminton League — covering umpiring, event planning, on-field operations, and sponsorship coordination."
+    },
+    {
+      "id": "photographic-society-organizing-secretary",
+      "order": 3,
+      "date": "2024–2025",
+      "sortYear": 2024,
+      "category": "leadership",
+      "title": "Organizing Secretary",
+      "organization": "Metropolitan University Photographic Society",
+      "description": "Organized photo walks and university photography coverage.",
+      "details": "Supported event planning, member communication, photo walks, and university photography coverage."
+    },
+    {
+      "id": "graduation",
+      "order": 4,
+      "date": "August 2026",
+      "sortYear": 2026,
+      "category": "education",
+      "title": "Graduation",
+      "organization": "Metropolitan University, Sylhet",
+      "description": "BSc in Computer Science and Engineering"
+    }
+  ],
+  "skills": [
+    {
+      "id": "current-strengths",
+      "order": 0,
+      "title": "Current strengths",
+      "description": "Technologies and tools I build with today.",
+      "accent": "primary",
+      "items": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "React",
+        "Tailwind CSS",
+        "Responsive UI",
+        "Git & GitHub"
+      ]
+    },
+    {
+      "id": "engineering-foundations",
+      "order": 1,
+      "title": "Engineering foundations",
+      "description": "Core CS fundamentals that underpin every system I build.",
+      "accent": "secondary",
+      "items": [
+        "Data Structures",
+        "Algorithms",
+        "Object-Oriented Programming",
+        "REST API concepts",
+        "Problem solving"
+      ]
+    },
+    {
+      "id": "currently-expanding",
+      "order": 2,
+      "title": "Currently expanding",
+      "description": "Areas I'm actively learning — not expert-level yet.",
+      "accent": "muted",
+      "items": [
+        "Node.js",
+        "Express.js",
+        "MongoDB",
+        "Full-stack architecture",
+        "AI-enabled products"
+      ]
+    }
+  ],
+  "certifications": [
+    {
+      "id": "programming-hero-complete-web-development",
+      "order": 0,
+      "title": "Complete Web Development",
+      "issuer": "Programming Hero",
+      "category": "professional",
+      "status": "completed",
+      "issued": "2026"
+    },
+    {
+      "id": "learn-with-sumit-reactive-accelerator",
+      "order": 1,
+      "title": "Reactive Accelerator",
+      "issuer": "Learn with Sumit",
+      "category": "professional",
+      "status": "in-progress"
+    },
+    {
+      "id": "edge-python-data-science",
+      "order": 2,
+      "title": "Python Programming & Basic Data Science",
+      "issuer": "EDGE, IICT SUST",
+      "category": "professional",
+      "status": "completed",
+      "issued": "2024"
+    },
+    {
+      "id": "wadhwani-jobready-employability",
+      "order": 3,
+      "title": "Employability Skills (JobReady)",
+      "issuer": "Wadhwani Foundation",
+      "category": "professional",
+      "status": "completed",
+      "issued": "2024"
+    }
+  ],
+  "beyond": {
+    "sports": [
+      {
+        "title": "Sports Club Organizer & Cricket Umpire",
+        "description": "Organizing and umpiring university cricket, football, and indoor sports competitions with the Metropolitan University Sports Club.",
+        "tags": [
+          "Cricket Umpiring",
+          "Football Tournaments",
+          "Event Planning"
+        ]
+      }
+    ],
+    "volunteering": [
+      {
+        "organization": "Red Crescent Youth (RCY)",
+        "period": "2019 – 2021",
+        "description": "Participated in social and community-service activities and first-aid training with the Bangladesh Red Crescent Society.",
+        "tags": [
+          "Community Service",
+          "First Aid Training"
+        ]
+      }
+    ]
+  },
+  "photos": [],
+  "posts": [],
+  "github": {
+    "username": "jahidjubaer",
+    "profileUrl": "https://github.com/jahidjubaer",
+    "repositoriesUrl": "https://github.com/jahidjubaer?tab=repositories",
+    "publicRepos": 37,
+    "syncedAt": "2026-10-19T07:04:02.620Z",
+    "recentRepos": [
+      {
+        "name": "portfolio",
+        "url": "https://github.com/jahidjubaer/portfolio",
+        "language": "JavaScript",
+        "stars": 0,
+        "homepage": "https://portfolio-rouge-ten-75d2q3rm0r.vercel.app",
+        "pushedAt": "2026-10-18T17:21:00Z"
+      },
+      {
+        "name": "sarabo-doc",
+        "url": "https://github.com/jahidjubaer/sarabo-doc",
+        "language": "TeX",
+        "stars": 0,
+        "homepage": null,
+        "pushedAt": "2026-10-18T10:29:15Z"
+      },
+      {
+        "name": "sarabo-client",
+        "url": "https://github.com/jahidjubaer/sarabo-client",
+        "language": "JavaScript",
+        "stars": 0,
+        "homepage": "https://sarabo-client-six.vercel.app",
+        "pushedAt": "2026-10-18T09:02:07Z"
+      }
+    ],
+    "repos": {
+      "sarabo-client": {
+        "name": "sarabo-client",
+        "url": "https://github.com/jahidjubaer/sarabo-client",
+        "language": "JavaScript",
+        "stars": 0,
+        "homepage": "https://sarabo-client-six.vercel.app",
+        "pushedAt": "2026-10-18T09:02:07Z"
+      },
+      "sarabo-server": {
+        "name": "sarabo-server",
+        "url": "https://github.com/jahidjubaer/sarabo-server",
+        "language": "JavaScript",
+        "stars": 0,
+        "homepage": "https://sarabo-server.vercel.app",
+        "pushedAt": "2026-10-16T10:19:57Z"
+      },
+      "hsc-ict-creck-client": {
+        "name": "hsc-ict-creck-client",
+        "url": "https://github.com/jahidjubaer/hsc-ict-creck-client",
+        "language": "JavaScript",
+        "stars": 0,
+        "homepage": "https://hsc-ict-creck-client.vercel.app",
+        "pushedAt": "2026-10-03T18:51:35Z"
+      },
+      "hsc-ict-creck-server": {
+        "name": "hsc-ict-creck-server",
+        "url": "https://github.com/jahidjubaer/hsc-ict-creck-server",
+        "language": "JavaScript",
+        "stars": 0,
+        "homepage": "https://hsc-ict-creck-server.vercel.app",
+        "pushedAt": "2026-10-03T16:53:26Z"
+      }
+    }
+  }
+}

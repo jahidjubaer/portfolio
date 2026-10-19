@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, Clock, Copy, FileText, Mail } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../routes/route-meta";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
 import { ButtonLink } from "../components/ui/ButtonLink";
 import { SpotlightCard } from "../components/ui/SpotlightCard";
@@ -54,11 +55,7 @@ export function ContactPage() {
   const [copied, setCopied] = useState(false);
   const copyResetTimerRef = useRef(null);
 
-  usePageMeta({
-    title: "Contact — Jahid Hasan",
-    description:
-      "Get in touch with Jahid Hasan about frontend developer, junior software engineer, MTO, or technical management roles, projects, or questions.",
-  });
+  usePageMeta(PAGE_META["/contact"]);
 
   useEffect(() => () => clearTimeout(copyResetTimerRef.current), []);
 

@@ -6,23 +6,20 @@
  * does not exist yet.
  */
 
+import { PAGE_META, SITE } from "../routes/route-meta";
+
 const rawSiteUrl = import.meta.env.VITE_SITE_URL || "http://localhost:5173";
 
 // Normalise: no trailing slash, so `${url}${path}` never doubles up.
 export const SITE_URL = rawSiteUrl.replace(/\/+$/, "");
 
 export const siteConfig = {
+  ...SITE,
   url: SITE_URL,
-  name: "Jahid Hasan",
-  shortName: "Jahid Hasan",
-  title: "Jahid Hasan — Frontend Developer & Junior Software Engineer",
-  description:
-    "Portfolio of Jahid Hasan, a CSE graduate and React-focused frontend developer building modern web products and expanding into full-stack and AI-enabled engineering.",
+  shortName: SITE.name,
+  title: PAGE_META["/"].title,
+  description: PAGE_META["/"].description,
   jobTitle: "Frontend Developer & Junior Software Engineer",
-  locale: "en_US",
-  twitterCard: "summary_large_image",
-  // A raster image — most social platforms will not render an SVG preview.
-  defaultOgImage: "/assets/og/og-default.png",
   // Verified public profiles only (mirrors client/src/data/profile.js).
   sameAs: [
     "https://github.com/jahidjubaer",

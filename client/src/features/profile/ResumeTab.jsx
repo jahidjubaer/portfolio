@@ -75,8 +75,14 @@ const STATS = [
     value: `${profile.problemSolving.platforms.split(/, | and /).length} judges`,
     label: profile.problemSolving.platforms,
   },
-  { value: String(githubSnapshot.publicRepos), label: "public repositories" },
-];
+  // Shown once a GitHub sync has counted the repositories.
+  githubSnapshot.publicRepos > 0
+    ? {
+        value: String(githubSnapshot.publicRepos),
+        label: "public repositories",
+      }
+    : null,
+].filter(Boolean);
 
 /** Resume-style overview: the default profile tab. */
 export function ResumeTab() {

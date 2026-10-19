@@ -143,7 +143,7 @@ export function RightRail() {
     <aside aria-label="Highlights" className="hidden py-5 pl-6 xl:block">
       <div className="sticky top-5 grid gap-5">
         <OpenToCard />
-        <RecentGitHubCard />
+        {githubSnapshot.recentRepos.length > 0 ? <RecentGitHubCard /> : null}
         <FindMeOn />
         <p className="px-1 text-xs text-(--color-text-muted)">
           <Link to="/resume" className="hover:underline underline-offset-4">

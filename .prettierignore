@@ -10,3 +10,6 @@ package-lock.json
 # Approved documentation is preserved verbatim; Prettier does not reformat it.
 *.md
 docs/
+
+# Written by server/scripts/export-content.js on every build.
+client/src/generated/content.json

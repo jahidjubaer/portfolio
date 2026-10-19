@@ -19,6 +19,7 @@ import * as controller from "../controllers/adminContentController.js";
  *   POST   /uploads                  { kind, filename, contentType } →
  *                                    one-time Vercel Blob client token
  *   POST   /github/sync              refresh the GitHub repo cache now
+ *   POST   /publish                  rebuild the public site (deploy hook)
  */
 export const adminRouter = Router();
 
@@ -32,3 +33,4 @@ adminRouter.put("/lists/:name/:key", controller.putItem);
 adminRouter.delete("/lists/:name/:key", controller.deleteItem);
 adminRouter.post("/uploads", controller.postUploadToken);
 adminRouter.post("/github/sync", controller.postGitHubSync);
+adminRouter.post("/publish", controller.postPublish);

@@ -1,14 +1,12 @@
 /**
- * Generates client/public/sitemap.xml from the canonical list of public,
- * indexable routes. Uses Node built-ins only (no XML library).
+ * Generates client/public/sitemap.xml and robots.txt from the public,
+ * indexable routes in src/routes/route-meta.js — the same list the
+ * prerender step writes HTML for — using the published content snapshot
+ * for project slugs, so the sitemap can never drift from the data.
  *
- * The base URL comes from VITE_SITE_URL and falls back to the local dev
- * origin, so the sitemap never hardcodes a production domain that does not
- * exist yet. Project detail routes are derived from the slugs declared in
- * src/data/projects.js so this list can never silently drift from the data.
- *
- * Error/404 states are intentionally excluded — they are marked noindex at
- * runtime and must never appear in the sitemap.
+ * The base URL comes from VITE_SITE_URL / Vercel (see site-url.js) and
+ * falls back to the local dev origin, never a made-up production domain.
+ * Error/404 states and /admin are never listed.
  *
  * Regenerate via `npm run seo:generate` (also run automatically in prebuild).
  */
@@ -16,37 +14,18 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolveSiteUrl } from "./site-url.js";
+import { getPublicRoutes } from "../src/routes/route-meta.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const CLIENT_ROOT = join(__dirname, "..");
-const PROJECTS_FILE = join(CLIENT_ROOT, "src", "data", "projects.js");
+const CLIENT_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const CONTENT_FILE = join(CLIENT_ROOT, "src", "generated", "content.json");
 const SITEMAP_FILE = join(CLIENT_ROOT, "public", "sitemap.xml");
 const ROBOTS_FILE = join(CLIENT_ROOT, "public", "robots.txt");
-const INDEX_HTML_FILE = join(CLIENT_ROOT, "index.html");
-const OG_IMAGE_PATH = "/assets/og/og-default.png";
 
-const STATIC_ROUTES = [
-  "/",
-  "/work",
-  "/learning",
-  "/beyond",
-  "/contact",
-  "/resume",
-];
-
-function readProjectSlugs() {
-  const source = readFileSync(PROJECTS_FILE, "utf8");
-  const slugs = [];
-  const pattern = /slug:\s*["']([^"']+)["']/g;
-  let match;
-  while ((match = pattern.exec(source)) !== null) {
-    slugs.push(match[1]);
-  }
-  return slugs;
-}
-
-export function buildSitemap(siteUrl, slugs) {
-  const paths = [...STATIC_ROUTES, ...slugs.map((slug) => `/work/${slug}`)];
+/**
+ * @param {string} siteUrl
+ * @param {string[]} paths site-relative, e.g. "/", "/work/sarabo"
+ */
+export function buildSitemap(siteUrl, paths) {
   const urls = paths
     .map((path) => {
       const loc = path === "/" ? siteUrl : `${siteUrl}${path}`;
@@ -61,42 +40,14 @@ export function buildRobots(siteUrl) {
   return `User-agent: *\nAllow: /\nDisallow: /admin\n\nSitemap: ${siteUrl}/sitemap.xml\n`;
 }
 
-/**
- * Rewrites index.html's static og:image/twitter:image fallback tags (read
- * by crawlers that don't execute JavaScript, before usePageMeta's
- * per-route absolute tags take over) to an absolute URL under the current
- * siteUrl. Anchored to each specific meta tag, so it never touches any
- * other relative path in the file, and is idempotent — safe to re-run
- * against either the original relative value or a previously-absolutized
- * one from an earlier build.
- */
-export function absolutizeOgImage(html, siteUrl) {
-  const absoluteOgImage = `${siteUrl}${OG_IMAGE_PATH}`;
-  return html
-    .replace(
-      /(<meta\s+property="og:image"\s+content=")[^"]*(")/,
-      `$1${absoluteOgImage}$2`,
-    )
-    .replace(
-      /(<meta\s+name="twitter:image"\s+content=")[^"]*(")/,
-      `$1${absoluteOgImage}$2`,
-    );
-}
-
 function main() {
   const siteUrl = resolveSiteUrl();
-  const slugs = readProjectSlugs();
-  writeFileSync(SITEMAP_FILE, buildSitemap(siteUrl, slugs));
+  const content = JSON.parse(readFileSync(CONTENT_FILE, "utf8"));
+  const paths = getPublicRoutes(content).map((route) => route.path);
+  writeFileSync(SITEMAP_FILE, buildSitemap(siteUrl, paths));
   writeFileSync(ROBOTS_FILE, buildRobots(siteUrl));
-
-  const indexHtml = readFileSync(INDEX_HTML_FILE, "utf8");
-  const updatedIndexHtml = absolutizeOgImage(indexHtml, siteUrl);
-  if (updatedIndexHtml !== indexHtml) {
-    writeFileSync(INDEX_HTML_FILE, updatedIndexHtml);
-  }
-
   console.log(
-    `[seo] wrote sitemap.xml (${STATIC_ROUTES.length + slugs.length} routes), robots.txt, and index.html OG image (base ${siteUrl})`,
+    `[seo] wrote sitemap.xml (${paths.length} routes) and robots.txt (base ${siteUrl})`,
   );
 }
 

@@ -5,6 +5,7 @@ import {
   getGitHubOverview,
   syncGitHubRepos,
 } from "../services/githubSyncService.js";
+import { getPublishStatus, publishSite } from "../services/publishService.js";
 
 function notFound() {
   const error = new Error("Not found");
@@ -34,6 +35,7 @@ export async function getContent(_req, res) {
     data: {
       ...content,
       repositories: await getGitHubOverview(content.projects),
+      publishing: await getPublishStatus(),
     },
   });
 }
@@ -70,5 +72,10 @@ export async function postUploadToken(req, res) {
 
 export async function postGitHubSync(_req, res) {
   const data = await syncGitHubRepos();
+  res.json({ success: true, data });
+}
+
+export async function postPublish(req, res) {
+  const data = await publishSite(req.admin);
   res.json({ success: true, data });
 }
