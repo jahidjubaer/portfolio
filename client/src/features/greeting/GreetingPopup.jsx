@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { cn } from "../../lib/cn";
 import { Mail, X } from "lucide-react";
 import { ImageWithFallback } from "../../components/media/ImageWithFallback";
 import { usePreferences } from "../preferences/usePreferences";
@@ -29,6 +30,26 @@ function markGreetingSeen() {
   } catch {
     // Without storage the greeting may simply show again next visit.
   }
+}
+
+/** @param {{ className?: string, "aria-hidden"?: "true" }} props */
+function GreetingMessage({ className, ...props }) {
+  return (
+    <div
+      {...props}
+      className={cn(
+        "rounded-2xl rounded-tl-sm bg-(--color-surface-raised) px-4 py-3",
+        className,
+      )}
+    >
+      <p className="font-semibold text-(--color-text-primary)">
+        {greeting.salutation}
+      </p>
+      <p className="mt-1 text-[0.9375rem] text-(--color-text-secondary)">
+        {greeting.message}
+      </p>
+    </div>
+  );
 }
 
 /**
@@ -119,9 +140,12 @@ export function GreetingPopup() {
             </button>
           </div>
 
-          <div aria-live="polite" className="mt-3.5">
+          {/* The message and replies keep their space while "typing", so
+              the card (pinned to the bottom) doesn't grow upwards and
+              shift its own header when they appear. */}
+          <div aria-live="polite" className="relative mt-3.5">
             {showTyping ? (
-              <p className="inline-flex items-center gap-1 rounded-2xl rounded-tl-sm bg-(--color-surface-raised) px-4 py-3">
+              <p className="absolute top-0 left-0 inline-flex items-center gap-1 rounded-2xl rounded-tl-sm bg-(--color-surface-raised) px-4 py-3">
                 <span className="sr-only">{firstName} is typing</span>
                 {[0, 1, 2].map((dot) => (
                   <motion.span
@@ -137,56 +161,55 @@ export function GreetingPopup() {
                   />
                 ))}
               </p>
+            ) : null}
+            {showTyping ? (
+              <GreetingMessage aria-hidden="true" className="invisible" />
             ) : (
               <motion.div
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl rounded-tl-sm bg-(--color-surface-raised) px-4 py-3"
               >
-                <p className="font-semibold text-(--color-text-primary)">
-                  {greeting.salutation}
-                </p>
-                <p className="mt-1 text-[0.9375rem] text-(--color-text-secondary)">
-                  {greeting.message}
-                </p>
+                <GreetingMessage />
               </motion.div>
             )}
           </div>
 
-          {showTyping ? null : (
-            <motion.ul
-              aria-label="Quick replies"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.15 }}
-              className="mt-3 flex flex-wrap gap-2"
-            >
-              {greeting.quickReplies.map((reply) => (
-                <li key={reply.subject}>
-                  <Link
-                    to={`/contact?subject=${encodeURIComponent(reply.subject)}`}
-                    onClick={() => {
-                      play("tap");
-                      close();
-                    }}
-                    className="inline-flex min-h-11 items-center rounded-full border border-(--color-accent-primary)/35 bg-(--color-accent-primary-soft) px-3.5 text-sm font-semibold text-(--color-accent-primary) transition-colors hover:border-(--color-accent-primary)"
-                  >
-                    {reply.label}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <a
-                  href={`mailto:${profile.email}`}
-                  onClick={close}
-                  className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-(--color-border) px-3.5 text-sm font-medium text-(--color-text-secondary) hover:text-(--color-text-primary)"
+          <motion.ul
+            aria-label="Quick replies"
+            aria-hidden={showTyping || undefined}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: showTyping ? 0 : 1 }}
+            transition={{ delay: showTyping ? 0 : 0.15 }}
+            className={cn(
+              "mt-3 flex flex-wrap gap-2",
+              showTyping && "invisible",
+            )}
+          >
+            {greeting.quickReplies.map((reply) => (
+              <li key={reply.subject}>
+                <Link
+                  to={`/contact?subject=${encodeURIComponent(reply.subject)}`}
+                  onClick={() => {
+                    play("tap");
+                    close();
+                  }}
+                  className="inline-flex min-h-11 items-center rounded-full border border-(--color-accent-primary)/35 bg-(--color-accent-primary-soft) px-3.5 text-sm font-semibold text-(--color-accent-primary) transition-colors hover:border-(--color-accent-primary)"
                 >
-                  <Mail size={15} aria-hidden="true" />
-                  Email me
-                </a>
+                  {reply.label}
+                </Link>
               </li>
-            </motion.ul>
-          )}
+            ))}
+            <li>
+              <a
+                href={`mailto:${profile.email}`}
+                onClick={close}
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-(--color-border) px-3.5 text-sm font-medium text-(--color-text-secondary) hover:text-(--color-text-primary)"
+              >
+                <Mail size={15} aria-hidden="true" />
+                Email me
+              </a>
+            </li>
+          </motion.ul>
         </motion.aside>
       ) : null}
     </AnimatePresence>

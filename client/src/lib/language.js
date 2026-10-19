@@ -1,7 +1,7 @@
 const BENGALI_PATTERN = /[ঀ-৿]/;
 
 /**
- * Best-effort language hint for Blogger-sourced text — Unicode script
+ * Best-effort language hint for post and photo text (often Bangla) — Unicode script
  * detection, not real language identification. Only ever flags Bengali;
  * everything else (English, empty, or unrecognized text) is left
  * undefined so the page's own lang="en" applies by default rather than

@@ -32,6 +32,9 @@ const LearningPage = lazy(() =>
 const WritingPage = lazy(() =>
   import("../pages/WritingPage").then((m) => ({ default: m.WritingPage })),
 );
+const PostPage = lazy(() =>
+  import("../pages/PostPage").then((m) => ({ default: m.PostPage })),
+);
 const CredentialsPage = lazy(() =>
   import("../pages/CredentialsPage").then((m) => ({
     default: m.CredentialsPage,
@@ -113,6 +116,7 @@ export const routeConfig = [
       { path: "credentials", element: <CredentialsPage /> },
       { path: "learning", element: <LearningPage /> },
       { path: "writing", element: <WritingPage /> },
+      { path: "writing/:slug", element: <PostPage /> },
       // /blog is an alias, not a second page — it redirects so /writing
       // stays the one canonical URL.
       { path: "blog", element: <Navigate to="/writing" replace /> },

@@ -4,8 +4,6 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import { env } from "./config/env.js";
 import { healthRouter } from "./routes/healthRoutes.js";
-import { blogRouter } from "./routes/blogRoutes.js";
-import { photographyRouter } from "./routes/photographyRoutes.js";
 import { publicContentRouter } from "./routes/publicContentRoutes.js";
 import { authRouter } from "./routes/authRoutes.js";
 import { adminRouter } from "./routes/adminRoutes.js";
@@ -35,8 +33,6 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/api", healthRouter);
-app.use("/api", blogRouter);
-app.use("/api", photographyRouter);
 app.use("/api", publicContentRouter);
 app.use("/api", authRouter);
 app.use("/api/admin", adminRouter);

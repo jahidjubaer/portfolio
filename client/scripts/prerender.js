@@ -107,7 +107,10 @@ function main() {
   for (const route of routes) {
     const file = outputFile(route.path);
     mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(file, renderRoute(template, route, siteUrl, image));
+    writeFileSync(
+      file,
+      renderRoute(template, route, siteUrl, route.image ?? image),
+    );
   }
   writeFileSync(
     join(DIST, "200.html"),

@@ -12,14 +12,14 @@ const fixture = [
     id: "street-1",
     src: "/a.webp",
     title: "A",
-    category: "street",
+    category: "Street",
     alt: "Street photography by Jahid Hasan",
   },
   {
     id: "nature-1",
     src: "/b.webp",
     title: "B",
-    category: "nature",
+    category: "Nature",
     alt: "Nature photography by Jahid Hasan",
   },
 ];
@@ -33,14 +33,14 @@ describe("PhotographyGallery", () => {
   it("shows category filters when at least two categories exist", () => {
     render(<PhotographyGallery photographs={fixture} />);
     expect(
-      screen.getByRole("group", { name: "Filter photography by category" }),
+      screen.getByRole("group", { name: "Filter photography by album" }),
     ).toBeInTheDocument();
   });
 
   it("hides category filters when only one category exists", () => {
     render(<PhotographyGallery photographs={[fixture[0]]} />);
     expect(
-      screen.queryByRole("group", { name: "Filter photography by category" }),
+      screen.queryByRole("group", { name: "Filter photography by album" }),
     ).not.toBeInTheDocument();
   });
 

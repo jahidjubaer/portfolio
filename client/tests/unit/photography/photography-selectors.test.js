@@ -1,120 +1,80 @@
 import { describe, expect, it } from "vitest";
 import {
-  getAllPhotographs,
   getAvailableCategories,
   getPhotographsByCategory,
   hasSelectableCategories,
-  getBeyondPreviewImage,
 } from "../../../src/features/photography/photography-selectors";
+import { buildPhotographs } from "../../../src/data/photography";
 
 const fixture = [
-  {
-    id: "street-1",
-    src: "/a.webp",
-    title: "A",
-    category: "street",
-    alt: "Street photography by Jahid Hasan",
-  },
-  {
-    id: "nature-1",
-    src: "/b.webp",
-    title: "B",
-    category: "nature",
-    alt: "Nature photography by Jahid Hasan",
-  },
-  {
-    id: "nature-2",
-    src: "/c.webp",
-    title: null,
-    category: "nature",
-    alt: "Nature photography by Jahid Hasan",
-  },
+  { id: "a", src: "/a.webp", title: "A", category: "Street", alt: "A" },
+  { id: "b", src: "/b.webp", title: "B", category: "Nature", alt: "B" },
+  { id: "c", src: "/c.webp", title: null, category: "Street", alt: "C" },
 ];
 
 describe("photography-selectors", () => {
-  it("returns all photographs", () => {
-    expect(getAllPhotographs(fixture)).toEqual(fixture);
+  it("lists albums in the order their first photo appears", () => {
+    expect(getAvailableCategories(fixture)).toEqual(["Street", "Nature"]);
   });
 
-  it("derives the list of available categories in fixed display order", () => {
-    expect(getAvailableCategories(fixture)).toEqual(["street", "nature"]);
-  });
-
-  it("appends categories outside the fixed enum (e.g. Blogger labels) instead of dropping them", () => {
-    const withBloggerCategories = [
-      ...fixture,
-      {
-        id: "b-1",
-        src: "/d.jpg",
-        title: "D",
-        category: "StreetPhotography",
-        alt: "",
-      },
-      { id: "b-2", src: "/e.jpg", title: "E", category: "FEATURED", alt: "" },
-    ];
-    expect(getAvailableCategories(withBloggerCategories)).toEqual([
-      "street",
-      "nature",
-      "FEATURED",
-      "StreetPhotography",
-    ]);
-  });
-
-  it("filters photographs by category", () => {
-    expect(getPhotographsByCategory("nature", fixture)).toHaveLength(2);
+  it("filters photographs by album", () => {
+    expect(getPhotographsByCategory("Street", fixture)).toHaveLength(2);
     expect(getPhotographsByCategory("all", fixture)).toHaveLength(3);
     expect(getPhotographsByCategory(null, fixture)).toHaveLength(3);
+    expect(getPhotographsByCategory("Sports", fixture)).toEqual([]);
   });
 
-  it("returns an empty list for a category with no matches", () => {
-    expect(getPhotographsByCategory("sports", fixture)).toEqual([]);
-  });
-
-  it("only enables category selection with two or more categories present", () => {
+  it("only enables album selection with two or more albums present", () => {
     expect(hasSelectableCategories(fixture)).toBe(true);
     expect(hasSelectableCategories([fixture[0]])).toBe(false);
     expect(hasSelectableCategories([])).toBe(false);
   });
+});
 
-  it("prefers a curated highlight image for the homepage preview", () => {
-    const manifest = {
-      beyond: {
-        highlights: [
-          { file: "hero.webp", src: "/assets/beyond/highlights/hero.webp" },
-        ],
-        photography: {
-          categories: { street: [{ file: "s.webp", src: "/s.webp" }] },
-        },
-      },
-    };
-    expect(getBeyondPreviewImage(manifest)).toEqual({
-      file: "hero.webp",
-      src: "/assets/beyond/highlights/hero.webp",
+describe("buildPhotographs", () => {
+  it("maps stored photos to gallery items in the admin's order", () => {
+    const image = (name) => ({
+      url: `https://store.public.blob.vercel-storage.com/photos/${name}.jpg`,
+      width: 1600,
+      height: 900,
     });
-  });
-
-  it("falls back to the first available photograph when there is no highlight", () => {
-    const manifest = {
-      beyond: {
-        highlights: [],
-        photography: {
-          categories: {
-            nature: [],
-            street: [{ file: "s.webp", src: "/s.webp" }],
-          },
+    expect(
+      buildPhotographs([
+        {
+          id: "two",
+          order: 1,
+          image: image("two"),
+          alt: "Two",
+          album: "Nature",
         },
+        {
+          id: "one",
+          order: 0,
+          image: image("one"),
+          alt: "A boat at dusk",
+          caption: "Jadukata River",
+          album: "Photography",
+        },
+      ]),
+    ).toEqual([
+      {
+        id: "one",
+        src: image("one").url,
+        width: 1600,
+        height: 900,
+        title: "Jadukata River",
+        category: "Photography",
+        alt: "A boat at dusk",
       },
-    };
-    expect(getBeyondPreviewImage(manifest)).toEqual({
-      file: "s.webp",
-      src: "/s.webp",
-    });
-  });
-
-  it("returns null when no Beyond image exists at all", () => {
-    const manifest = {
-      beyond: { highlights: [], photography: { categories: {} } },
-    };
-    expect(getBeyondPreviewImage(manifest)).toBeNull();
+      {
+        id: "two",
+        src: image("two").url,
+        width: 1600,
+        height: 900,
+        title: null,
+        category: "Nature",
+        alt: "Two",
+      },
+    ]);
   });
 });

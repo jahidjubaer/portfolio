@@ -1,58 +1,36 @@
-import { assetManifest } from "../generated/asset-manifest";
+import { photos } from "../generated/content.json";
 
 /**
- * Verified photography categories — see CONTENT_CHECKLIST.md section 11.
- * No photograph currently has verified location, year, or caption
- * metadata, so those fields are intentionally omitted rather than
- * guessed. Order here also drives display order in the gallery/filter UI.
+ * @typedef {{
+ *   id: string,
+ *   src: string,
+ *   width: number,
+ *   height: number,
+ *   title: string | null,
+ *   category: string,
+ *   alt: string,
+ * }} Photograph
  */
-export const PHOTOGRAPHY_CATEGORY_LABELS = {
-  street: "Street",
-  nature: "Nature",
-  campus: "Campus",
-  sports: "Sports",
-  events: "Events",
-  uncategorized: "Uncategorized",
-};
-
-function titleFromFilename(filename) {
-  const base = filename.replace(/\.[^.]+$/, "");
-  const cleaned = base.replace(/[-_]+/g, " ").trim();
-  if (!cleaned) return null;
-  return cleaned.replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
-function altForCategory(category) {
-  const label = PHOTOGRAPHY_CATEGORY_LABELS[category];
-  return label && category !== "uncategorized"
-    ? `${label} photography by Jahid Hasan`
-    : "Photography work by Jahid Hasan";
-}
 
 /**
- * Builds the flat photograph list the gallery renders from, sourced only
- * from files the asset manifest actually detected. Never invents a title,
- * location, year, or caption — a cleaned filename is used as a neutral
- * title fallback only.
- * @param {typeof assetManifest} manifest
- * @returns {Array<{ id: string, src: string, title: string | null, category: string, alt: string }>}
+ * Photographs for the Beyond gallery, edited in the admin panel (Photos)
+ * and read from the published content snapshot, in the admin's order.
+ * The album name is the gallery's filter category.
+ * @param {Array<{ id: string, order: number, image: { url: string, width: number, height: number }, alt: string, caption?: string, album: string }>} list
+ * @returns {Photograph[]}
  */
-export function buildPhotographs(manifest = assetManifest) {
-  const categories = manifest.beyond?.photography?.categories ?? {};
-  const manifestPhotos = Object.keys(categories).flatMap((category) =>
-    categories[category].map((image, index) => ({
-      id: `${category}-${index + 1}`,
-      src: image.src,
-      title: titleFromFilename(image.file),
-      category,
-      alt: altForCategory(category),
-    })),
-  );
-
-  // No fallback content: when the manifest has no photographs, the gallery
-  // shows its honest empty state. Stock or sample images must never stand
-  // in for Jahid's own work — see CONTENT_CHECKLIST.md section 11.
-  return manifestPhotos;
+export function buildPhotographs(list = photos) {
+  return [...list]
+    .sort((a, b) => a.order - b.order)
+    .map((photo) => ({
+      id: photo.id,
+      src: photo.image.url,
+      width: photo.image.width,
+      height: photo.image.height,
+      title: photo.caption ?? null,
+      category: photo.album,
+      alt: photo.alt,
+    }));
 }
 
 export const photographs = buildPhotographs();

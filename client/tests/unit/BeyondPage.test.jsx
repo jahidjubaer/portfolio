@@ -4,24 +4,24 @@ import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { leadershipRoles } from "../../src/data/leadership";
 
-const getPhotographyPhotos = vi.fn();
-vi.mock("../../src/lib/api", () => ({
-  getPhotographyPhotos: (...args) => getPhotographyPhotos(...args),
+// The gallery reads the published snapshot; each test sets what's in it.
+const gallery = vi.hoisted(() => ({ photographs: [] }));
+vi.mock("../../src/data/photography", () => ({
+  get photographs() {
+    return gallery.photographs;
+  },
 }));
 
 import { routeConfig } from "../../src/routes/route-config";
 
-const BLOGGER_PHOTO = {
-  id: "post-1-0",
-  src: "https://blogger.googleusercontent.com/img/b/abc/s1600/photo.jpg",
-  thumbnail: "https://blogger.googleusercontent.com/img/b/abc/s500/photo.jpg",
+const PHOTO = {
+  id: "2026-06-blue-sky-nature",
+  src: "https://store.public.blob.vercel-storage.com/photos/blue-sky.jpg",
+  width: 1600,
+  height: 1067,
   title: "Blue sky Nature",
   alt: "Blue sky Nature",
-  caption: "Blue sky Nature",
   category: "Nature",
-  postUrl:
-    "https://jahid-thecapturecrew.blogspot.com/2026/06/blue-sky-nature.html",
-  publishedAt: "2026-06-30T12:12:12.987-07:00",
 };
 
 function renderBeyond() {
@@ -37,12 +37,7 @@ function renderBeyond() {
 
 describe("BeyondPage", () => {
   beforeEach(() => {
-    // Matches the real unconfigured/no-local-fallback production default —
-    // every pre-existing test below relies on this exact outcome ("being
-    // prepared", not an error) unless it overrides the mock itself.
-    getPhotographyPhotos
-      .mockReset()
-      .mockResolvedValue({ success: true, configured: false, photos: [] });
+    gallery.photographs = [];
   });
 
   it("renders exactly one H1", async () => {
@@ -63,7 +58,7 @@ describe("BeyondPage", () => {
     renderBeyond();
     await screen.findByRole("heading", { level: 1 });
     expect(
-      screen.queryByRole("group", { name: "Filter photography by category" }),
+      screen.queryByRole("group", { name: "Filter photography by album" }),
     ).not.toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
@@ -103,18 +98,14 @@ describe("BeyondPage", () => {
     ).toHaveAttribute("href", "/contact");
   });
 
-  describe("Blogger photography", () => {
-    it("renders real Blogger photographs as a gallery instead of the empty state", async () => {
-      getPhotographyPhotos.mockResolvedValue({
-        success: true,
-        configured: true,
-        photos: [BLOGGER_PHOTO],
-      });
+  describe("photography", () => {
+    it("shows the published photographs instead of the empty state", async () => {
+      gallery.photographs = [PHOTO];
       renderBeyond();
 
-      expect(
-        await screen.findByRole("img", { name: BLOGGER_PHOTO.alt }),
-      ).toBeInTheDocument();
+      const image = await screen.findByRole("img", { name: PHOTO.alt });
+      expect(image).toHaveAttribute("src", PHOTO.src);
+      expect(image).toHaveAttribute("width", "1600");
       expect(
         screen.queryByText(
           "A curated photography selection is being prepared.",
@@ -122,60 +113,16 @@ describe("BeyondPage", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("opens the viewer with a working link back to the original Blogger post", async () => {
-      getPhotographyPhotos.mockResolvedValue({
-        success: true,
-        configured: true,
-        photos: [BLOGGER_PHOTO],
-      });
+    it("opens the viewer with the caption and no link off the site", async () => {
+      gallery.photographs = [PHOTO];
       const user = userEvent.setup();
       renderBeyond();
 
-      await user.click(
-        await screen.findByRole("img", { name: BLOGGER_PHOTO.alt }),
-      );
+      await user.click(await screen.findByRole("img", { name: PHOTO.alt }));
 
-      const originalPostLink = await screen.findByRole("link", {
-        name: /view original post/i,
-      });
-      expect(originalPostLink).toHaveAttribute("href", BLOGGER_PHOTO.postUrl);
-      expect(originalPostLink).toHaveAttribute("target", "_blank");
-      expect(originalPostLink).toHaveAttribute("rel", "noopener noreferrer");
-    });
-
-    it("shows a loading status before Blogger photography resolves", async () => {
-      getPhotographyPhotos.mockReturnValue(new Promise(() => {})); // never resolves
-      renderBeyond();
-
-      await screen.findByRole("heading", { level: 1 });
-      expect(screen.getByRole("status")).toHaveTextContent(
-        "Loading photography…",
-      );
-    });
-
-    it("shows a retryable error state on upstream failure, then recovers", async () => {
-      getPhotographyPhotos.mockResolvedValue({
-        success: false,
-        message: "Photography couldn't be loaded right now.",
-      });
-      const user = userEvent.setup();
-      renderBeyond();
-
-      const alert = await screen.findByRole("alert");
-      expect(alert).toHaveTextContent(
-        "Photography couldn't be loaded right now.",
-      );
-
-      getPhotographyPhotos.mockResolvedValue({
-        success: true,
-        configured: true,
-        photos: [BLOGGER_PHOTO],
-      });
-      await user.click(screen.getByRole("button", { name: "Retry" }));
-
-      expect(
-        await screen.findByRole("img", { name: BLOGGER_PHOTO.alt }),
-      ).toBeInTheDocument();
+      const viewer = await screen.findByRole("dialog");
+      expect(viewer).toHaveTextContent("Blue sky Nature");
+      expect(screen.queryByRole("link", { name: /original post/i })).toBeNull();
     });
   });
 });

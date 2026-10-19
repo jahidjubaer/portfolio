@@ -16,13 +16,13 @@ function notFound() {
 // Only known collection names reach the service layer.
 function singletonName(req) {
   const { name } = req.params;
-  if (!(name in admin.SINGLETON_SCHEMAS)) throw notFound();
+  if (!Object.hasOwn(admin.SINGLETON_SCHEMAS, name)) throw notFound();
   return name;
 }
 
 function listName(req) {
   const { name } = req.params;
-  if (!(name in admin.LIST_SCHEMAS)) throw notFound();
+  if (!Object.hasOwn(admin.LIST_SCHEMAS, name)) throw notFound();
   return name;
 }
 

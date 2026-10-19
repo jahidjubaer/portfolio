@@ -37,7 +37,7 @@ export const PAGE_META = {
   "/writing": {
     title: "Writing — Jahid Hasan",
     description:
-      "An index of Jahid Hasan's learning notes and technical writing — engineering notes, project lessons, and problem-solving reflections, published on Blogger.",
+      "Jahid Hasan's learning notes and technical writing, mostly in Bangla: JavaScript from the basics, and tools he uses along the way.",
   },
   "/beyond": {
     title: "Beyond the Code — Jahid Hasan",
@@ -94,6 +94,18 @@ export function projectMeta(project) {
 }
 
 /**
+ * @param {{ title: string, excerpt: string, cover?: { url: string, width: number, height: number } }} post
+ */
+export function postMeta(post) {
+  return {
+    title: `${post.title} — Jahid Hasan`,
+    description: post.excerpt,
+    type: "article",
+    ...(post.cover ? { image: post.cover } : {}),
+  };
+}
+
+/**
  * Every public, indexable route with its head metadata, for the
  * prerender step and the sitemap.
  * @param {{ profile: { resume: { url: string | null } }, projects: Array<{ slug: string, seo: { title: string, description: string } }> }} content
@@ -110,6 +122,10 @@ export function getPublicRoutes(content) {
     ...content.projects.map((project) => ({
       path: `/work/${project.slug}`,
       ...projectMeta(project),
+    })),
+    ...(content.posts ?? []).map((post) => ({
+      path: `/writing/${post.slug}`,
+      ...postMeta(post),
     })),
   ];
 }

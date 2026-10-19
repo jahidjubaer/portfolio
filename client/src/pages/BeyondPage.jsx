@@ -1,5 +1,4 @@
 import {
-  ArrowUpRight,
   Camera,
   Heart,
   Languages,
@@ -11,19 +10,12 @@ import { usePageMeta } from "../hooks/usePageMeta";
 import { PAGE_META } from "../routes/route-meta";
 import { Container } from "../components/ui/Container";
 import { ButtonLink } from "../components/ui/ButtonLink";
-import { TextLink } from "../components/ui/TextLink";
-import { VisuallyHidden } from "../components/ui/VisuallyHidden";
 import { Surface } from "../components/ui/Surface";
 import { Tag } from "../components/ui/Tag";
 import { Divider } from "../components/ui/Divider";
 import { Reveal } from "../features/motion/Reveal";
 import { PhotographyGallery } from "../features/photography/PhotographyGallery";
-import { PhotographyGalleryState } from "../features/photography/PhotographyGalleryState";
-import { usePhotographyPhotos } from "../features/photography/usePhotographyPhotos";
-import {
-  PHOTOGRAPHY_BLOG_URL,
-  isPhotographyBlogConfigured,
-} from "../config/photographyBlog";
+import { photographs } from "../data/photography";
 import { leadershipRoles } from "../data/leadership";
 import {
   interests,
@@ -35,13 +27,6 @@ import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
 
 export function BeyondPage() {
   usePageMeta(PAGE_META["/beyond"]);
-
-  const {
-    status: photographyStatus,
-    photographs,
-    message: photographyMessage,
-    retry: retryPhotography,
-  } = usePhotographyPhotos();
 
   return (
     <>
@@ -74,29 +59,9 @@ export function BeyondPage() {
                 Photography Showcase
               </h2>
             </div>
-            {isPhotographyBlogConfigured ? (
-              <TextLink
-                href={PHOTOGRAPHY_BLOG_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="body-sm inline-flex items-center gap-1 font-medium"
-              >
-                View complete archive
-                <ArrowUpRight aria-hidden="true" size={14} />
-                <VisuallyHidden>
-                  (opens in a new tab, on Blogger)
-                </VisuallyHidden>
-              </TextLink>
-            ) : null}
           </div>
 
-          {photographyStatus === "loading" || photographyStatus === "error" ? (
-            <PhotographyGalleryState
-              status={photographyStatus}
-              message={photographyMessage}
-              onRetry={retryPhotography}
-            />
-          ) : photographs.length > 0 ? (
+          {photographs.length > 0 ? (
             <div className="mt-6">
               <PhotographyGallery photographs={photographs} />
             </div>

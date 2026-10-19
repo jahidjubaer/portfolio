@@ -1,5 +1,4 @@
 import { cn } from "../../lib/cn";
-import { PHOTOGRAPHY_CATEGORY_LABELS } from "../../data/photography";
 
 /**
  * Category filter chips. Active state is never color-only — it also
@@ -16,15 +15,12 @@ export function PhotographyFilter({ categories, activeCategory, onChange }) {
   return (
     <div
       role="group"
-      aria-label="Filter photography by category"
+      aria-label="Filter photography by album"
       className="flex flex-wrap gap-2"
     >
       {options.map((category) => {
         const isActive = activeCategory === category;
-        const label =
-          category === "all"
-            ? "All"
-            : (PHOTOGRAPHY_CATEGORY_LABELS[category] ?? category);
+        const label = category === "all" ? "All" : category;
 
         return (
           <button

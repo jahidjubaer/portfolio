@@ -78,6 +78,15 @@ describe("admin content API", () => {
   it("rejects unknown collection names", async () => {
     const response = await as("put", "/api/admin/singletons/users").send({});
     expect(response.status).toBe(404);
+    // Names inherited by every object aren't collections either.
+    for (const name of ["constructor", "toString", "__proto__"]) {
+      expect(
+        (await as("put", `/api/admin/singletons/${name}`).send({})).status,
+      ).toBe(404);
+      expect(
+        (await as("post", `/api/admin/lists/${name}`).send({})).status,
+      ).toBe(404);
+    }
   });
 
   it("creates, updates, and deletes a certification", async () => {

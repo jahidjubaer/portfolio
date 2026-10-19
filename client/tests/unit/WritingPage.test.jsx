@@ -1,263 +1,160 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
+import { createMemoryRouter, RouterProvider } from "react-router-dom";
 
-const getLearningPosts = vi.fn();
-vi.mock("../../src/lib/api", () => ({
-  getLearningPosts: (...args) => getLearningPosts(...args),
-}));
+// Posts come from the published snapshot; each test sets what's in it.
+const store = vi.hoisted(() => ({ posts: [] }));
+vi.mock("../../src/data/posts", async (importOriginal) => {
+  const original = await importOriginal();
+  return {
+    ...original,
+    get posts() {
+      return original.sortPosts(store.posts);
+    },
+    getPost: (slug) => store.posts.find((post) => post.slug === slug) ?? null,
+  };
+});
 
-import { WritingPage } from "../../src/pages/WritingPage";
+import { routeConfig } from "../../src/routes/route-config";
 
-const POST_A = {
-  id: "post-a",
-  title: "Learning React Server Components",
-  url: "https://jahid-notes.blogspot.com/post-a.html",
-  publishedAt: "2026-01-15T10:00:00.000-08:00",
-  updatedAt: "2026-01-15T10:00:00.000-08:00",
-  excerpt: "A short excerpt about server components.",
-  thumbnail: "https://blogger.googleusercontent.com/img/a/s640/photo.jpg",
-  labels: ["React", "Notes"],
+const COVER = {
+  url: "https://store.public.blob.vercel-storage.com/photos/cover.png",
+  width: 640,
+  height: 420,
 };
 
-const POST_B = {
-  id: "post-b",
-  title: "Two Weeks With TypeScript",
-  url: "https://jahid-notes.blogspot.com/post-b.html",
-  publishedAt: "2026-02-01T10:00:00.000-08:00",
-  updatedAt: null,
-  excerpt: "What I learned trying TypeScript on a side project.",
-  thumbnail: null,
-  labels: ["TypeScript"],
+const NAPKIN = {
+  slug: "napkin-ai-presentations",
+  order: 1,
+  title: "প্রেজেন্টেশন তৈরির সমাধান ন্যাপকিন - Napkin",
+  excerpt: "আজকে আমরা জানবো ন্যাপকিন সম্পর্কে।",
+  body: "আজকে আমরা জানবো **ন্যাপকিন** সম্পর্কে।\n\nPrevious: [part one](/writing/javascript-introduction)\n\n```\nnode first.js\n```",
+  tags: ["এআই", "টুলস"],
+  status: "published",
+  publishedAt: "2025-08-25",
+  cover: COVER,
+  coverAlt: "Napkin's home page",
 };
 
-function renderPage() {
-  return render(
-    <MemoryRouter>
-      <WritingPage />
-    </MemoryRouter>,
-  );
+const INTRO = {
+  slug: "javascript-introduction",
+  order: 0,
+  title: "JavaScript introduction",
+  excerpt: "Starting a JavaScript series.",
+  body: "Why JavaScript.",
+  tags: ["JavaScript"],
+  status: "published",
+  publishedAt: "2025-09-12",
+};
+
+/** Titles of the post cards, in page order. */
+function postTitles() {
+  return screen
+    .getAllByRole("link")
+    .filter((link) => link.getAttribute("href").startsWith("/writing/"))
+    .map((link) => link.textContent);
 }
 
+function renderAt(path) {
+  const router = createMemoryRouter(routeConfig, { initialEntries: [path] });
+  render(<RouterProvider router={router} />);
+  return router;
+}
+
+beforeEach(() => {
+  store.posts = [NAPKIN, INTRO];
+});
+
 describe("WritingPage", () => {
-  beforeEach(() => {
-    getLearningPosts.mockReset();
-  });
+  it("lists posts newest first, linking to their pages on this site", async () => {
+    renderAt("/writing");
+    expect(await screen.findAllByRole("heading", { level: 1 })).toHaveLength(1);
 
-  it("renders the route with its single H1", async () => {
-    getLearningPosts.mockResolvedValue({
-      success: true,
-      configured: true,
-      posts: [],
-    });
-    renderPage();
+    expect(postTitles()).toEqual([INTRO.title, NAPKIN.title]);
 
-    expect(
-      screen.getByRole("heading", { level: 1, name: "Blog / Learning" }),
-    ).toBeInTheDocument();
-  });
+    const link = screen.getByRole("link", { name: NAPKIN.title });
+    expect(link).toHaveAttribute("href", "/writing/napkin-ai-presentations");
+    expect(link).not.toHaveAttribute("target");
+    expect(link).toHaveAttribute("lang", "bn");
 
-  it("shows an accessible loading status before posts resolve", () => {
-    getLearningPosts.mockReturnValue(new Promise(() => {})); // never resolves
-    renderPage();
-
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Loading learning notes…",
+    const card = link.closest("article");
+    expect(within(card).getByText("August 25, 2025")).toHaveAttribute(
+      "datetime",
+      "2025-08-25",
     );
+    expect(screen.queryByText(/Blogger/)).toBeNull();
   });
 
-  it("renders posts once loaded, including date, title, excerpt, and a label", async () => {
-    // A single label here (rather than POST_A's usual two) keeps this test
-    // focused on card content — two-or-more *distinct* labels across the
-    // post list also renders the separate label-filter row, which is
-    // covered in its own tests below.
-    getLearningPosts.mockResolvedValue({
-      success: true,
-      configured: true,
-      posts: [{ ...POST_A, labels: ["React"] }],
-    });
-    renderPage();
-
-    expect(
-      await screen.findByRole("heading", {
-        level: 2,
-        name: "Learning React Server Components",
-      }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("A short excerpt about server components."),
-    ).toBeInTheDocument();
-    expect(screen.getByText("React")).toBeInTheDocument();
-    const time = screen.getByText("January 15, 2026");
-    expect(time.tagName).toBe("TIME");
-    expect(time).toHaveAttribute("dateTime", POST_A.publishedAt);
-  });
-
-  it("shows the empty state — not an error — when Blogger has zero posts", async () => {
-    getLearningPosts.mockResolvedValue({
-      success: true,
-      configured: true,
-      posts: [],
-    });
-    renderPage();
-
-    expect(
-      await screen.findByText("No published notes yet."),
-    ).toBeInTheDocument();
-    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-  });
-
-  it("shows the configuration-missing state without developer terminology", async () => {
-    getLearningPosts.mockResolvedValue({
-      success: true,
-      configured: false,
-      posts: [],
-    });
-    renderPage();
-
-    expect(
-      await screen.findByText("Learning notes are being prepared."),
-    ).toBeInTheDocument();
-    expect(screen.queryByText(/VITE_BLOGGER_BLOG_URL/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/not configured/i)).not.toBeInTheDocument();
-  });
-
-  it("shows a retryable error state on upstream failure, without exposing raw details", async () => {
-    getLearningPosts.mockResolvedValue({
-      success: false,
-      message: "Learning posts couldn't be loaded right now.",
-    });
-    renderPage();
-
-    const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent(
-      "Learning posts couldn't be loaded right now.",
-    );
-    expect(screen.queryByText(/502/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Error:/)).not.toBeInTheDocument();
-
+  it("filters by tag", async () => {
     const user = userEvent.setup();
-    getLearningPosts.mockResolvedValue({
-      success: true,
-      configured: true,
-      posts: [POST_A],
-    });
-    await user.click(screen.getByRole("button", { name: "Retry" }));
-
+    renderAt("/writing");
+    const filters = await screen.findByRole("group", { name: "Filter by tag" });
+    await user.click(
+      within(filters).getByRole("button", { name: "JavaScript" }),
+    );
+    expect(postTitles()).toEqual([INTRO.title]);
     expect(
-      await screen.findByRole("heading", {
-        level: 2,
-        name: "Learning React Server Components",
-      }),
-    ).toBeInTheDocument();
-    expect(getLearningPosts).toHaveBeenCalledTimes(2);
+      within(filters).getByRole("button", { name: "JavaScript" }),
+    ).toHaveAttribute("aria-pressed", "true");
   });
 
-  it("opens article links in a new tab with rel=noopener noreferrer", async () => {
-    getLearningPosts.mockResolvedValue({
-      success: true,
-      configured: true,
-      posts: [POST_A],
-    });
-    renderPage();
-
-    const titleLink = await screen.findByRole("link", {
-      name: "Learning React Server Components",
-    });
-    expect(titleLink).toHaveAttribute("href", POST_A.url);
-    expect(titleLink).toHaveAttribute("target", "_blank");
-    expect(titleLink).toHaveAttribute("rel", "noopener noreferrer");
+  it("shows an empty state when nothing is published", async () => {
+    store.posts = [];
+    renderAt("/writing");
+    expect(await screen.findByText(/No posts yet/)).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "Filter by tag" })).toBeNull();
   });
+});
 
-  it("falls back to the learning placeholder when a post has no thumbnail", async () => {
-    getLearningPosts.mockResolvedValue({
-      success: true,
-      configured: true,
-      posts: [POST_B],
-    });
-    renderPage();
+describe("PostPage", () => {
+  it("renders the post with its cover, Markdown body, and internal links", async () => {
+    renderAt("/writing/napkin-ai-presentations");
+    const title = await screen.findByRole("heading", { level: 1 });
+    expect(title).toHaveTextContent(NAPKIN.title);
+    expect(title.closest("article")).toHaveAttribute("lang", "bn");
 
-    await screen.findByRole("heading", { level: 2, name: POST_B.title });
-    expect(screen.getByRole("img")).toHaveAttribute(
-      "src",
-      "/assets/placeholders/learning-placeholder.svg",
+    const cover = screen.getByRole("img", { name: "Napkin's home page" });
+    expect(cover).toHaveAttribute("width", "640");
+    expect(screen.getByText("ন্যাপকিন").tagName).toBe("STRONG");
+    expect(screen.getByText("node first.js").closest("pre")).not.toBeNull();
+    expect(screen.getByRole("link", { name: "part one" })).toHaveAttribute(
+      "href",
+      "/writing/javascript-introduction",
+    );
+    await waitFor(() =>
+      expect(document.title).toBe(`${NAPKIN.title} — Jahid Hasan`),
     );
   });
 
-  it("shows a label filter only when two or more distinct labels exist", async () => {
-    getLearningPosts.mockResolvedValue({
-      success: true,
-      configured: true,
-      posts: [POST_A, POST_B],
-    });
-    renderPage();
+  it("doesn't repeat a cover that also appears in the text", async () => {
+    store.posts = [
+      {
+        ...INTRO,
+        cover: COVER,
+        coverAlt: "Series cover",
+        body: `Intro.
 
-    await screen.findByRole("heading", { level: 2, name: POST_A.title });
-    expect(
-      screen.getByRole("group", { name: "Filter by label" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "TypeScript" }),
-    ).toBeInTheDocument();
-  });
-
-  it("marks a Bengali filter label with lang='bn' but leaves 'All' unmarked", async () => {
-    getLearningPosts.mockResolvedValue({
-      success: true,
-      configured: true,
-      posts: [
-        { ...POST_A, labels: ["জাভা স্ক্রিপ্ট"] },
-        { ...POST_B, labels: ["TypeScript"] },
-      ],
-    });
-    renderPage();
-
-    await screen.findByRole("heading", { level: 2, name: POST_A.title });
-    expect(screen.getByRole("button", { name: "All" })).not.toHaveAttribute(
-      "lang",
+![](${COVER.url})`,
+      },
+    ];
+    renderAt("/writing/javascript-introduction");
+    await screen.findByRole("heading", { level: 1 });
+    expect(screen.queryByRole("img", { name: "Series cover" })).toBeNull();
+    expect(document.querySelectorAll(`img[src="${COVER.url}"]`)).toHaveLength(
+      1,
     );
-    expect(
-      screen.getByRole("button", { name: "জাভা স্ক্রিপ্ট" }),
-    ).toHaveAttribute("lang", "bn");
-    expect(
-      screen.getByRole("button", { name: "TypeScript" }),
-    ).not.toHaveAttribute("lang");
   });
 
-  it("hides the label filter when fewer than two distinct labels exist", async () => {
-    getLearningPosts.mockResolvedValue({
-      success: true,
-      configured: true,
-      posts: [{ ...POST_A, labels: ["React"] }],
-    });
-    renderPage();
-
-    await screen.findByRole("heading", { level: 2, name: POST_A.title });
+  it("says when a post doesn't exist, and keeps it out of search", async () => {
+    renderAt("/writing/missing");
     expect(
-      screen.queryByRole("group", { name: "Filter by label" }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("filters posts by the selected label", async () => {
-    getLearningPosts.mockResolvedValue({
-      success: true,
-      configured: true,
-      posts: [POST_A, POST_B],
-    });
-    const user = userEvent.setup();
-    renderPage();
-
-    await screen.findByRole("heading", { level: 2, name: POST_A.title });
-    await user.click(screen.getByRole("button", { name: "TypeScript" }));
-
-    expect(
-      screen.getByRole("heading", { level: 2, name: POST_B.title }),
+      await screen.findByRole("heading", { level: 1, name: "Post not found" }),
     ).toBeInTheDocument();
-    await waitFor(() => {
-      expect(
-        screen.queryByRole("heading", { level: 2, name: POST_A.title }),
-      ).not.toBeInTheDocument();
-    });
+    expect(
+      document.head
+        .querySelector('meta[name="robots"]')
+        .getAttribute("content"),
+    ).toBe("noindex, follow");
   });
 });

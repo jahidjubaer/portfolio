@@ -361,17 +361,6 @@ test("Resume download action is visible on a mobile viewport", async ({
 test("Beyond page renders its sections on a mobile viewport", async ({
   page,
 }) => {
-  // /api/photography doesn't exist in this static-preview e2e server (no
-  // Express backend) — mock the same "not configured" shape production
-  // returns before a Photography Blogger URL is set.
-  await page.route("**/api/photography", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ success: true, configured: false, photos: [] }),
-    });
-  });
-
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/beyond");
 
@@ -380,8 +369,5 @@ test("Beyond page renders its sections on a mobile viewport", async ({
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { level: 2, name: "University Club Leadership" }),
-  ).toBeVisible();
-  await expect(
-    page.getByText("A curated photography selection is being prepared."),
   ).toBeVisible();
 });

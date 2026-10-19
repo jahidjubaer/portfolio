@@ -71,7 +71,7 @@ export function PhotographyGallery({ photographs }) {
 
       <StaggerGroup
         as="ul"
-        className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3"
       >
         {visible.map((photo) => (
           <StaggerItem key={photo.id} as="li">
