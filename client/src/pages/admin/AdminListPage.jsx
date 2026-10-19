@@ -1,20 +1,33 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  GripVertical,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
 import { useAdmin } from "../../features/admin/admin-context";
 import { LISTS } from "../../features/admin/admin-collections";
 import { deleteListItem, reorderList } from "../../features/admin/admin-api";
 import { Button } from "../../components/ui/Button";
 import { ButtonLink } from "../../components/ui/ButtonLink";
 import { AdminPageHeader } from "./AdminPageHeader";
+import { INPUT } from "../../features/admin/form/MediaFields";
+import { cn } from "../../lib/cn";
+
+// Below this many items a search box is just clutter.
+const SEARCH_FROM = 7;
 
 const ICON_BUTTON =
   "inline-grid size-10 place-items-center rounded-(--radius-sm) border border-(--color-border) text-(--color-text-secondary) hover:border-(--color-border-strong) hover:text-(--color-text-primary) disabled:opacity-35";
 
 /**
- * A list section: items in display order with move up/down (unless the
- * list sorts itself, like posts by date), edit, and delete (confirmed
- * inline).
+ * A list section: items in display order with drag-and-drop and move
+ * up/down buttons (unless the list sorts itself, like posts by date), a
+ * search box for long lists, edit, and delete (confirmed inline).
  * @param {{ name: keyof typeof LISTS }} props
  */
 export function AdminListPage({ name }) {
@@ -27,6 +40,20 @@ export function AdminListPage({ name }) {
   const [confirming, setConfirming] = useState(null);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
+  const [query, setQuery] = useState("");
+  const [dragFrom, setDragFrom] = useState(null);
+  const [dragOver, setDragOver] = useState(null);
+  const searchId = useId();
+  const needle = query.trim().toLowerCase();
+  const visible = needle
+    ? items.filter((item) =>
+        `${config.titleOf(item, content)} ${config.subtitleOf(item, content)}`
+          .toLowerCase()
+          .includes(needle),
+      )
+    : items;
+  // Reordering a filtered list would be ambiguous, so it waits.
+  const canReorder = sortable && !needle;
 
   async function run(action, message) {
     setBusy(true);
@@ -42,11 +69,22 @@ export function AdminListPage({ name }) {
     }
   }
 
-  function move(index, offset) {
+  function moveTo(from, to) {
+    if (from === to) return;
     const keys = items.map((item) => item[config.keyField]);
-    const [key] = keys.splice(index, 1);
-    keys.splice(index + offset, 0, key);
+    const [key] = keys.splice(from, 1);
+    keys.splice(to, 0, key);
     run(() => reorderList(name, keys), "Order saved.");
+  }
+
+  function move(index, offset) {
+    moveTo(index, index + offset);
+  }
+
+  function handleDrop(index) {
+    if (dragFrom !== null) moveTo(dragFrom, index);
+    setDragFrom(null);
+    setDragOver(null);
   }
 
   return (
@@ -70,24 +108,80 @@ export function AdminListPage({ name }) {
       >
         {status}
       </p>
+      {items.length >= SEARCH_FROM ? (
+        <div className="relative mb-3">
+          <label htmlFor={searchId} className="sr-only">
+            Search {config.label.toLowerCase()}
+          </label>
+          <Search
+            size={16}
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-(--color-text-muted)"
+          />
+          <input
+            id={searchId}
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={`Search ${config.label.toLowerCase()}…`}
+            className={cn(INPUT, "pl-9")}
+          />
+        </div>
+      ) : null}
+      {needle && visible.length === 0 ? (
+        <p className="text-sm text-(--color-text-secondary)">
+          Nothing matches “{query}”.
+        </p>
+      ) : null}
       {items.length === 0 ? (
         <p className="rounded-(--radius-lg) border border-dashed border-(--color-border-strong) p-6 text-center text-(--color-text-secondary)">
           No {config.label.toLowerCase()} yet.
         </p>
       ) : (
         <ol className="grid gap-2">
-          {items.map((item, index) => {
+          {visible.map((item, index) => {
             const key = item[config.keyField];
-            const title = config.titleOf(item);
+            const title = config.titleOf(item, content);
             const thumbnail = config.thumbnailOf?.(item);
             return (
               <li
                 key={key}
-                className="flex flex-wrap items-center gap-3 rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-3 sm:flex-nowrap"
+                draggable={canReorder && !busy}
+                onDragStart={(event) => {
+                  event.dataTransfer.effectAllowed = "move";
+                  setDragFrom(index);
+                }}
+                onDragOver={(event) => {
+                  if (dragFrom === null) return;
+                  event.preventDefault();
+                  setDragOver(index);
+                }}
+                onDragEnd={() => {
+                  setDragFrom(null);
+                  setDragOver(null);
+                }}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  handleDrop(index);
+                }}
+                className={cn(
+                  "flex flex-wrap items-center gap-3 rounded-(--radius-lg) border bg-(--color-surface) p-3 transition-colors sm:flex-nowrap",
+                  dragOver === index && dragFrom !== index
+                    ? "border-(--color-accent-primary)"
+                    : "border-(--color-border)",
+                  dragFrom === index && "opacity-50",
+                )}
               >
-                {sortable ? (
-                  <span className="mono-meta w-6 text-center text-(--color-text-muted)">
-                    {index + 1}
+                {canReorder ? (
+                  <span
+                    aria-hidden="true"
+                    title="Drag to reorder"
+                    className="flex cursor-grab items-center gap-1 text-(--color-text-muted) active:cursor-grabbing"
+                  >
+                    <GripVertical size={16} />
+                    <span className="mono-meta w-5 text-center">
+                      {index + 1}
+                    </span>
                   </span>
                 ) : null}
                 {thumbnail ? (
@@ -105,7 +199,7 @@ export function AdminListPage({ name }) {
                     {title}
                   </p>
                   <p className="truncate text-sm text-(--color-text-muted)">
-                    {config.subtitleOf(item)}
+                    {config.subtitleOf(item, content)}
                   </p>
                 </div>
                 {confirming === key ? (
@@ -136,7 +230,7 @@ export function AdminListPage({ name }) {
                   </div>
                 ) : (
                   <div className="flex items-center gap-1.5">
-                    {sortable ? (
+                    {canReorder ? (
                       <>
                         <button
                           type="button"

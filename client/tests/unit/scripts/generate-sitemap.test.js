@@ -34,7 +34,9 @@ describe("buildSitemap", () => {
   it("includes every static route and derived project route", () => {
     for (const path of [
       "/work",
+      "/credentials",
       "/learning",
+      "/writing",
       "/beyond",
       "/contact",
       "/resume",
@@ -50,7 +52,7 @@ describe("buildSitemap", () => {
     expect(xml).not.toContain("not-found");
   });
 
-  it("does not list /blog — it is only a client-side redirect alias to /learning", () => {
+  it("does not list /blog — it is only a client-side redirect alias to /writing", () => {
     expect(xml).not.toContain("<loc>https://example.com/blog</loc>");
   });
 });

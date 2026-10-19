@@ -1,17 +1,18 @@
-import { timelineEvents } from "./timeline";
+import { experienceGroups } from "./experience";
+import { formatRange } from "../lib/dates";
 
 /**
- * Leadership roles for /beyond and the resume, derived from the
- * leadership entries of the experience timeline (their longer `details`
- * write-up when there is one), most recent first.
+ * Leadership roles for /beyond and the resume, from the leadership
+ * entries of the experience list, most recent first.
  * @type {Array<{ organization: string, role: string, dates: string, description: string }>}
  */
-export const leadershipRoles = [...timelineEvents]
-  .reverse()
-  .filter((event) => event.category === "leadership")
-  .map((event) => ({
-    organization: event.organization,
-    role: event.title,
-    dates: event.date,
-    description: event.details ?? event.description,
-  }));
+export const leadershipRoles = experienceGroups
+  .filter((group) => group.category === "leadership")
+  .flatMap((group) =>
+    group.roles.map((role) => ({
+      organization: group.organization.name,
+      role: role.title,
+      dates: formatRange(role),
+      description: role.description ?? "",
+    })),
+  );

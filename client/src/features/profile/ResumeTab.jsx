@@ -1,21 +1,22 @@
 import {
   Award,
-  Camera,
   CircleUserRound,
   Download,
   FileText,
   GraduationCap,
-  HeartHandshake,
   Layers,
   Target,
-  Users,
 } from "lucide-react";
 import { ProfileSection } from "./ProfileSection";
 import { CertificationsSection } from "./CertificationsSection";
 import { ButtonLink } from "../../components/ui/ButtonLink";
 import { cn } from "../../lib/cn";
 import { profile } from "../../data/profile";
-import { timelineEvents } from "../../data/timeline";
+import { experienceGroups } from "../../data/experience";
+import { educationEntries } from "../../data/education";
+import { ExperienceList } from "../experience/ExperienceList";
+import { EducationList } from "../credentials/EducationList";
+import { ShowAllLink } from "./ShowAllLink";
 import { capabilityGroups } from "../../data/capabilities";
 import { githubSnapshot } from "../../data/github";
 
@@ -23,51 +24,8 @@ import { githubSnapshot } from "../../data/github";
 // they get the accent treatment, the management tracks stay neutral.
 const PRIMARY_ROLE_COUNT = 2;
 
-const experience = timelineEvents
-  .filter((event) => event.category !== "education")
-  .slice()
-  .reverse();
-
-function experienceIcon(event) {
-  if (event.category === "community") return HeartHandshake;
-  if (/photograph/i.test(event.organization)) return Camera;
-  return Users;
-}
-
-function TimelineItem({ icon: Icon, title, date, organization, children }) {
-  return (
-    <li className="relative grid grid-cols-[2.75rem_minmax(0,1fr)] gap-4 pb-6 last:pb-0">
-      <span
-        aria-hidden="true"
-        className="relative z-[1] grid size-11 place-items-center rounded-(--radius-md) border border-(--color-border) bg-(--color-surface) text-(--color-text-secondary)"
-      >
-        <Icon size={19} />
-      </span>
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-          <h3 className="text-base font-semibold text-(--color-text-primary)">
-            {title}
-          </h3>
-          <span className="mono-meta tabular-nums text-(--color-text-muted)">
-            {date}
-          </span>
-        </div>
-        <p className="text-[0.9375rem] text-(--color-text-secondary)">
-          {organization}
-        </p>
-        {children}
-      </div>
-    </li>
-  );
-}
-
-function Timeline({ children }) {
-  return (
-    <ol className="relative before:absolute before:bottom-2 before:left-[1.375rem] before:top-2 before:w-px before:bg-(--color-border)">
-      {children}
-    </ol>
-  );
-}
+// The profile previews education like LinkedIn; the rest is on /credentials.
+const EDUCATION_PREVIEW = 2;
 
 const STATS = [
   { value: "250+", label: "problems solved in C++", accent: true },
@@ -114,37 +72,24 @@ export function ResumeTab() {
         </ul>
       </ProfileSection>
 
-      <ProfileSection
-        id="experience"
-        icon={Award}
-        title="Experience & leadership"
-      >
-        <Timeline>
-          {experience.map((event) => (
-            <TimelineItem
-              key={event.id}
-              icon={experienceIcon(event)}
-              title={event.title}
-              date={event.date}
-              organization={event.organization}
-            >
-              <p className="mt-1.5 text-[0.9375rem] text-(--color-text-secondary)">
-                {event.description}
-              </p>
-            </TimelineItem>
-          ))}
-        </Timeline>
-      </ProfileSection>
+      {experienceGroups.length > 0 ? (
+        <ProfileSection
+          id="experience"
+          icon={Award}
+          title="Experience & leadership"
+        >
+          <ExperienceList groups={experienceGroups} />
+        </ProfileSection>
+      ) : null}
 
       <ProfileSection id="education" icon={GraduationCap} title="Education">
-        <Timeline>
-          <TimelineItem
-            icon={GraduationCap}
-            title={profile.education.degree}
-            date={profile.education.graduation}
-            organization={profile.education.university}
-          />
-        </Timeline>
+        <EducationList entries={educationEntries.slice(0, EDUCATION_PREVIEW)} />
+        <ShowAllLink
+          total={educationEntries.length}
+          shown={EDUCATION_PREVIEW}
+          noun="education entries"
+          to="/credentials#education"
+        />
         <ul className="mt-6 grid gap-3 sm:grid-cols-3">
           {STATS.map((stat) => (
             <li

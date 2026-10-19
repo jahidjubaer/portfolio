@@ -1,6 +1,15 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Check, Moon, Palette, Sun, Volume2, VolumeX, X } from "lucide-react";
+import {
+  BookOpen,
+  Check,
+  Moon,
+  Palette,
+  Sun,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
 import { usePreferences } from "../../features/preferences/usePreferences";
 import {
   ACCENT_OPTIONS,
@@ -9,6 +18,7 @@ import {
   FONT_OPTIONS,
 } from "../../features/preferences/appearance-options";
 import { loadFont } from "../../features/preferences/font-loader";
+import { replayOpening } from "../../features/intro/opening-state";
 import { ROUND_BUTTON } from "./PreferenceButtons";
 import { cn } from "../../lib/cn";
 
@@ -101,6 +111,11 @@ export function AppearanceMenu({ placement = "rail", className }) {
   function close() {
     setOpen(false);
     triggerRef.current?.focus();
+  }
+
+  function handleReplayOpening() {
+    setOpen(false);
+    replayOpening();
   }
 
   function resetAppearance() {
@@ -237,6 +252,15 @@ export function AppearanceMenu({ placement = "rail", className }) {
                 ))}
               </div>
             </fieldset>
+
+            <button
+              type="button"
+              onClick={handleReplayOpening}
+              className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-(--radius-sm) border border-(--color-border) text-sm font-medium text-(--color-text-secondary) transition-colors hover:border-(--color-border-strong) hover:text-(--color-text-primary)"
+            >
+              <BookOpen size={16} aria-hidden="true" />
+              Play opening
+            </button>
 
             <div className="mt-4 flex items-center justify-between border-t border-(--color-border) pt-3">
               <button

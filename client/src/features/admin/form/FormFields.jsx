@@ -2,6 +2,7 @@ import { useId } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { cn } from "../../../lib/cn";
 import { errorFor, getAt, toDraft } from "./draft";
+import { QuickAddOrganization } from "./QuickAddOrganization";
 import {
   INPUT,
   ImageControl,
@@ -11,6 +12,12 @@ import {
 } from "./MediaFields";
 
 const LABEL = "text-sm font-semibold text-(--color-text-primary)";
+
+// Fields take the full row unless marked `half`, which pairs them up
+// (start and end dates, location and location type) from sm up.
+function fieldSpan(field) {
+  return field.half ? undefined : "sm:col-span-2";
+}
 
 const LIST_HINTS = {
   lines: "One per line.",
@@ -111,7 +118,20 @@ function Field({ field, path, draft, errors, onChange, isNew }) {
         className="size-5 accent-(--color-accent-fill)"
       />
     );
+  } else if (type === "checkboxes") {
+    return (
+      <CheckboxesField
+        field={field}
+        value={value ?? []}
+        onChange={(next) => onChange(path, next)}
+        error={error}
+        hint={hint}
+      />
+    );
   } else if (type === "select") {
+    // A blank first option: "None" for an optional choice, or a
+    // placeholder so a required one starts visibly unchosen.
+    const emptyLabel = field.optional ? "None" : field.placeholder;
     control = (
       <select
         {...common}
@@ -119,6 +139,7 @@ function Field({ field, path, draft, errors, onChange, isNew }) {
         onChange={(event) => onChange(path, event.target.value)}
         className={INPUT}
       >
+        {emptyLabel ? <option value="">{emptyLabel}</option> : null}
         {field.options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -126,6 +147,14 @@ function Field({ field, path, draft, errors, onChange, isNew }) {
         ))}
       </select>
     );
+    if (field.quickAdd === "organizations") {
+      control = (
+        <>
+          {control}
+          <QuickAddOrganization onCreated={(id) => onChange(path, id)} />
+        </>
+      );
+    }
   } else if (["textarea", "lines", "paragraphs", "json"].includes(type)) {
     control = (
       <textarea
@@ -196,6 +225,65 @@ function Field({ field, path, draft, errors, onChange, isNew }) {
   );
 }
 
+/**
+ * Several choices from a fixed list (projects, certifications), as
+ * native checkboxes in a fieldset. The value is the array of chosen
+ * option values.
+ */
+function CheckboxesField({ field, value, onChange, error, hint }) {
+  const id = useId();
+  function toggle(optionValue, checked) {
+    onChange(
+      checked
+        ? [...value, optionValue]
+        : value.filter((item) => item !== optionValue),
+    );
+  }
+  return (
+    <fieldset
+      aria-describedby={
+        [hint ? `${id}-hint` : null, error ? `${id}-error` : null]
+          .filter(Boolean)
+          .join(" ") || undefined
+      }
+      className="grid gap-1.5"
+    >
+      <legend className={cn(LABEL, "mb-1.5")}>{field.label}</legend>
+      {field.options.length === 0 ? (
+        <p className="text-sm text-(--color-text-muted)">
+          Nothing to choose yet.
+        </p>
+      ) : null}
+      <div className="grid gap-x-4 sm:grid-cols-2">
+        {field.options.map((option) => (
+          <label
+            key={option.value}
+            className="flex min-h-11 items-center gap-3 text-[0.9375rem] text-(--color-text-primary)"
+          >
+            <input
+              type="checkbox"
+              checked={value.includes(option.value)}
+              onChange={(event) => toggle(option.value, event.target.checked)}
+              className="size-5 shrink-0 accent-(--color-accent-fill)"
+            />
+            {option.label}
+          </label>
+        ))}
+      </div>
+      {hint ? (
+        <p id={`${id}-hint`} className="text-xs text-(--color-text-muted)">
+          {hint}
+        </p>
+      ) : null}
+      {error ? (
+        <p id={`${id}-error`} className="text-sm text-(--color-danger)">
+          {error}
+        </p>
+      ) : null}
+    </fieldset>
+  );
+}
+
 /** A repeatable group of sub-fields (links, social profiles, highlights). */
 function ObjectListField({ field, path, draft, errors, onChange, isNew }) {
   const items = getAt(draft, path) ?? [];
@@ -262,19 +350,22 @@ function ObjectListField({ field, path, draft, errors, onChange, isNew }) {
               </button>
             </div>
           </div>
-          {field.fields
-            .filter((sub) => !sub.showWhen || sub.showWhen(items[index]))
-            .map((sub) => (
-              <Field
-                key={sub.name}
-                field={sub}
-                path={`${path}.${index}.${sub.name}`}
-                draft={draft}
-                errors={errors}
-                onChange={onChange}
-                isNew={isNew}
-              />
-            ))}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {field.fields
+              .filter((sub) => !sub.showWhen || sub.showWhen(items[index]))
+              .map((sub) => (
+                <div key={sub.name} className={fieldSpan(sub)}>
+                  <Field
+                    field={sub}
+                    path={`${path}.${index}.${sub.name}`}
+                    draft={draft}
+                    errors={errors}
+                    onChange={onChange}
+                    isNew={isNew}
+                  />
+                </div>
+              ))}
+          </div>
         </div>
       ))}
       <button
@@ -303,17 +394,18 @@ function ObjectListField({ field, path, draft, errors, onChange, isNew }) {
  */
 export function FormFields({ fields, draft, errors, onChange, isNew = false }) {
   return (
-    <div className="grid gap-5">
+    <div className="grid content-start gap-5 sm:grid-cols-2">
       {fields.map((field) => (
-        <Field
-          key={field.name}
-          field={field}
-          path={field.name}
-          draft={draft}
-          errors={errors}
-          onChange={onChange}
-          isNew={isNew}
-        />
+        <div key={field.name} className={fieldSpan(field)}>
+          <Field
+            field={field}
+            path={field.name}
+            draft={draft}
+            errors={errors}
+            onChange={onChange}
+            isNew={isNew}
+          />
+        </div>
       ))}
     </div>
   );

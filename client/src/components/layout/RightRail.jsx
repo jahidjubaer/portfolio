@@ -150,7 +150,7 @@ export function RightRail() {
             Resume
           </Link>
           {" · "}
-          <Link to="/learning" className="hover:underline underline-offset-4">
+          <Link to="/writing" className="hover:underline underline-offset-4">
             Writing
           </Link>
         </p>

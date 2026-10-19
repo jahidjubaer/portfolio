@@ -10,9 +10,10 @@ import * as controller from "../controllers/adminContentController.js";
  * so the API doesn't reveal what exists to signed-out callers.
  *
  *   GET    /content                  everything, for the editors
- *   PUT    /singletons/:name         profile | beyond
- *   POST   /lists/:name              projects | experience | skills |
- *                                    certifications | photos | posts
+ *   PUT    /singletons/:name         profile | beyond | learning
+ *   POST   /lists/:name              projects | organizations | experience |
+ *                                    education | skills | certifications |
+ *                                    learningTracks | photos | posts
  *   PUT    /lists/:name/order        { keys: [...] } in display order
  *   PUT    /lists/:name/:key         replace one item (key = slug or id)
  *   DELETE /lists/:name/:key

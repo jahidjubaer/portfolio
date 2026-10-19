@@ -192,7 +192,9 @@ describe("admin GitHub repos", { timeout: 20_000 }, () => {
     installFakeAdminApi({ repositories: SYNCED });
     renderAdmin("/admin");
     expect(
-      await screen.findByText("1 project link needs attention"),
+      await screen.findByText(
+        "1 project link points at a repository that is no longer public.",
+      ),
     ).toBeVisible();
   });
 });

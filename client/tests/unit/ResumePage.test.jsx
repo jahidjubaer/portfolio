@@ -88,7 +88,7 @@ describe("ResumePage", () => {
     );
 
     expect(
-      screen.getByText("BSc in Computer Science and Engineering"),
+      screen.getByText("BSc, Computer Science and Engineering"),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Featured Engineering Projects" }),

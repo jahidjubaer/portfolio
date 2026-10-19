@@ -18,7 +18,9 @@ const NAV_ROUTES = [
   { label: "Projects", to: "/work" },
   { label: "Beyond", to: "/beyond" },
   { label: "Contact", to: "/contact" },
-  { label: "Writing", to: "/learning" },
+  { label: "Education & Certifications", to: "/credentials" },
+  { label: "Learning", to: "/learning" },
+  { label: "Writing", to: "/writing" },
   { label: "Resume", to: "/resume" },
 ];
 

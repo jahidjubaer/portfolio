@@ -84,8 +84,8 @@ describe("admin content API", () => {
     const certificate = {
       id: "new-cert",
       title: "New certificate",
-      issuer: "Issuer",
-      category: "leadership",
+      organizationId: content.organizations[0].id,
+      kind: "certification",
       status: "completed",
       issued: "2026",
     };
@@ -93,7 +93,10 @@ describe("admin content API", () => {
       certificate,
     );
     expect(created.status).toBe(201);
-    expect(created.body.data.order).toBe(content.certifications.length);
+    // Added after the last one, whatever gaps deletions left in the order.
+    expect(created.body.data.order).toBe(
+      Math.max(...content.certifications.map((item) => item.order)) + 1,
+    );
 
     const duplicate = await as("post", "/api/admin/lists/certifications").send(
       certificate,
@@ -123,6 +126,50 @@ describe("admin content API", () => {
       "/api/admin/lists/certifications/new-cert",
     );
     expect(again.status).toBe(404);
+  });
+
+  it("rejects an organization that doesn't exist", async () => {
+    const response = await as("post", "/api/admin/lists/certifications").send({
+      id: "orphan",
+      title: "Orphan",
+      organizationId: "nowhere",
+      kind: "course",
+      status: "in-progress",
+    });
+    expect(response.status).toBe(400);
+    expect(response.body.issues).toEqual([
+      { path: "organizationId", message: '"nowhere" isn\'t in organizations.' },
+    ]);
+  });
+
+  it("won't delete an organization that is still in use", async () => {
+    const used = content.experience[0].organizationId;
+    const blocked = await as(
+      "delete",
+      `/api/admin/lists/organizations/${used}`,
+    );
+    expect(blocked.status).toBe(409);
+    expect(blocked.body.error).toMatch(/still used in experience/);
+
+    const created = await as("post", "/api/admin/lists/organizations").send({
+      id: "unused-org",
+      name: "Unused",
+    });
+    expect(created.status).toBe(201);
+    const removed = await as(
+      "delete",
+      "/api/admin/lists/organizations/unused-org",
+    );
+    expect(removed.status).toBe(200);
+  });
+
+  it("saves the learning method", async () => {
+    const response = await as("put", "/api/admin/singletons/learning").send({
+      steps: [{ title: "Learn", description: "From the docs." }],
+    });
+    expect(response.status).toBe(200);
+    const read = await request(app).get("/api/public/content");
+    expect(read.body.data.learning.steps).toHaveLength(1);
   });
 
   it("reorders a list only with a complete permutation", async () => {

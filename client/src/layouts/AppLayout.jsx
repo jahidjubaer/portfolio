@@ -10,6 +10,7 @@ import { PreferencesProvider } from "../features/preferences/PreferencesProvider
 import { PageTransition } from "../features/motion/PageTransition";
 import { CommandPalette } from "../features/command-palette/CommandPalette";
 import { GreetingPopup } from "../features/greeting/GreetingPopup";
+import { OpeningCurtain } from "../features/intro/OpeningCurtain";
 
 /**
  * Three-column app shell: navigation rail | page column | highlights rail.
@@ -37,6 +38,7 @@ export function AppLayout() {
       <BottomNav />
       <CommandPalette />
       <GreetingPopup />
+      <OpeningCurtain />
     </PreferencesProvider>
   );
 }

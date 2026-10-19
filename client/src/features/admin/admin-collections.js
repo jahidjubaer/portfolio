@@ -1,14 +1,34 @@
+import {
+  BadgeCheck,
+  BriefcaseBusiness,
+  Building2,
+  CircleUserRound,
+  FolderGit2,
+  GraduationCap,
+  Images,
+  Layers,
+  Mountain,
+  Package,
+  PenLine,
+  Route as RouteIcon,
+  Sprout,
+} from "lucide-react";
 // The admin validates with the exact schemas the API enforces.
 import {
   beyondSchema,
   certificationSchema,
+  educationSchema,
   experienceSchema,
+  learningSchema,
+  learningTrackSchema,
+  organizationSchema,
   photoSchema,
   postSchema,
   profileSchema,
   projectSchema,
   skillGroupSchema,
 } from "../../../../server/src/schemas/content.js";
+import { organizationUsage } from "./attention";
 
 const SOCIAL_OPTIONS = ["github", "linkedin", "codeforces", "leetcode"].map(
   (value) => ({ value, label: value }),
@@ -53,9 +73,6 @@ export const SINGLETONS = {
       { name: "linkedin", label: "LinkedIn URL", type: "url" },
       { name: "codeforces", label: "Codeforces URL", type: "url" },
       { name: "leetcode", label: "LeetCode URL", type: "url" },
-      { name: "education.degree", label: "Degree" },
-      { name: "education.university", label: "University" },
-      { name: "education.graduation", label: "Graduation" },
       { name: "problemSolving.total", label: "Problem solving (headline)" },
       { name: "problemSolving.primaryLanguage", label: "Main language" },
       { name: "problemSolving.platforms", label: "Platforms" },
@@ -84,6 +101,35 @@ export const SINGLETONS = {
           { name: "label", label: "Label" },
           { name: "handle", label: "Handle" },
           { name: "url", label: "URL", type: "url" },
+        ],
+      },
+    ],
+  },
+  learning: {
+    label: "How I learn",
+    description: "The steps at the top of the Learning page.",
+    schema: learningSchema,
+    fields: [
+      {
+        name: "intro",
+        label: "Intro",
+        type: "textarea",
+        rows: 3,
+        optional: true,
+      },
+      {
+        name: "steps",
+        label: "Steps",
+        type: "objectList",
+        itemLabel: "step",
+        fields: [
+          { name: "title", label: "Step" },
+          {
+            name: "description",
+            label: "What it means for you",
+            type: "textarea",
+            rows: 2,
+          },
         ],
       },
     ],
@@ -213,10 +259,56 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
+/** Organizations as select options, for "Organization" pickers. */
+function organizationOptions(content) {
+  return (content.organizations ?? []).map((item) => ({
+    value: item.id,
+    label: item.name,
+  }));
+}
+
+function organizationName(content, id) {
+  return content.organizations?.find((item) => item.id === id)?.name ?? id;
+}
+
+const ORGANIZATION_HINT =
+  "Not in the list? Use New organization; add its logo later under Organizations.";
+
+// "2024" or "2024-06"; durations on the site are worked out from these.
+const DATE_HINT = "Year, or year-month: 2024 or 2024-06.";
+
+const EMPLOYMENT_TYPE_OPTIONS = [
+  { value: "full-time", label: "Full-time" },
+  { value: "part-time", label: "Part-time" },
+  { value: "internship", label: "Internship" },
+  { value: "contract", label: "Contract" },
+  { value: "freelance", label: "Freelance" },
+  { value: "self-employed", label: "Self-employed" },
+  { value: "volunteer", label: "Volunteer" },
+];
+
+const WORKPLACE_OPTIONS = [
+  { value: "on-site", label: "On-site" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "remote", label: "Remote" },
+];
+
+/** "2023 – 2025", "2024 – present" for list subtitles. */
+function spanOf(roles) {
+  const starts = roles.map((role) => role.start).sort();
+  const current = roles.some((role) => role.current);
+  const ends = roles
+    .map((role) => role.end)
+    .filter(Boolean)
+    .sort();
+  return `${starts[0]} – ${current ? "present" : ends.at(-1)}`;
+}
+
 /** Ordered lists: a list page plus an add/edit form per item. */
 export const LISTS = {
   projects: {
     label: "Projects",
+    viewOnSite: (item) => `/work/${item.slug}`,
     itemLabel: "project",
     description: "Order, featured projects, links, and case studies.",
     keyField: "slug",
@@ -371,25 +463,80 @@ export const LISTS = {
       },
     ],
   },
-  experience: {
-    label: "Experience",
-    itemLabel: "entry",
-    description: "Leadership, community, work, and education timeline.",
+  organizations: {
+    label: "Organizations",
+    itemLabel: "organization",
+    description:
+      "Companies, clubs, schools, and course providers: name, logo, and link, used everywhere.",
     keyField: "id",
-    schema: experienceSchema,
-    titleOf: (item) => item.title,
-    subtitleOf: (item) => `${item.organization} · ${item.date}`,
-    newItem: { category: "leadership" },
+    schema: organizationSchema,
+    titleOf: (item) => item.name,
+    subtitleOf: (item, content) => {
+      const uses = organizationUsage(content, item.id);
+      return [
+        uses
+          ? `Used in ${uses} ${uses === 1 ? "place" : "places"}`
+          : "Not used yet",
+        item.location,
+        item.logo ? null : "No logo yet",
+      ]
+        .filter(Boolean)
+        .join(" · ");
+    },
+    thumbnailOf: (item) => item.logo,
+    newItem: {},
     fields: [
       { name: "id", label: "ID", hint: KEY_HINT, readOnlyWhenEditing: true },
-      { name: "title", label: "Role / title" },
-      { name: "organization", label: "Organization" },
+      { name: "name", label: "Name" },
       {
-        name: "date",
-        label: "Dates",
-        hint: 'Shown as written, e.g. "2024–2025"',
+        name: "logo",
+        label: "Logo",
+        type: "image",
+        uploadKind: "image",
+        optional: true,
+        hint: "A square PNG or WebP works best. Without one, initials are shown.",
       },
-      { name: "sortYear", label: "Start year", type: "number" },
+      {
+        name: "url",
+        label: "Website",
+        type: "url",
+        optional: true,
+        hint: "Its website, LinkedIn, or Facebook page.",
+      },
+      { name: "location", label: "Location", optional: true },
+    ],
+  },
+  experience: {
+    label: "Experience",
+    viewOnSite: () => "/#experience",
+    itemLabel: "experience",
+    description:
+      "One entry per organization, with every role you held there (LinkedIn style).",
+    keyField: "id",
+    schema: experienceSchema,
+    titleOf: (item, content) => organizationName(content, item.organizationId),
+    subtitleOf: (item) =>
+      `${item.roles.length} ${item.roles.length === 1 ? "role" : "roles"} · ${spanOf(item.roles)}`,
+    // The site sorts experience by date, so manual ordering doesn't apply.
+    sortable: false,
+    compare: (a, b) => spanOf(b.roles).localeCompare(spanOf(a.roles)),
+    newItem: () => ({ category: "leadership", roles: [{}] }),
+    fields: (content) => [
+      {
+        name: "id",
+        label: "ID",
+        hint: KEY_HINT,
+        readOnlyWhenEditing: true,
+      },
+      {
+        name: "organizationId",
+        label: "Organization",
+        type: "select",
+        placeholder: "Choose an organization…",
+        options: organizationOptions(content),
+        quickAdd: "organizations",
+        hint: ORGANIZATION_HINT,
+      },
       {
         name: "category",
         label: "Category",
@@ -397,27 +544,131 @@ export const LISTS = {
         options: [
           { value: "work", label: "Work" },
           { value: "leadership", label: "Leadership" },
-          { value: "community", label: "Community" },
-          { value: "education", label: "Education" },
+          { value: "community", label: "Community / volunteering" },
         ],
+        hint: "Leadership roles also appear on the Beyond page and the resume.",
+      },
+      {
+        name: "roles",
+        label: "Roles",
+        type: "objectList",
+        itemLabel: "role",
+        fields: [
+          { name: "title", label: "Title" },
+          {
+            name: "employmentType",
+            label: "Employment type",
+            type: "select",
+            optional: true,
+            options: EMPLOYMENT_TYPE_OPTIONS,
+          },
+          { name: "start", label: "Start", hint: DATE_HINT, half: true },
+          {
+            name: "end",
+            label: "End",
+            optional: true,
+            half: true,
+            hint: `${DATE_HINT} Leave empty for a role you still hold.`,
+          },
+          {
+            name: "current",
+            label: "I currently hold this role",
+            type: "checkbox",
+            optional: true,
+          },
+          { name: "location", label: "Location", optional: true, half: true },
+          {
+            name: "workplace",
+            label: "Location type",
+            type: "select",
+            optional: true,
+            half: true,
+            options: WORKPLACE_OPTIONS,
+          },
+          {
+            name: "description",
+            label: "Description",
+            type: "textarea",
+            rows: 4,
+            optional: true,
+          },
+          { name: "skills", label: "Skills", type: "lines", rows: 3 },
+        ],
+      },
+    ],
+  },
+  education: {
+    label: "Education",
+    viewOnSite: () => "/credentials#education",
+    itemLabel: "school",
+    description: "Schools and degrees, on the Education & Certifications page.",
+    keyField: "id",
+    schema: educationSchema,
+    titleOf: (item, content) => organizationName(content, item.organizationId),
+    subtitleOf: (item) =>
+      [item.degree, item.field, item.end].filter(Boolean).join(" · "),
+    sortable: false,
+    compare: (a, b) => (b.end ?? "").localeCompare(a.end ?? ""),
+    newItem: {},
+    fields: (content) => [
+      { name: "id", label: "ID", hint: KEY_HINT, readOnlyWhenEditing: true },
+      {
+        name: "organizationId",
+        label: "School",
+        type: "select",
+        placeholder: "Choose a school…",
+        options: organizationOptions(content),
+        quickAdd: "organizations",
+        hint: ORGANIZATION_HINT,
+      },
+      { name: "degree", label: "Degree", hint: 'e.g. "BSc"' },
+      {
+        name: "field",
+        label: "Field of study",
+        optional: true,
+        hint: 'e.g. "Computer Science and Engineering"',
+      },
+      {
+        name: "start",
+        label: "Start",
+        optional: true,
+        hint: DATE_HINT,
+        half: true,
+      },
+      {
+        name: "end",
+        label: "End (or expected)",
+        optional: true,
+        half: true,
+        hint: DATE_HINT,
+      },
+      { name: "grade", label: "Grade", optional: true },
+      {
+        name: "showGrade",
+        label: "Show the grade on the site",
+        type: "checkbox",
+        optional: true,
+      },
+      {
+        name: "activities",
+        label: "Activities and societies",
+        type: "textarea",
+        rows: 2,
+        optional: true,
       },
       {
         name: "description",
-        label: "Short description",
+        label: "Description",
         type: "textarea",
-        rows: 2,
-      },
-      {
-        name: "details",
-        label: "Longer write-up",
-        type: "textarea",
-        rows: 4,
+        rows: 3,
         optional: true,
       },
+      { name: "skills", label: "Skills", type: "lines", rows: 3 },
     ],
   },
   skills: {
     label: "Skills",
+    viewOnSite: () => "/#skills",
     itemLabel: "skill group",
     description: "Skill groups. No levels or percentages.",
     keyField: "id",
@@ -444,32 +695,51 @@ export const LISTS = {
   },
   certifications: {
     label: "Certifications",
+    viewOnSite: () => "/credentials#certifications",
     itemLabel: "certification",
-    description: "Professional, leadership, and other certificates.",
+    description: "Licenses, certificates, and courses, LinkedIn style.",
     keyField: "id",
     schema: certificationSchema,
     titleOf: (item) => item.title,
-    subtitleOf: (item) =>
-      `${item.issuer} · ${item.status === "in-progress" ? "In progress" : item.issued}`,
-    newItem: { category: "professional", status: "completed" },
-    fields: [
+    subtitleOf: (item, content) =>
+      [
+        organizationName(content, item.organizationId),
+        item.status === "in-progress" ? "In progress" : item.issued,
+        item.featured ? "On profile" : null,
+      ]
+        .filter(Boolean)
+        .join(" · "),
+    thumbnailOf: (item) => item.image,
+    sortable: false,
+    compare: (a, b) => (b.issued ?? "9999").localeCompare(a.issued ?? "9999"),
+    newItem: { kind: "certification", status: "completed" },
+    fields: (content) => [
       { name: "id", label: "ID", hint: KEY_HINT, readOnlyWhenEditing: true },
-      { name: "title", label: "Title" },
-      { name: "issuer", label: "Issued by" },
+      { name: "title", label: "Name" },
       {
-        name: "category",
-        label: "Group",
+        name: "organizationId",
+        label: "Issuing organization",
         type: "select",
+        placeholder: "Choose an organization…",
+        options: organizationOptions(content),
+        quickAdd: "organizations",
+        hint: ORGANIZATION_HINT,
+      },
+      {
+        name: "kind",
+        label: "Type",
+        type: "select",
+        half: true,
         options: [
-          { value: "professional", label: "Professional" },
-          { value: "leadership", label: "Leadership" },
-          { value: "other", label: "Other" },
+          { value: "certification", label: "Certification" },
+          { value: "course", label: "Course" },
         ],
       },
       {
         name: "status",
         label: "Status",
         type: "select",
+        half: true,
         options: [
           { value: "completed", label: "Completed" },
           { value: "in-progress", label: "In progress" },
@@ -477,14 +747,25 @@ export const LISTS = {
       },
       {
         name: "issued",
-        label: "Issued (year or month & year)",
+        label: "Issue date",
         optional: true,
+        hint: DATE_HINT,
+        half: true,
       },
       {
+        name: "expires",
+        label: "Expiration date",
+        optional: true,
+        half: true,
+        hint: DATE_HINT,
+      },
+      { name: "credentialId", label: "Credential ID", optional: true },
+      {
         name: "credentialUrl",
-        label: "Verification link",
+        label: "Credential URL",
         type: "url",
         optional: true,
+        hint: "A real verification link only. It becomes the Show credential button.",
       },
       {
         name: "description",
@@ -493,10 +774,129 @@ export const LISTS = {
         rows: 2,
         optional: true,
       },
+      { name: "skills", label: "Skills", type: "lines", rows: 3 },
+      {
+        name: "image",
+        label: "Certificate image",
+        type: "image",
+        uploadKind: "image",
+        optional: true,
+      },
+      {
+        name: "imageAlt",
+        label: "Certificate image description",
+        optional: true,
+      },
+      {
+        name: "featured",
+        label: "Show on the profile (strongest few only)",
+        type: "checkbox",
+        optional: true,
+      },
+    ],
+  },
+  learningTracks: {
+    label: "Learning tracks",
+    viewOnSite: () => "/learning",
+    itemLabel: "track",
+    description:
+      "What you're learning: resources, practice, what you built, and notes.",
+    keyField: "id",
+    schema: learningTrackSchema,
+    titleOf: (item) => item.title,
+    subtitleOf: (item) =>
+      ({
+        learning: "Now learning",
+        applied: "Applied",
+        exploring: "Exploring",
+      })[item.status],
+    newItem: {
+      status: "learning",
+      resources: [],
+      certificationIds: [],
+      projectSlugs: [],
+      notes: [],
+    },
+    fields: (content) => [
+      { name: "id", label: "ID", hint: KEY_HINT, readOnlyWhenEditing: true },
+      { name: "title", label: "Topic", hint: 'e.g. "Advanced React"' },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: [
+          { value: "learning", label: "Now learning" },
+          { value: "applied", label: "Applied (done, used in projects)" },
+          { value: "exploring", label: "Exploring" },
+        ],
+      },
+      { name: "since", label: "Since", optional: true, hint: DATE_HINT },
+      {
+        name: "summary",
+        label: "Summary",
+        type: "textarea",
+        rows: 2,
+        optional: true,
+      },
+      {
+        name: "resources",
+        label: "Learned from",
+        type: "objectList",
+        itemLabel: "resource",
+        fields: [
+          { name: "label", label: "Name", hint: 'e.g. "React docs"' },
+          { name: "url", label: "Link", type: "url", optional: true },
+          {
+            name: "organizationId",
+            label: "Provider",
+            type: "select",
+            optional: true,
+            options: organizationOptions(content),
+            quickAdd: "organizations",
+          },
+        ],
+      },
+      {
+        name: "certificationIds",
+        label: "Related certifications & courses",
+        type: "checkboxes",
+        options: (content.certifications ?? []).map((item) => ({
+          value: item.id,
+          label: item.title,
+        })),
+      },
+      {
+        name: "practice",
+        label: "Practice",
+        type: "textarea",
+        rows: 2,
+        optional: true,
+        hint: "How you practised it: exercises, problems, small builds.",
+      },
+      {
+        name: "projectSlugs",
+        label: "Built with it",
+        type: "checkboxes",
+        options: (content.projects ?? []).map((item) => ({
+          value: item.slug,
+          label: item.title,
+        })),
+      },
+      {
+        name: "notes",
+        label: "Notes written",
+        type: "objectList",
+        itemLabel: "note",
+        fields: [
+          { name: "label", label: "Title" },
+          { name: "url", label: "Link", type: "url" },
+        ],
+      },
     ],
   },
   photos: {
     label: "Photography",
+    viewOnSite: () => "/beyond",
     itemLabel: "photo",
     description: "Photos for the Beyond page, grouped into albums.",
     keyField: "id",
@@ -593,19 +993,50 @@ export const LISTS = {
   },
 };
 
-/** Sidebar order. */
-export const ADMIN_SECTIONS = [
-  { path: "profile", ...SINGLETONS.profile },
-  { path: "projects", ...LISTS.projects },
+/** Sidebar groups, in order. Each section is a list, a singleton, or a page. */
+export const ADMIN_GROUPS = [
   {
-    path: "repositories",
-    label: "GitHub repos",
-    description: "Synced from GitHub. Turn a repo into a project.",
+    label: "Site",
+    sections: [
+      { path: "profile", icon: CircleUserRound, ...SINGLETONS.profile },
+      { path: "beyond", icon: Mountain, ...SINGLETONS.beyond },
+    ],
   },
-  { path: "experience", ...LISTS.experience },
-  { path: "skills", ...LISTS.skills },
-  { path: "certifications", ...LISTS.certifications },
-  { path: "posts", ...LISTS.posts },
-  { path: "photos", ...LISTS.photos },
-  { path: "beyond", ...SINGLETONS.beyond },
+  {
+    label: "Career",
+    sections: [
+      { path: "organizations", icon: Building2, ...LISTS.organizations },
+      { path: "experience", icon: BriefcaseBusiness, ...LISTS.experience },
+      { path: "education", icon: GraduationCap, ...LISTS.education },
+      { path: "certifications", icon: BadgeCheck, ...LISTS.certifications },
+      { path: "skills", icon: Layers, ...LISTS.skills },
+    ],
+  },
+  {
+    label: "Work",
+    sections: [
+      { path: "projects", icon: Package, ...LISTS.projects },
+      {
+        path: "repositories",
+        icon: FolderGit2,
+        label: "GitHub repos",
+        description: "Synced from GitHub. Turn a repo into a project.",
+      },
+    ],
+  },
+  {
+    label: "Learning",
+    sections: [
+      { path: "learning", icon: RouteIcon, ...SINGLETONS.learning },
+      { path: "learningTracks", icon: Sprout, ...LISTS.learningTracks },
+      { path: "posts", icon: PenLine, ...LISTS.posts },
+    ],
+  },
+  {
+    label: "Media",
+    sections: [{ path: "photos", icon: Images, ...LISTS.photos }],
+  },
 ];
+
+/** Every section in sidebar order. */
+export const ADMIN_SECTIONS = ADMIN_GROUPS.flatMap((group) => group.sections);

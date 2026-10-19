@@ -15,7 +15,8 @@ import {
   signOutAdmin,
 } from "../../features/admin/admin-api";
 import { AdminContext } from "../../features/admin/admin-context";
-import { ADMIN_SECTIONS } from "../../features/admin/admin-collections";
+import { ADMIN_GROUPS } from "../../features/admin/admin-collections";
+import { needsMigration, sectionCount } from "../../features/admin/attention";
 import { PublishButton } from "../../features/admin/PublishButton";
 
 function CenteredCard({ children }) {
@@ -52,6 +53,36 @@ function navClass({ isActive }) {
     isActive
       ? "bg-(--color-surface-soft) text-(--color-text-primary)"
       : "text-(--color-text-secondary) hover:bg-(--color-surface-raised) hover:text-(--color-text-primary)",
+  );
+}
+
+/** A sidebar entry: icon, label, and how many items the section holds. */
+function SectionLink({ section, content }) {
+  const Icon = section.icon;
+  const count = sectionCount(section.path, content);
+  const warnings =
+    section.path === "repositories"
+      ? (content.repositories?.warnings.length ?? 0)
+      : 0;
+  return (
+    <NavLink to={`/admin/${section.path}`} className={navClass}>
+      <Icon size={17} aria-hidden="true" className="shrink-0" />
+      <span className="flex-1">{section.label}</span>
+      {warnings > 0 ? (
+        <span
+          className="size-2 rounded-full bg-(--color-danger)"
+          title="Needs attention"
+        >
+          <span className="sr-only">, needs attention</span>
+        </span>
+      ) : null}
+      {count !== null ? (
+        <span className="text-xs tabular-nums text-(--color-text-muted)">
+          <span className="sr-only">, </span>
+          {count}
+        </span>
+      ) : null}
+    </NavLink>
   );
 }
 
@@ -199,20 +230,38 @@ export function AdminLayout() {
           aria-label="Admin sections"
           className="min-w-0 md:sticky md:top-20 md:self-start"
         >
-          <ul className="flex gap-1 overflow-x-auto pb-1 md:grid md:overflow-visible">
+          <ul className="flex gap-1 overflow-x-auto pb-1 md:grid md:gap-4 md:overflow-visible">
             <li>
               <NavLink to="/admin" end className={navClass}>
                 <LayoutDashboard size={17} aria-hidden="true" />
                 Overview
               </NavLink>
             </li>
-            {ADMIN_SECTIONS.map((section) => (
-              <li key={section.path}>
-                <NavLink to={`/admin/${section.path}`} className={navClass}>
-                  {section.label}
-                </NavLink>
-              </li>
-            ))}
+            {content
+              ? ADMIN_GROUPS.map((group) => (
+                  <li
+                    key={group.label}
+                    className="flex shrink-0 gap-1 md:block"
+                  >
+                    <p
+                      id={`admin-group-${group.label}`}
+                      className="mono-meta mb-1 hidden px-3 text-(--color-text-muted) md:block"
+                    >
+                      {group.label}
+                    </p>
+                    <ul
+                      aria-labelledby={`admin-group-${group.label}`}
+                      className="flex gap-1 md:grid"
+                    >
+                      {group.sections.map((section) => (
+                        <li key={section.path}>
+                          <SectionLink section={section} content={content} />
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))
+              : null}
           </ul>
         </nav>
 
@@ -230,6 +279,16 @@ export function AdminLayout() {
               >
                 Retry
               </button>
+            </p>
+          ) : null}
+          {content && needsMigration(content) ? (
+            <p
+              role="alert"
+              className="mb-4 rounded-(--radius-md) border border-(--color-warning)/50 bg-(--color-warning)/10 p-3 text-sm text-(--color-text-primary)"
+            >
+              The database is still in the old format, so Experience, Education,
+              and Certifications can&apos;t be edited yet. Run{" "}
+              <code>npm run migrate -w server</code> once, then reload.
             </p>
           ) : null}
           {content ? (

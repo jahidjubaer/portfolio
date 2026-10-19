@@ -5,7 +5,7 @@ import { cn } from "../../lib/cn";
 
 // Five slots fit a phone comfortably: the four primary routes plus Writing.
 // Resume stays reachable from the profile page and the command palette.
-const writing = SECONDARY_NAV.find((item) => item.to === "/learning");
+const writing = SECONDARY_NAV.find((item) => item.to === "/writing");
 const BOTTOM_NAV = [...PRIMARY_NAV.slice(0, 3), writing, PRIMARY_NAV[3]];
 
 /** Fixed bottom tab bar for phones (hidden from md up). */

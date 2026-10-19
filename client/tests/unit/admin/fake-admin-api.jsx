@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routeConfig } from "../../../src/routes/route-config";
 import { profile, socialProfiles } from "../../../src/data/profile";
-import { certifications } from "../../../src/data/certifications";
+import snapshot from "../../../src/generated/content.json";
 import { capabilityGroups } from "../../../src/data/capabilities";
 import { projects } from "../../../src/data/projects";
 
@@ -27,7 +27,7 @@ function json(status, body) {
 /**
  * Stubs fetch with an in-memory admin API (session, content, and the
  * write endpoints) so admin pages run end to end in jsdom.
- * @param {{ signedIn?: boolean, withProjects?: boolean, repositories?: object, syncResult?: { status: number, body: object }, publishing?: object, publishResult?: { status: number, body: object } }} [options]
+ * @param {{ signedIn?: boolean, withProjects?: boolean, repositories?: object, syncResult?: { status: number, body: object }, publishing?: object, publishResult?: { status: number, body: object }, overrides?: object }} [options]
  */
 export function installFakeAdminApi({
   signedIn = true,
@@ -39,6 +39,7 @@ export function installFakeAdminApi({
     status: 200,
     body: { success: true, data: { at: "2026-10-19T08:00:00Z", ok: true } },
   },
+  overrides = {},
 } = {}) {
   const { resume, ...profileFields } = profile;
   const state = {
@@ -58,12 +59,13 @@ export function installFakeAdminApi({
             structuredClone({ ...project, order }),
           )
         : [],
-      experience: [],
+      organizations: structuredClone(snapshot.organizations),
+      experience: structuredClone(snapshot.experience),
+      education: structuredClone(snapshot.education),
       skills: capabilityGroups.map((group, order) => ({ ...group, order })),
-      certifications: certifications.map((item, order) => ({
-        ...item,
-        order,
-      })),
+      certifications: structuredClone(snapshot.certifications),
+      learning: structuredClone(snapshot.learning),
+      learningTracks: [],
       beyond: { sports: [], volunteering: [] },
       photos: [],
       posts: [],
@@ -83,6 +85,7 @@ export function installFakeAdminApi({
         history: [],
         ...publishing,
       },
+      ...overrides,
     },
     requests: [],
   };

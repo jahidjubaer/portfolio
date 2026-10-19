@@ -3,7 +3,12 @@ import { COLLECTIONS, KEY_FIELDS, SINGLETON_ID } from "../db/collections.js";
 import {
   beyondSchema,
   certificationSchema,
+  educationSchema,
   experienceSchema,
+  findBrokenReferences,
+  learningSchema,
+  learningTrackSchema,
+  organizationSchema,
   photoSchema,
   postSchema,
   profileSchema,
@@ -18,13 +23,17 @@ const HIDE_ID = { projection: { _id: 0 } };
 export const SINGLETON_SCHEMAS = {
   profile: profileSchema,
   beyond: beyondSchema,
+  learning: learningSchema,
 };
 
 export const LIST_SCHEMAS = {
   projects: projectSchema,
+  organizations: organizationSchema,
   experience: experienceSchema,
+  education: educationSchema,
   skills: skillGroupSchema,
   certifications: certificationSchema,
+  learningTracks: learningTrackSchema,
   photos: photoSchema,
   posts: postSchema,
 };
@@ -55,7 +64,78 @@ export function validate(schema, value) {
   return result.data;
 }
 
-/** @param {"profile" | "beyond"} name */
+// Lists that hold ids of other items, and the lists those ids point into.
+const REFERENCES = {
+  experience: ["organizations"],
+  education: ["organizations"],
+  certifications: ["organizations"],
+  learningTracks: ["organizations", "certifications", "projects"],
+};
+const REFERENCED_BY = {
+  organizations: [
+    "experience",
+    "education",
+    "certifications",
+    "learningTracks",
+  ],
+  certifications: ["learningTracks"],
+  projects: ["learningTracks"],
+};
+
+async function loadLists(db, names) {
+  const lists = await Promise.all(
+    names.map((name) =>
+      db.collection(COLLECTIONS[name]).find({}, HIDE_ID).toArray(),
+    ),
+  );
+  return Object.fromEntries(names.map((name, index) => [name, lists[index]]));
+}
+
+/** 400 when a saved item points at an organization (etc.) that doesn't exist. */
+async function checkReferences(db, name, document) {
+  if (!REFERENCES[name]) return;
+  const content = await loadLists(db, REFERENCES[name]);
+  const issues = findBrokenReferences({ ...content, [name]: [document] });
+  if (issues.length) {
+    throw httpError(
+      400,
+      "Some fields need attention.",
+      issues.map((issue) => ({
+        path: issue.path.slice(2).join("."),
+        message: issue.message,
+      })),
+    );
+  }
+}
+
+/**
+ * 409 when other items still point at the one being deleted: any reference
+ * that resolves now but wouldn't once it's gone.
+ */
+async function checkNotReferenced(db, name, key) {
+  if (!REFERENCED_BY[name]) return;
+  const content = await loadLists(db, [
+    ...new Set([
+      name,
+      ...REFERENCED_BY[name].flatMap((user) => [user, ...REFERENCES[user]]),
+    ]),
+  ]);
+  const describe = (issue) => `${issue.path.join(".")} ${issue.message}`;
+  const before = new Set(findBrokenReferences(content).map(describe));
+  const after = findBrokenReferences({
+    ...content,
+    [name]: content[name].filter((item) => item[KEY_FIELDS[name]] !== key),
+  }).filter((issue) => !before.has(describe(issue)));
+  const users = [...new Set(after.map((issue) => issue.path[0]))];
+  if (users.length) {
+    throw httpError(
+      409,
+      `It's still used in ${users.join(", ")}. Change those first.`,
+    );
+  }
+}
+
+/** @param {keyof typeof SINGLETON_SCHEMAS} name */
 export async function replaceSingleton(name, input) {
   const document = validate(SINGLETON_SCHEMAS[name], input);
   const db = await getDb();
@@ -83,6 +163,7 @@ export async function createItem(name, input) {
     ...input,
     order: last ? last.order + 1 : 0,
   });
+  await checkReferences(db, name, document);
   try {
     await collection.insertOne({ ...document });
   } catch (error) {
@@ -115,24 +196,30 @@ export async function updateItem(name, key, input) {
     [keyField]: key,
     order: existing.order,
   });
+  await checkReferences(db, name, document);
   await collection.replaceOne({ [keyField]: key }, document);
   await markEdited();
   return document;
 }
 
 /**
- * Deletes one item. A photo's uploaded file goes with it; other uploads
- * (post covers, images inside Markdown) may be shared, so they stay.
+ * Deletes one item. A photo's, logo's, or certificate's uploaded file goes
+ * with it; other uploads (post covers, images inside Markdown) may be
+ * shared, so they stay. Items still referenced elsewhere can't be deleted.
  * @param {keyof typeof LIST_SCHEMAS} name @param {string} key
  */
 export async function deleteItem(name, key) {
   const db = await getDb();
+  await checkNotReferenced(db, name, key);
   const deleted = await db
     .collection(COLLECTIONS[name])
     .findOneAndDelete({ [KEY_FIELDS[name]]: key });
   if (!deleted) throw httpError(404, "Item not found.");
   await markEdited();
   if (name === "photos") await deleteUpload(deleted.image?.url);
+  // A logo or certificate image belongs to its one item.
+  if (name === "organizations") await deleteUpload(deleted.logo?.url);
+  if (name === "certifications") await deleteUpload(deleted.image?.url);
 }
 
 /**

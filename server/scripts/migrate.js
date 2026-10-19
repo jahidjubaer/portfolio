@@ -7,7 +7,10 @@
  * Needs MONGODB_URI (server/.env, or `vercel env pull`).
  */
 import { buildSeedContent } from "./seed-content.js";
-import { migrateCaseStudies } from "../src/db/migrations.js";
+import {
+  migrateCaseStudies,
+  migrateToOrganizations,
+} from "../src/db/migrations.js";
 import { closeDb, getDb, isDatabaseConfigured } from "../src/db/client.js";
 import { env } from "../src/config/env.js";
 
@@ -29,6 +32,29 @@ try {
   if (result.manual.length) {
     console.log(
       `Old-format case studies with no seed version (edit in /admin): ${result.manual.join(", ")}`,
+    );
+  }
+
+  const p2 = await migrateToOrganizations(db, { dryRun });
+  if (p2.skipped) {
+    console.log("Organizations: already migrated.");
+  } else {
+    const verbP2 = dryRun ? "Would create" : "Created";
+    console.log(
+      `${verbP2} ${p2.organizations.length} organizations: ${p2.organizations.map((item) => item.name).join("; ")}`,
+    );
+    for (const item of p2.experience) {
+      console.log(
+        `  Experience at ${item.organizationId}: ${item.roles.map((role) => `${role.title} (${role.start}–${role.end ?? "present"})`).join(", ")}`,
+      );
+    }
+    for (const item of p2.education) {
+      console.log(
+        `  Education: ${item.degree}, ${item.field ?? ""} → ${item.organizationId}`,
+      );
+    }
+    console.log(
+      `  Certifications linked to organizations: ${p2.certifications.length}`,
     );
   }
 } catch (error) {

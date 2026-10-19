@@ -11,6 +11,8 @@ import { Reveal } from "../features/motion/Reveal";
 import { profile } from "../data/profile";
 import { capabilityGroups } from "../data/capabilities";
 import { leadershipRoles } from "../data/leadership";
+import { degreeLine, educationEntries } from "../data/education";
+import { formatYearMonth } from "../lib/dates";
 import { ProjectStack } from "../features/projects/ProjectStack";
 import { getFeaturedProjects } from "../features/projects/project-selectors";
 import { Download, FileText, Code2, ExternalLink } from "lucide-react";
@@ -103,15 +105,23 @@ export function ResumePage() {
                   Education
                 </h2>
               </div>
-              <h3 className="heading-md mt-3 text-(--color-text-primary)">
-                {profile.education.degree}
-              </h3>
-              <p className="body-sm mt-1 font-medium text-(--color-text-secondary)">
-                {profile.education.university}
-              </p>
-              <p className="mono-meta mt-2 text-(--color-text-muted)">
-                Graduation: {profile.education.graduation}
-              </p>
+              {educationEntries.slice(0, 1).map((entry) => (
+                <div key={entry.id}>
+                  <h3 className="heading-md mt-3 text-(--color-text-primary)">
+                    {degreeLine(entry)}
+                  </h3>
+                  <p className="body-sm mt-1 font-medium text-(--color-text-secondary)">
+                    {[entry.organization.name, entry.organization.location]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </p>
+                  {entry.end ? (
+                    <p className="mono-meta mt-2 text-(--color-text-muted)">
+                      Graduation: {formatYearMonth(entry.end)}
+                    </p>
+                  ) : null}
+                </div>
+              ))}
             </Surface>
 
             {/* Problem Solving Card */}

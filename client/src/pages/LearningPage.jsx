@@ -1,109 +1,101 @@
-import { useMemo, useState } from "react";
+import { BookOpen, Route as RouteIcon, Sprout } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { PAGE_META } from "../routes/route-meta";
-import { Container } from "../components/ui/Container";
-import { SectionHeader } from "../components/ui/SectionHeader";
-import { TextLink } from "../components/ui/TextLink";
-import { cn } from "../lib/cn";
-import { detectTextLanguage } from "../lib/language";
-import { useLearningPosts } from "../features/learning/useLearningPosts";
-import { LearningPostGrid } from "../features/learning/LearningPostGrid";
-import { LearningPostsState } from "../features/learning/LearningPostsState";
-import { BLOG_URL, isBlogConfigured } from "../config/blog";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
+import { TextLink } from "../components/ui/TextLink";
+import { ProfileSection } from "../features/profile/ProfileSection";
+import { LearningTrackCard } from "../features/learning-tracks/LearningTrackCard";
+import { CertificationList } from "../features/credentials/CertificationList";
+import {
+  LEARNING_STATUSES,
+  learningMethod,
+  learningTracks,
+} from "../data/learning";
+import { certifications } from "../data/certifications";
 
-function deriveDisplayState({ status, configured, posts }) {
-  if (status === "loading") return "loading";
-  if (status === "error") return "error";
-  if (!configured) return "config-missing";
-  if (posts.length === 0) return "empty";
-  return "posts";
+const trackGroups = LEARNING_STATUSES.map((status) => ({
+  ...status,
+  tracks: learningTracks.filter((track) => track.status === status.id),
+})).filter((group) => group.tracks.length > 0);
+
+// Until tracks are written up in the admin, the courses in progress are
+// the honest answer to "what is he learning now?".
+const inProgress = certifications.filter(
+  (item) => item.status === "in-progress",
+);
+
+/** The "How I learn" steps, numbered, with arrows between them on wide screens. */
+function MethodSteps() {
+  return (
+    <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {learningMethod.steps.map((step, index) => (
+        <li
+          key={step.title}
+          className="rounded-(--radius-md) border border-(--color-border) bg-(--color-surface-raised) p-4"
+        >
+          <p className="mono-meta text-(--color-accent-primary)">
+            {String(index + 1).padStart(2, "0")}
+          </p>
+          <h3 className="mt-1 font-semibold text-(--color-text-primary)">
+            {step.title}
+          </h3>
+          <p className="mt-1 text-[0.9375rem] text-(--color-text-secondary)">
+            {step.description}
+          </p>
+        </li>
+      ))}
+    </ol>
+  );
 }
 
+/** How Jahid learns, and what he is learning, with the proof linked. */
 export function LearningPage() {
-  const { status, configured, posts, message, retry } = useLearningPosts();
-  const [selectedLabel, setSelectedLabel] = useState("All");
-
   usePageMeta(PAGE_META["/learning"]);
-
-  const displayState = deriveDisplayState({ status, configured, posts });
-
-  const labels = useMemo(() => {
-    const unique = new Set();
-    for (const post of posts) {
-      for (const label of post.labels) unique.add(label);
-    }
-    return Array.from(unique);
-  }, [posts]);
-
-  // Only worth showing once there is real variety to filter — a single
-  // label (or none) would just be a control that does nothing useful.
-  const showFilters = displayState === "posts" && labels.length >= 2;
-
-  const visiblePosts =
-    showFilters && selectedLabel !== "All"
-      ? posts.filter((post) => post.labels.includes(selectedLabel))
-      : posts;
 
   return (
     <>
       <PageHeader>
-        <PageHeaderTitle>Writing</PageHeaderTitle>
+        <PageHeaderTitle as="h1">Learning</PageHeaderTitle>
       </PageHeader>
-      <Container as="div" className="section-spacing">
-        <SectionHeader
-          as="h1"
-          label="Learning Log"
-          heading="Blog / Learning"
-          description="Notes from what I'm learning, building and figuring out along the way."
-        />
-        <p className="body-sm mt-4 max-w-prose text-(--color-text-muted)">
-          Long-form posts are published on Blogger.{" "}
-          {isBlogConfigured ? (
-            <TextLink href={BLOG_URL} target="_blank" rel="noopener noreferrer">
-              Visit all posts ↗
-            </TextLink>
-          ) : null}
-        </p>
 
-        {showFilters ? (
-          <div
-            role="group"
-            aria-label="Filter by label"
-            className="mt-8 flex flex-wrap gap-2"
-          >
-            {["All", ...labels].map((label) => (
-              <button
-                key={label}
-                type="button"
-                aria-pressed={selectedLabel === label}
-                onClick={() => setSelectedLabel(label)}
-                lang={detectTextLanguage(label)}
-                className={cn(
-                  "rounded-(--radius-pill) border px-3 py-1 font-mono text-xs transition-colors",
-                  selectedLabel === label
-                    ? "border-(--color-accent-primary) bg-(--color-accent-primary-soft) font-semibold text-(--color-accent-primary)"
-                    : "border-(--color-border) text-(--color-text-secondary) hover:text-(--color-text-primary)",
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+      <ProfileSection id="how-i-learn" icon={RouteIcon} title="How I learn">
+        {learningMethod.intro ? (
+          <p className="mb-5 max-w-[46em] text-base text-(--color-text-secondary)">
+            {learningMethod.intro}
+          </p>
         ) : null}
+        <MethodSteps />
+      </ProfileSection>
 
-        <div className="mt-10">
-          {displayState === "posts" ? (
-            <LearningPostGrid posts={visiblePosts} headingLevel="h2" />
-          ) : (
-            <LearningPostsState
-              status={displayState}
-              message={message}
-              onRetry={retry}
-            />
-          )}
-        </div>
-      </Container>
+      {trackGroups.map((group) => (
+        <ProfileSection
+          key={group.id}
+          id={group.id}
+          icon={group.id === "learning" ? Sprout : BookOpen}
+          title={group.label}
+        >
+          <ul className="grid gap-4">
+            {group.tracks.map((track) => (
+              <li key={track.id}>
+                <LearningTrackCard track={track} />
+              </li>
+            ))}
+          </ul>
+        </ProfileSection>
+      ))}
+
+      {trackGroups.length === 0 && inProgress.length > 0 ? (
+        <ProfileSection id="in-progress" icon={Sprout} title="In progress">
+          <CertificationList items={inProgress} />
+        </ProfileSection>
+      ) : null}
+
+      <p className="px-4 py-8 text-[0.9375rem] text-(--color-text-secondary) sm:px-7">
+        Completed courses and certificates are on{" "}
+        <TextLink to="/credentials">Education &amp; Certifications</TextLink>,
+        and the notes I write along the way are under{" "}
+        <TextLink to="/writing">Writing</TextLink>.
+      </p>
     </>
   );
 }

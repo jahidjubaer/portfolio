@@ -1,3 +1,4 @@
+import { educationEntries } from "../../data/education";
 import { siteConfig } from "../../config/site";
 import { profile } from "../../data/profile";
 
@@ -24,10 +25,10 @@ export function StructuredData() {
         addressLocality: "Sylhet",
         addressCountry: "BD",
       },
-      alumniOf: {
+      alumniOf: educationEntries.map((entry) => ({
         "@type": "CollegeOrUniversity",
-        name: profile.education.university,
-      },
+        name: entry.organization.name,
+      })),
       sameAs: siteConfig.sameAs,
     },
     {

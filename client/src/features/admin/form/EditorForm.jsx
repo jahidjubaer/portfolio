@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useBlocker } from "react-router-dom";
-import { Save } from "lucide-react";
+import { Eye, Save } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
+import { cn } from "../../../lib/cn";
 import { FormFields } from "./FormFields";
+import { PreviewBoundary } from "./PreviewBoundary";
 import { fromDraft, issuesToErrors, setAt, toDraft } from "./draft";
 
 /**
@@ -20,7 +22,11 @@ import { fromDraft, issuesToErrors, setAt, toDraft } from "./draft";
  *   prepareForValidation?: (value: Record<string, unknown>) => Record<string, unknown>,
  *   isNew?: boolean,
  *   submitLabel?: string,
+ *   preview?: (value: Record<string, unknown>) => import("react").ReactNode,
  * }} props
+ *
+ * With `preview`, the unsaved values are also rendered beside the form the
+ * way the public site will show them. Ctrl/⌘+S saves.
  */
 export function EditorForm({
   fields,
@@ -32,6 +38,7 @@ export function EditorForm({
   prepareForValidation = (input) => input,
   isNew = false,
   submitLabel = "Save changes",
+  preview,
 }) {
   const [initialDraft] = useState(() => toDraft(value, fields));
   const [draft, setDraft] = useState(initialDraft);
@@ -61,6 +68,17 @@ export function EditorForm({
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
+
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        formRef.current?.requestSubmit();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   function handleChange(path, next) {
     setDraft((current) => setAt(current, path, next));
@@ -106,13 +124,38 @@ export function EditorForm({
   }
 
   const rootError = errors[""];
+  const previewValue = preview ? normalize(fromDraft(draft, fields)) : null;
+  const previewContent = preview ? (
+    <aside
+      aria-labelledby="preview-heading"
+      className="rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-4 xl:sticky xl:top-20"
+    >
+      <h2
+        id="preview-heading"
+        className="mono-meta mb-4 flex items-center gap-2 text-(--color-text-muted)"
+      >
+        <Eye size={14} aria-hidden="true" />
+        Preview, as it will look on the site
+      </h2>
+      <PreviewBoundary value={JSON.stringify(previewValue)}>
+        {preview(previewValue) ?? (
+          <p className="text-sm text-(--color-text-muted)">
+            Fill in the form to see a preview.
+          </p>
+        )}
+      </PreviewBoundary>
+    </aside>
+  ) : null;
 
   return (
     <form
       ref={formRef}
       onSubmit={handleSubmit}
       noValidate
-      className="grid gap-6"
+      className={cn(
+        "grid gap-6",
+        preview && "xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start",
+      )}
     >
       <FormFields
         fields={fields}
@@ -121,11 +164,14 @@ export function EditorForm({
         onChange={handleChange}
         isNew={isNew}
       />
+      {previewContent}
       {rootError ? (
-        <p className="text-sm text-(--color-danger)">{rootError}</p>
+        <p className="text-sm text-(--color-danger) xl:col-span-full">
+          {rootError}
+        </p>
       ) : null}
 
-      <div className="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-3 border-t border-(--color-border) bg-(--color-canvas)/90 px-4 py-3 backdrop-blur sm:-mx-7 sm:px-7">
+      <div className="sticky bottom-0 -mx-4 flex xl:col-span-full flex-wrap items-center gap-3 border-t border-(--color-border) bg-(--color-canvas)/90 px-4 py-3 backdrop-blur sm:-mx-7 sm:px-7">
         <Button
           type="submit"
           disabled={saving}
@@ -143,6 +189,11 @@ export function EditorForm({
           }
         >
           {status?.message ?? (dirty ? "Unsaved changes" : "")}
+        </p>
+        <p className="ml-auto hidden text-xs text-(--color-text-muted) sm:block">
+          <kbd className="font-mono">Ctrl</kbd>/
+          <kbd className="font-mono">⌘</kbd> +{" "}
+          <kbd className="font-mono">S</kbd> saves
         </p>
       </div>
 

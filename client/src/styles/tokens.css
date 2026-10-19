@@ -51,6 +51,12 @@
   --color-success: #4ade80;
   --color-warning: #e7b75f;
   --color-danger: #ff766f;
+
+  /* Opening curtain (features/intro) */
+  --color-paper: #141417;
+  --color-paper-fibre: #3a3a42;
+  --color-paper-rule: rgba(255, 255, 255, 0.035);
+  --color-paper-shade: rgba(0, 0, 0, 0.35);
 }
 
 :root[data-theme="light"] {
@@ -77,6 +83,10 @@
   --color-success: #15803d;
   --color-warning: #a16207;
   --color-danger: #b91c1c;
+  --color-paper: #f5f2ea;
+  --color-paper-fibre: #fffdf8;
+  --color-paper-rule: rgba(20, 20, 22, 0.045);
+  --color-paper-shade: rgba(60, 50, 30, 0.12);
 }
 
 :root {
@@ -144,5 +154,6 @@
   --z-mobile-menu: 40;
   --z-rail: 55; /* above the sticky page header so rail popovers overlap it */
   --z-overlay: 60;
+  --z-curtain: 90; /* opening animation; the skip link still sits above it */
   --z-skip-link: 100;
 }

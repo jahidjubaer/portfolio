@@ -36,13 +36,71 @@ function getContext() {
   return context;
 }
 
-/** @param {keyof typeof SOUNDS} name */
+/** @param {AudioContext} ctx @param {number} seconds */
+function noiseBuffer(ctx, seconds) {
+  const buffer = ctx.createBuffer(1, ctx.sampleRate * seconds, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let index = 0; index < data.length; index += 1) {
+    data[index] = Math.random() * 2 - 1;
+  }
+  return buffer;
+}
+
+/**
+ * The opening curtain: a short crackle of paper tearing, then a soft
+ * whoosh as the halves swing away. Both are filtered white noise.
+ * @param {AudioContext} ctx
+ */
+function playPageOpen(ctx) {
+  const start = ctx.currentTime;
+
+  const tear = ctx.createBufferSource();
+  tear.buffer = noiseBuffer(ctx, 0.32);
+  const tearFilter = ctx.createBiquadFilter();
+  tearFilter.type = "highpass";
+  tearFilter.frequency.value = 2600;
+  const tearGain = ctx.createGain();
+  // Uneven little bursts read as fibres giving way.
+  for (let step = 0; step < 22; step += 1) {
+    const at = start + step * 0.013;
+    const level = (0.2 + Math.random() * 0.8) * 0.05 * (1 - step / 26);
+    tearGain.gain.setValueAtTime(level, at);
+  }
+  tearGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.32);
+  tear.connect(tearFilter).connect(tearGain).connect(ctx.destination);
+  tear.start(start);
+
+  const whoosh = ctx.createBufferSource();
+  whoosh.buffer = noiseBuffer(ctx, 1);
+  const sweep = ctx.createBiquadFilter();
+  sweep.type = "bandpass";
+  sweep.Q.value = 0.9;
+  sweep.frequency.setValueAtTime(420, start + 0.05);
+  sweep.frequency.exponentialRampToValueAtTime(2100, start + 0.42);
+  sweep.frequency.exponentialRampToValueAtTime(650, start + 0.95);
+  const whooshGain = ctx.createGain();
+  whooshGain.gain.setValueAtTime(0.0001, start + 0.05);
+  whooshGain.gain.exponentialRampToValueAtTime(0.11, start + 0.38);
+  whooshGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.98);
+  whoosh.connect(sweep).connect(whooshGain).connect(ctx.destination);
+  whoosh.start(start + 0.05);
+  whoosh.stop(start + 1);
+}
+
+const NOISE_SOUNDS = { pageOpen: playPageOpen };
+
+/** @param {keyof typeof SOUNDS | keyof typeof NOISE_SOUNDS} name */
 export function playSound(name) {
   const notes = SOUNDS[name];
-  if (!notes) return;
+  const noise = NOISE_SOUNDS[name];
+  if (!notes && !noise) return;
   const ctx = getContext();
   if (!ctx) return;
   if (ctx.state === "suspended") ctx.resume().catch(() => {});
+  if (noise) {
+    noise(ctx);
+    return;
+  }
 
   const start = ctx.currentTime;
   for (const note of notes) {

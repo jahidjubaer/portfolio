@@ -1,10 +1,12 @@
 import {
+  BadgeCheck,
   Camera,
   CircleUserRound,
   FileText,
   Mail,
   Package,
   PenLine,
+  Sprout,
 } from "lucide-react";
 
 /**
@@ -21,6 +23,8 @@ export const PRIMARY_NAV = [
 ];
 
 export const SECONDARY_NAV = [
-  { to: "/learning", label: "Writing", icon: PenLine },
+  { to: "/credentials", label: "Credentials", icon: BadgeCheck },
+  { to: "/learning", label: "Learning", icon: Sprout },
+  { to: "/writing", label: "Writing", icon: PenLine },
   { to: "/resume", label: "Resume", icon: FileText },
 ];

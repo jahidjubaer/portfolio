@@ -57,7 +57,7 @@ test("renders three fixture posts and links out to the real Blogger articles", a
     source: "Blogger",
   });
 
-  await page.goto("/learning");
+  await page.goto("/writing");
 
   for (const post of FIXTURE_POSTS) {
     await expect(
@@ -85,7 +85,7 @@ test("mobile layout renders the learning grid without overflow", async ({
   });
   await page.setViewportSize({ width: 360, height: 800 });
 
-  await page.goto("/learning");
+  await page.goto("/writing");
   await expect(
     page.getByRole("heading", { level: 2, name: FIXTURE_POSTS[0].title }),
   ).toBeVisible();
@@ -108,7 +108,7 @@ test("has no automatically detectable accessibility violations with posts loaded
     source: "Blogger",
   });
 
-  await page.goto("/learning");
+  await page.goto("/writing");
   await expect(
     page.getByRole("heading", { level: 2, name: FIXTURE_POSTS[0].title }),
   ).toBeVisible();

@@ -1,30 +1,55 @@
 import { certifications as storedCertifications } from "../generated/content.json";
+import { getOrganization } from "./organizations";
 
 /**
- * Certificates and training, grouped by kind, edited in the admin panel
- * and read from the published content snapshot. Add `credentialUrl` only
- * with a real verification link.
- *
  * @typedef {{
  *   id: string,
  *   title: string,
- *   issuer: string,
- *   category: "professional" | "leadership" | "other",
+ *   organization: import("./organizations").Organization,
+ *   kind: "certification" | "course",
  *   status: "completed" | "in-progress",
  *   issued?: string,
+ *   expires?: string,
+ *   credentialId?: string,
  *   credentialUrl?: string,
  *   description?: string,
+ *   skills?: string[],
+ *   image?: { url: string, width: number, height: number },
+ *   imageAlt?: string,
  * }} Certification
  */
 
-/** @type {Certification[]} */
-export const certifications = [...storedCertifications].sort(
-  (a, b) => a.order - b.order,
-);
+/**
+ * One stored certification, ready to render. Shared with the admin's
+ * live preview.
+ * @param {Record<string, any>} stored
+ * @param {(id: string) => import("./organizations").Organization} findOrganization
+ * @returns {Certification}
+ */
+export function resolveCertification(stored, findOrganization) {
+  const { organizationId, ...item } = stored;
+  delete item.order;
+  return { ...item, organization: findOrganization(organizationId) };
+}
 
-/** Display order and headings; groups without entries are not shown. */
-export const CERTIFICATION_CATEGORIES = [
-  { id: "professional", label: "Professional" },
-  { id: "leadership", label: "Leadership" },
-  { id: "other", label: "Other" },
+const recency = (item) =>
+  item.status === "in-progress" ? "9999" : (item.issued ?? "0000");
+
+/**
+ * Licenses, certificates, and courses as LinkedIn orders them: in progress
+ * first, then the most recently issued.
+ * @type {Certification[]}
+ */
+export const certifications = storedCertifications
+  .map((stored) => resolveCertification(stored, getOrganization))
+  .sort((a, b) => recency(b).localeCompare(recency(a)));
+
+export const CERTIFICATION_KINDS = [
+  { id: "certification", label: "Certifications" },
+  { id: "course", label: "Courses" },
 ];
+
+/** @param {string} id */
+export function getCertification(id) {
+  return certifications.find((item) => item.id === id);
+}

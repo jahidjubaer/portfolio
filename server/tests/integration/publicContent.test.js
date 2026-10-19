@@ -59,8 +59,12 @@ describe("GET /api/public/*", () => {
       [
         "beyond",
         "certifications",
+        "education",
         "experience",
         "github",
+        "learning",
+        "learningTracks",
+        "organizations",
         "photos",
         "posts",
         "profile",
@@ -70,6 +74,27 @@ describe("GET /api/public/*", () => {
     );
     expect(response.body.data.certifications).toHaveLength(
       content.certifications.length,
+    );
+  });
+
+  it("never publishes a grade that isn't marked to show", async () => {
+    const db = await getDb();
+    const education = db.collection("education");
+    const [entry] = content.education;
+    await education.updateOne(
+      { id: entry.id },
+      { $set: { grade: "3.38", showGrade: false } },
+    );
+    const hidden = await request(app).get("/api/public/content");
+    expect(hidden.body.data.education[0]).not.toHaveProperty("grade");
+
+    await education.updateOne({ id: entry.id }, { $set: { showGrade: true } });
+    const shown = await request(app).get("/api/public/content");
+    expect(shown.body.data.education[0].grade).toBe("3.38");
+
+    await education.updateOne(
+      { id: entry.id },
+      { $unset: { grade: "", showGrade: "" } },
     );
   });
 

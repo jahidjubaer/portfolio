@@ -10,7 +10,7 @@ import { createContext } from "react";
  *   setAccent: (id: string) => void,
  *   font: string,
  *   setFont: (id: string) => void,
- *   play: (name: "tap" | "toggle" | "message" | "success") => void,
+ *   play: (name: "tap" | "toggle" | "message" | "success" | "pageOpen") => void,
  * }} Preferences
  */
 

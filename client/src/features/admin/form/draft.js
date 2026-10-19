@@ -5,10 +5,13 @@
  * on save. That keeps typing natural: a trailing newline isn't lost.
  *
  * Field types: text, email, url, date, textarea, markdown, number, select,
- * checkbox, lines, paragraphs, json, image (an uploaded `{ url, width,
- * height }`), pdf (URL text with an upload button), objectList (with
- * nested `fields`).
- * Flags: `optional` (blank → field removed), `nullable` (blank → null).
+ * checkbox, checkboxes (several values from `options`), lines,
+ * paragraphs, json, image (an uploaded `{ url, width, height }`), pdf (URL
+ * text with an upload button), objectList (with nested `fields`).
+ * Flags: `optional` (blank or unticked → field removed), `nullable`
+ * (blank → null). A select's `placeholder` is its blank first option;
+ * `quickAdd: "organizations"` adds a "New organization" button under it.
+ * `half` lets two consecutive fields share a row on wider screens.
  * `showWhen(item)` hides an objectList sub-field for some items.
  *
  * @typedef {{
@@ -20,6 +23,9 @@
  *   nullable?: boolean,
  *   rows?: number,
  *   options?: Array<{ value: string, label: string }>,
+ *   placeholder?: string,
+ *   quickAdd?: "organizations",
+ *   half?: boolean,
  *   fields?: Field[],
  *   itemLabel?: string,
  *   newItem?: Record<string, unknown>,
@@ -58,6 +64,8 @@ function toDraftValue(field, value) {
       return value == null ? "" : String(value);
     case "checkbox":
       return Boolean(value);
+    case "checkboxes":
+      return value ?? [];
     case "image":
       return value ?? null;
     case "objectList":
@@ -106,7 +114,9 @@ function fromDraftValue(field, raw) {
     case "number":
       return raw === "" ? undefined : Number(raw);
     case "checkbox":
-      return Boolean(raw);
+      return field.optional && !raw ? undefined : Boolean(raw);
+    case "checkboxes":
+      return raw;
     case "image":
       if (raw) return raw;
       return field.optional ? undefined : null;

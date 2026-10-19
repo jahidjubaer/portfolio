@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installFakeAdminApi, renderAdmin } from "./fake-admin-api";
+import { certifications } from "../../../src/data/certifications";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -60,11 +61,13 @@ describe("AdminLayout", () => {
       "Beyond",
     ]) {
       expect(
-        within(nav).getByRole("link", { name: label }),
+        within(nav).getByRole("link", { name: new RegExp(`^${label}`) }),
       ).toBeInTheDocument();
     }
     expect(
-      screen.getByRole("link", { name: /certifications 4/i }),
+      screen.getByRole("link", {
+        name: new RegExp(`^Certifications\\W+${certifications.length}$`),
+      }),
     ).toBeInTheDocument();
   });
 

@@ -4,6 +4,9 @@ import { useAdmin } from "../../features/admin/admin-context";
 import { LISTS } from "../../features/admin/admin-collections";
 import { createListItem, updateListItem } from "../../features/admin/admin-api";
 import { EditorForm } from "../../features/admin/form/EditorForm";
+import { PREVIEWS } from "../../features/admin/previews";
+import { ButtonLink } from "../../components/ui/ButtonLink";
+import { ExternalLink } from "lucide-react";
 import { AdminPageHeader } from "./AdminPageHeader";
 
 /**
@@ -63,10 +66,27 @@ export function AdminItemPage({ name }) {
   return (
     <>
       <AdminPageHeader
-        title={isNew ? `New ${config.itemLabel}` : config.titleOf(item)}
+        title={
+          isNew ? `New ${config.itemLabel}` : config.titleOf(item, content)
+        }
         description={isNew ? config.prefilledNote?.(routeState) : undefined}
         backTo={backTo}
         backLabel={config.label}
+        actions={
+          !isNew && config.viewOnSite ? (
+            <ButtonLink
+              href={config.viewOnSite(item)}
+              target="_blank"
+              rel="noreferrer"
+              variant="secondary"
+              size="sm"
+              trailingIcon={<ExternalLink size={14} />}
+            >
+              View on site
+              <span className="sr-only"> (published version, new tab)</span>
+            </ButtonLink>
+          ) : null
+        }
       />
       <EditorForm
         key={key ?? "new"}
@@ -80,6 +100,9 @@ export function AdminItemPage({ name }) {
         // The server assigns `order`; give validation a placeholder.
         prepareForValidation={(value) => ({ ...value, order: item.order ?? 0 })}
         submitLabel={isNew ? `Add ${config.itemLabel}` : "Save changes"}
+        preview={
+          PREVIEWS[name] ? (value) => PREVIEWS[name](value, content) : undefined
+        }
       />
     </>
   );

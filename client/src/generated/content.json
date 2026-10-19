@@ -24,11 +24,6 @@
     "linkedin": "https://www.linkedin.com/in/jahidjubaer/",
     "codeforces": "https://codeforces.com/profile/jahidjubaer17",
     "leetcode": "https://leetcode.com/u/jahidjubaer/",
-    "education": {
-      "degree": "BSc in Computer Science and Engineering",
-      "university": "Metropolitan University, Sylhet",
-      "graduation": "August 2026"
-    },
     "problemSolving": {
       "total": "250+ programming problems solved",
       "primaryLanguage": "C++",
@@ -324,59 +319,183 @@
       ]
     }
   ],
+  "organizations": [
+    {
+      "id": "red-crescent-youth-rcy",
+      "order": 0,
+      "name": "Red Crescent Youth (RCY)"
+    },
+    {
+      "id": "metropolitan-university-sports-club",
+      "order": 1,
+      "name": "Metropolitan University Sports Club",
+      "location": "Sylhet"
+    },
+    {
+      "id": "metropolitan-university-photographic-society",
+      "order": 2,
+      "name": "Metropolitan University Photographic Society",
+      "location": "Sylhet"
+    },
+    {
+      "id": "metropolitan-university",
+      "order": 3,
+      "name": "Metropolitan University",
+      "url": "https://metrouni.edu.bd/",
+      "location": "Sylhet"
+    },
+    {
+      "id": "programming-hero",
+      "order": 4,
+      "name": "Programming Hero",
+      "url": "https://www.programming-hero.com/"
+    },
+    {
+      "id": "learn-with-sumit",
+      "order": 5,
+      "name": "Learn with Sumit",
+      "url": "https://learnwithsumit.com/"
+    },
+    {
+      "id": "edge-iict-sust",
+      "order": 6,
+      "name": "EDGE, IICT SUST"
+    },
+    {
+      "id": "wadhwani-foundation",
+      "order": 7,
+      "name": "Wadhwani Foundation",
+      "url": "https://www.wadhwanifoundation.org/"
+    },
+    {
+      "id": "kaggle",
+      "order": 8,
+      "name": "Kaggle",
+      "url": "https://www.kaggle.com/learn"
+    },
+    {
+      "id": "youkn0wwho-academy",
+      "order": 9,
+      "name": "YouKn0wWho Academy",
+      "url": "https://youkn0wwho.academy/"
+    },
+    {
+      "id": "sust-research-society",
+      "order": 10,
+      "name": "SUST Research Society",
+      "location": "Sylhet"
+    },
+    {
+      "id": "ononno",
+      "order": 11,
+      "name": "Ononno"
+    },
+    {
+      "id": "bangladesh-red-crescent-society",
+      "order": 12,
+      "name": "Bangladesh Red Crescent Society",
+      "url": "https://bdrcs.org/"
+    },
+    {
+      "id": "bangladesh-scouts",
+      "order": 13,
+      "name": "Bangladesh Scouts",
+      "url": "https://scouts.gov.bd/"
+    }
+  ],
   "experience": [
     {
-      "id": "rcy-volunteering",
+      "id": "red-crescent-youth-rcy",
       "order": 0,
-      "date": "2019–2021",
-      "sortYear": 2019,
+      "organizationId": "red-crescent-youth-rcy",
       "category": "community",
-      "title": "Volunteer",
-      "organization": "Red Crescent Youth (RCY)",
-      "description": "Community volunteering with Red Crescent Youth."
+      "roles": [
+        {
+          "title": "Volunteer",
+          "employmentType": "volunteer",
+          "start": "2019",
+          "end": "2021",
+          "description": "Community volunteering with Red Crescent Youth."
+        }
+      ]
     },
     {
-      "id": "sports-club-joint-secretary",
+      "id": "metropolitan-university-sports-club",
       "order": 1,
-      "date": "2023–2024",
-      "sortYear": 2023,
+      "organizationId": "metropolitan-university-sports-club",
       "category": "leadership",
-      "title": "Joint Office Secretary",
-      "organization": "Metropolitan University Sports Club",
-      "description": "Supported event planning and team leadership across university sports programs.",
-      "details": "Supported event planning and team leadership across university sports programs."
+      "roles": [
+        {
+          "title": "Organizing Secretary",
+          "start": "2024",
+          "end": "2025",
+          "description": "Coordinated university sports events including the Metropolitan University Premier League (cricket), League M (football), Indoor Games, CLC, Futsal, and Badminton League — covering umpiring, event planning, on-field operations, and sponsorship coordination. Helped organise 10+ events, coordinated participants and university authorities, and captained participating teams.",
+          "skills": [
+            "Event planning",
+            "Team leadership",
+            "Stakeholder coordination",
+            "Sponsorship"
+          ]
+        },
+        {
+          "title": "Joint Office Secretary",
+          "start": "2023",
+          "end": "2024",
+          "description": "Supported event planning and team leadership across university sports programs.",
+          "skills": [
+            "Administration",
+            "Coordination",
+            "Event operations"
+          ]
+        },
+        {
+          "title": "Member",
+          "start": "2022",
+          "end": "2025",
+          "description": "Took part in club activities and represented teams in cricket and football events."
+        }
+      ]
     },
     {
-      "id": "sports-club-organizing-secretary",
+      "id": "metropolitan-university-photographic-society",
       "order": 2,
-      "date": "2024–2025",
-      "sortYear": 2024,
+      "organizationId": "metropolitan-university-photographic-society",
       "category": "leadership",
-      "title": "Organizing Secretary",
-      "organization": "Metropolitan University Sports Club",
-      "description": "Coordinated university cricket, football, indoor games, and badminton leagues.",
-      "details": "Coordinated university sports events including the Metropolitan University Premier League (cricket), League M (football), Indoor Games, CLC, Futsal, and Badminton League — covering umpiring, event planning, on-field operations, and sponsorship coordination."
-    },
+      "roles": [
+        {
+          "title": "Organizing Secretary",
+          "start": "2024",
+          "end": "2025",
+          "description": "Supported event planning, member communication, photo walks, and university photography coverage.",
+          "skills": [
+            "Event photography",
+            "Visual storytelling",
+            "Event coordination"
+          ]
+        }
+      ]
+    }
+  ],
+  "education": [
     {
-      "id": "photographic-society-organizing-secretary",
-      "order": 3,
-      "date": "2024–2025",
-      "sortYear": 2024,
-      "category": "leadership",
-      "title": "Organizing Secretary",
-      "organization": "Metropolitan University Photographic Society",
-      "description": "Organized photo walks and university photography coverage.",
-      "details": "Supported event planning, member communication, photo walks, and university photography coverage."
-    },
-    {
-      "id": "graduation",
-      "order": 4,
-      "date": "August 2026",
-      "sortYear": 2026,
-      "category": "education",
-      "title": "Graduation",
-      "organization": "Metropolitan University, Sylhet",
-      "description": "BSc in Computer Science and Engineering"
+      "id": "bsc-metropolitan-university",
+      "order": 0,
+      "organizationId": "metropolitan-university",
+      "degree": "BSc",
+      "field": "Computer Science and Engineering",
+      "start": "2022-07",
+      "end": "2026-08",
+      "activities": "Metropolitan University Sports Club, Metropolitan University Photographic Society",
+      "description": "Strongest results in programming, algorithms, operating systems, databases, web programming, and software engineering, with hands-on lab and project work.",
+      "skills": [
+        "Algorithms",
+        "Data structures",
+        "Object-oriented programming",
+        "Operating systems",
+        "Database management",
+        "Web programming",
+        "Software engineering"
+      ]
     }
   ],
   "skills": [
@@ -430,36 +549,243 @@
       "id": "programming-hero-complete-web-development",
       "order": 0,
       "title": "Complete Web Development",
-      "issuer": "Programming Hero",
-      "category": "professional",
-      "status": "completed",
-      "issued": "2026"
+      "organizationId": "programming-hero",
+      "kind": "course",
+      "status": "in-progress",
+      "description": "Batch 12 (Jul 2025 – Jan 2026). 10 of 12 milestones completed: HTML, CSS, responsive design, JavaScript, the DOM, APIs, React, routing, and Firebase authentication.",
+      "skills": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "React",
+        "React Router",
+        "Tailwind CSS",
+        "Firebase Authentication"
+      ],
+      "featured": true
     },
     {
       "id": "learn-with-sumit-reactive-accelerator",
       "order": 1,
       "title": "Reactive Accelerator",
-      "issuer": "Learn with Sumit",
-      "category": "professional",
-      "status": "in-progress"
+      "organizationId": "learn-with-sumit",
+      "kind": "course",
+      "status": "in-progress",
+      "description": "Batch 4. First two content modules completed (JSX, components, props, state, events, immutable updates); continuing self-paced.",
+      "skills": [
+        "React"
+      ]
     },
     {
       "id": "edge-python-data-science",
       "order": 2,
       "title": "Python Programming & Basic Data Science",
-      "issuer": "EDGE, IICT SUST",
-      "category": "professional",
+      "organizationId": "edge-iict-sust",
+      "kind": "certification",
       "status": "completed",
-      "issued": "2024"
+      "issued": "2024-12",
+      "credentialId": "EDGE-DSTS-126-1520-00010",
+      "description": "80-hour training (Jul – Nov 2024) under the EDGE Project of Bangladesh Computer Council, ICT Division, delivered by IICT, SUST.",
+      "skills": [
+        "Python",
+        "NumPy",
+        "Pandas",
+        "Data cleaning",
+        "Exploratory data analysis",
+        "Data visualisation"
+      ],
+      "featured": true
     },
     {
-      "id": "wadhwani-jobready-employability",
-      "order": 3,
-      "title": "Employability Skills (JobReady)",
-      "issuer": "Wadhwani Foundation",
-      "category": "professional",
+      "id": "employability-skills",
+      "order": 4,
+      "title": "Employability Skills – JobReady",
+      "organizationId": "wadhwani-foundation",
+      "kind": "certification",
       "status": "completed",
-      "issued": "2024"
+      "issued": "2024-11",
+      "description": "113-hour programme delivered by Brilliant Brains Valley, completed with a 95% overall score (93% in the summative assessment).",
+      "skills": [
+        "Communication",
+        "Professionalism",
+        "Teamwork",
+        "Customer centricity",
+        "Problem solving",
+        "Data security"
+      ],
+      "featured": true
+    },
+    {
+      "id": "kaggle-python",
+      "order": 5,
+      "title": "Python",
+      "organizationId": "kaggle",
+      "kind": "certification",
+      "status": "completed",
+      "issued": "2025-04",
+      "skills": [
+        "Python"
+      ]
+    },
+    {
+      "id": "kaggle-pandas",
+      "order": 6,
+      "title": "Pandas",
+      "organizationId": "kaggle",
+      "kind": "certification",
+      "status": "completed",
+      "issued": "2025-04",
+      "skills": [
+        "Pandas",
+        "Data manipulation"
+      ]
+    },
+    {
+      "id": "sust-path-to-academic-excellence",
+      "order": 7,
+      "title": "A Path to Academic Excellence",
+      "organizationId": "sust-research-society",
+      "kind": "course",
+      "status": "completed",
+      "issued": "2026-01",
+      "description": "Research workshop on responsible research practice, academic publishing, and collaboration.",
+      "skills": [
+        "Research ethics",
+        "Academic writing"
+      ]
+    },
+    {
+      "id": "ononno-deep-focus",
+      "order": 8,
+      "title": "Deep Focus: Study & Work Session Protocol",
+      "organizationId": "ononno",
+      "kind": "course",
+      "status": "completed",
+      "issued": "2026-04",
+      "credentialId": "CERT-2B6A934889",
+      "skills": [
+        "Focus planning",
+        "Productivity"
+      ]
+    },
+    {
+      "id": "mups-photography-workshop-2023",
+      "order": 9,
+      "title": "Photography Workshop 2023",
+      "organizationId": "metropolitan-university-photographic-society",
+      "kind": "course",
+      "status": "completed",
+      "issued": "2023",
+      "skills": [
+        "Photography",
+        "Composition",
+        "Event photography"
+      ]
+    },
+    {
+      "id": "bdrcs-basic-first-aid",
+      "order": 10,
+      "title": "Red Cross Red Crescent Basic & First Aid Training",
+      "organizationId": "bangladesh-red-crescent-society",
+      "kind": "course",
+      "status": "completed",
+      "issued": "2020-08",
+      "description": "Two-day basic first-aid training with the Netrakona Unit.",
+      "skills": [
+        "First aid",
+        "Emergency response"
+      ]
+    },
+    {
+      "id": "scouts-patrol-leader-course",
+      "order": 11,
+      "title": "Patrol Leader Course, 5th National Power & Energy Camp",
+      "organizationId": "bangladesh-scouts",
+      "kind": "course",
+      "status": "completed",
+      "issued": "2016-12",
+      "credentialId": "1038",
+      "description": "Organised by Bangladesh Scouts with the Ministry of Power, Energy & Mineral Resources.",
+      "skills": [
+        "Leadership",
+        "Teamwork"
+      ]
+    }
+  ],
+  "learning": {
+    "steps": [
+      {
+        "title": "Learn",
+        "description": "Courses, official documentation, and books."
+      },
+      {
+        "title": "Practice",
+        "description": "Small exercises and problems until the idea sticks."
+      },
+      {
+        "title": "Build",
+        "description": "Use it in a real project."
+      },
+      {
+        "title": "Write",
+        "description": "Write down what I learned, in my own words."
+      }
+    ]
+  },
+  "learningTracks": [
+    {
+      "id": "react-frontend",
+      "order": 0,
+      "title": "React & frontend",
+      "status": "learning",
+      "since": "2025-07",
+      "summary": "Components, props, state, routing, API integration, and Firebase authentication, now going deeper into how React renders and updates state.",
+      "resources": [],
+      "certificationIds": [
+        "programming-hero-complete-web-development",
+        "learn-with-sumit-reactive-accelerator"
+      ],
+      "practice": "Milestone projects, a Tic-Tac-Toe game, and a task-management practice app.",
+      "projectSlugs": [
+        "sarabo",
+        "ict-crack"
+      ],
+      "notes": []
+    },
+    {
+      "id": "problem-solving-cpp",
+      "order": 1,
+      "title": "Problem solving with C++",
+      "status": "applied",
+      "since": "2024",
+      "summary": "Complexity, recursion, bitmasks, number theory, prefix sums, greedy and constructive problems, STL, and introductory graphs.",
+      "resources": [
+        {
+          "label": "Phase 0 and Phase 1 (Part 1)",
+          "organizationId": "youkn0wwho-academy"
+        }
+      ],
+      "certificationIds": [],
+      "practice": "250+ problems on VJudge, Codeforces, Dimik OJ, and other judges.",
+      "projectSlugs": [],
+      "notes": []
+    },
+    {
+      "id": "python-data",
+      "order": 2,
+      "title": "Python & data analysis",
+      "status": "exploring",
+      "since": "2024-07",
+      "summary": "Foundations in Python, NumPy, and Pandas: cleaning, exploring, and charting data.",
+      "resources": [],
+      "certificationIds": [
+        "edge-python-data-science",
+        "kaggle-python",
+        "kaggle-pandas"
+      ],
+      "practice": "Data cleaning, exploratory analysis, and charts with Matplotlib and Seaborn.",
+      "projectSlugs": [],
+      "notes": []
     }
   ],
   "beyond": {

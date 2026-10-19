@@ -22,10 +22,14 @@ async function findOrdered(name) {
 
 export const getProfile = () => findSingleton("profile");
 export const getBeyond = () => findSingleton("beyond");
+export const getLearning = () => findSingleton("learning");
 export const listProjects = () => findOrdered("projects");
+export const listOrganizations = () => findOrdered("organizations");
 export const listExperience = () => findOrdered("experience");
+export const listEducation = () => findOrdered("education");
 export const listSkills = () => findOrdered("skills");
 export const listCertifications = () => findOrdered("certifications");
+export const listLearningTracks = () => findOrdered("learningTracks");
 export const listPhotos = () => findOrdered("photos");
 
 const PUBLISHED = { status: "published" };
@@ -57,6 +61,13 @@ export async function getProject(slug) {
   return db.collection(COLLECTIONS.projects).findOne({ slug }, HIDE_ID);
 }
 
+function withoutHiddenGrade(entry) {
+  if (entry.showGrade) return entry;
+  const rest = { ...entry };
+  delete rest.grade;
+  return rest;
+}
+
 /**
  * Everything the public site renders — used by the R7 build snapshot.
  * The admin asks for drafts too, so it can edit them.
@@ -66,18 +77,26 @@ export async function getContentSnapshot({ includeDrafts = false } = {}) {
   const [
     profile,
     projects,
+    organizations,
     experience,
+    education,
     skills,
     certifications,
+    learning,
+    learningTracks,
     beyond,
     photos,
     posts,
   ] = await Promise.all([
     getProfile(),
     listProjects(),
+    listOrganizations(),
     listExperience(),
+    listEducation(),
     listSkills(),
     listCertifications(),
+    getLearning(),
+    listLearningTracks(),
     getBeyond(),
     listPhotos(),
     listPosts({ includeDrafts }),
@@ -85,9 +104,15 @@ export async function getContentSnapshot({ includeDrafts = false } = {}) {
   return {
     profile,
     projects,
+    organizations,
     experience,
+    // A grade only leaves the admin once "Show grade" is ticked (CLAUDE.md:
+    // confirm before showing CGPA), so the public bundle never carries it.
+    education: includeDrafts ? education : education.map(withoutHiddenGrade),
     skills,
     certifications,
+    learning,
+    learningTracks,
     beyond,
     photos,
     posts,

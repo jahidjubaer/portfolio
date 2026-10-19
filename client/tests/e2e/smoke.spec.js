@@ -3,7 +3,9 @@ import { test, expect } from "@playwright/test";
 const routes = [
   { path: "/", heading: "Jahid Hasan" },
   { path: "/work", heading: "Projects" },
-  { path: "/learning", heading: "Blog / Learning" },
+  { path: "/writing", heading: "Blog / Learning" },
+  { path: "/learning", heading: "Learning" },
+  { path: "/credentials", heading: "Education & Certifications" },
   { path: "/beyond", heading: "Beyond the code" },
   { path: "/contact", heading: "Contact" },
   { path: "/resume", heading: "Jahid Hasan" },
@@ -45,9 +47,9 @@ test("/about redirects to the profile", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("/blog redirects to /learning", async ({ page }) => {
+test("/blog redirects to /writing", async ({ page }) => {
   await page.goto("/blog");
-  await expect(page).toHaveURL(/\/learning$/);
+  await expect(page).toHaveURL(/\/writing$/);
   await expect(
     page.getByRole("heading", { level: 1, name: "Blog / Learning" }),
   ).toBeVisible();
@@ -60,6 +62,8 @@ test("sidebar navigation reaches every primary route", async ({ page }) => {
     ["Beyond", "Beyond the code"],
     ["Contact", "Contact"],
     ["Writing", "Blog / Learning"],
+    ["Learning", "Learning"],
+    ["Credentials", "Education & Certifications"],
     ["Profile", "Jahid Hasan"],
   ]) {
     await sidebar(page).getByRole("link", { name: label, exact: true }).click();
@@ -302,7 +306,9 @@ for (const path of [
   "/contact",
   "/resume",
   "/beyond",
+  "/writing",
   "/learning",
+  "/credentials",
 ]) {
   test(`no horizontal overflow on ${path} at 360px`, async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });

@@ -29,6 +29,14 @@ const ContactPage = lazy(() =>
 const LearningPage = lazy(() =>
   import("../pages/LearningPage").then((m) => ({ default: m.LearningPage })),
 );
+const WritingPage = lazy(() =>
+  import("../pages/WritingPage").then((m) => ({ default: m.WritingPage })),
+);
+const CredentialsPage = lazy(() =>
+  import("../pages/CredentialsPage").then((m) => ({
+    default: m.CredentialsPage,
+  })),
+);
 const ResumePage = lazy(() =>
   import("../pages/ResumePage").then((m) => ({ default: m.ResumePage })),
 );
@@ -56,9 +64,12 @@ const AdminRepositoriesPage = lazy(() =>
 
 const ADMIN_LISTS = [
   "projects",
+  "organizations",
   "experience",
+  "education",
   "skills",
   "certifications",
+  "learningTracks",
   "posts",
   "photos",
 ];
@@ -79,6 +90,7 @@ export const routeConfig = [
       { index: true, element: <AdminOverview /> },
       { path: "profile", element: <AdminSingletonPage name="profile" /> },
       { path: "beyond", element: <AdminSingletonPage name="beyond" /> },
+      { path: "learning", element: <AdminSingletonPage name="learning" /> },
       { path: "repositories", element: <AdminRepositoriesPage /> },
       ...ADMIN_LISTS.flatMap((name) => [
         { path: name, element: <AdminListPage name={name} /> },
@@ -97,10 +109,12 @@ export const routeConfig = [
       { path: "work/:slug", element: <ProjectDetailsPage /> },
       // /about content now lives in the profile's Resume tab.
       { path: "about", element: <Navigate to="/" replace /> },
+      { path: "credentials", element: <CredentialsPage /> },
       { path: "learning", element: <LearningPage /> },
-      // /blog is an alias, not a second page — it redirects so /learning
-      // stays the single canonical URL (see LearningPage's usePageMeta).
-      { path: "blog", element: <Navigate to="/learning" replace /> },
+      { path: "writing", element: <WritingPage /> },
+      // /blog is an alias, not a second page — it redirects so /writing
+      // stays the one canonical URL.
+      { path: "blog", element: <Navigate to="/writing" replace /> },
       { path: "beyond", element: <BeyondPage /> },
       { path: "contact", element: <ContactPage /> },
       { path: "resume", element: <ResumePage /> },

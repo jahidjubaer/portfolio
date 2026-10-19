@@ -3,10 +3,14 @@ import { buildSeedContent } from "../../scripts/seed-content.js";
 import {
   caseStudySchema,
   certificationSchema,
+  contentSchema,
+  findBrokenReferences,
   photoSchema,
   postSchema,
   projectSchema,
+  roleSchema,
 } from "../../src/schemas/content.js";
+import { toYearMonth, upgradeContent } from "../../src/db/content-upgrade.js";
 
 const BLOB_IMAGE = {
   url: "https://store.public.blob.vercel-storage.com/photos/a-x1.webp",
@@ -31,11 +35,16 @@ describe("seed content", () => {
     );
   });
 
-  it("attaches the longer leadership write-up to matching experience", () => {
-    const organizing = content.experience.find(
-      (event) => event.id === "sports-club-organizing-secretary",
+  it("groups roles under one organization, newest first", () => {
+    const club = content.experience.find(
+      (entry) => entry.organizationId === "metropolitan-university-sports-club",
     );
-    expect(organizing.details).toMatch(/Premier League/);
+    expect(club.roles.map((role) => role.title)).toEqual([
+      "Organizing Secretary",
+      "Joint Office Secretary",
+      "Member",
+    ]);
+    expect(club.roles[0].description).toMatch(/Premier League/);
   });
 
   it("does not store the build-derived résumé availability flag", () => {
@@ -54,19 +63,22 @@ describe("content schemas", () => {
     expect(result.success).toBe(false);
   });
 
-  it("validates certifications by category", () => {
+  it("validates certifications", () => {
     const certificate = {
       id: "example",
       order: 0,
       title: "Example certificate",
-      issuer: "Example issuer",
-      category: "professional",
+      organizationId: "example-org",
+      kind: "certification",
       status: "completed",
-      issued: "2026",
+      issued: "2026-03",
     };
     expect(certificationSchema.safeParse(certificate).success).toBe(true);
     expect(
-      certificationSchema.safeParse({ ...certificate, category: "hobby" })
+      certificationSchema.safeParse({ ...certificate, kind: "hobby" }).success,
+    ).toBe(false);
+    expect(
+      certificationSchema.safeParse({ ...certificate, issued: "March 2026" })
         .success,
     ).toBe(false);
     expect(
@@ -82,8 +94,8 @@ describe("content schemas", () => {
       id: "example",
       order: 0,
       title: "Example course",
-      issuer: "Example issuer",
-      category: "professional",
+      organizationId: "example-org",
+      kind: "course",
     };
     expect(
       certificationSchema.safeParse({ ...base, status: "completed" }).success,
@@ -91,6 +103,51 @@ describe("content schemas", () => {
     expect(
       certificationSchema.safeParse({ ...base, status: "in-progress" }).success,
     ).toBe(true);
+  });
+
+  it("needs an end date or an explicit current role", () => {
+    const role = { title: "Organizer", start: "2024-01" };
+    expect(roleSchema.safeParse(role).success).toBe(false);
+    expect(roleSchema.safeParse({ ...role, current: true }).success).toBe(true);
+    expect(roleSchema.safeParse({ ...role, end: "2025" }).success).toBe(true);
+    expect(
+      roleSchema.safeParse({ ...role, end: "2025", current: true }).success,
+    ).toBe(false);
+    expect(roleSchema.safeParse({ ...role, end: "2023-12" }).success).toBe(
+      false,
+    );
+    // Same year at different precision is not "before".
+    expect(
+      roleSchema.safeParse({ title: "x", start: "2024-06", end: "2024" })
+        .success,
+    ).toBe(true);
+  });
+
+  it("rejects ids that point at nothing", () => {
+    const valid = buildSeedContent();
+    expect(findBrokenReferences(valid)).toEqual([]);
+    const broken = structuredClone(valid);
+    broken.certifications[0].organizationId = "nowhere";
+    broken.learningTracks.push({
+      id: "react",
+      order: 0,
+      title: "React",
+      status: "learning",
+      resources: [{ label: "Course", organizationId: "missing" }],
+      certificationIds: ["missing-cert"],
+      projectSlugs: ["missing-project"],
+      notes: [],
+    });
+    const messages = findBrokenReferences(broken).map((issue) => issue.message);
+    expect(messages).toEqual(
+      expect.arrayContaining([
+        '"nowhere" isn\'t in organizations.',
+        '"missing-cert" isn\'t in certifications.',
+        '"missing-project" isn\'t in projects.',
+        '"missing" isn\'t in organizations.',
+      ]),
+    );
+    expect(contentSchema.safeParse(broken).success).toBe(false);
   });
 });
 
@@ -187,5 +244,115 @@ describe("photos and posts", () => {
   it("needs alt text for a cover image", () => {
     const result = postSchema.safeParse({ ...post, cover: BLOB_IMAGE });
     expect(result.error.issues[0].path).toEqual(["coverAlt"]);
+  });
+});
+
+describe("upgradeContent (R7 → organizations)", () => {
+  const legacy = {
+    profile: {
+      name: "Jahid",
+      education: {
+        degree: "BSc in Computer Science and Engineering",
+        university: "Metropolitan University, Sylhet",
+        graduation: "August 2026",
+      },
+    },
+    experience: [
+      {
+        id: "club-a",
+        order: 0,
+        date: "2023–2024",
+        sortYear: 2023,
+        category: "leadership",
+        title: "Joint Secretary",
+        organization: "Sports Club",
+        description: "Short.",
+      },
+      {
+        id: "club-b",
+        order: 1,
+        date: "2024–2025",
+        sortYear: 2024,
+        category: "leadership",
+        title: "Organizing Secretary",
+        organization: "Sports Club",
+        description: "Short.",
+        details: "Longer write-up.",
+      },
+      {
+        id: "graduation",
+        order: 2,
+        date: "August 2026",
+        sortYear: 2026,
+        category: "education",
+        title: "Graduation",
+        organization: "Metropolitan University, Sylhet",
+        description: "BSc",
+      },
+    ],
+    certifications: [
+      {
+        id: "c1",
+        order: 0,
+        title: "Course",
+        issuer: "EDGE, IICT SUST",
+        category: "professional",
+        status: "completed",
+        issued: "November 2024",
+      },
+    ],
+  };
+
+  it("groups roles by organization and moves education out", () => {
+    const upgraded = upgradeContent(legacy);
+    expect(upgraded.experience).toHaveLength(1);
+    expect(upgraded.experience[0].roles).toEqual([
+      {
+        title: "Organizing Secretary",
+        start: "2024",
+        end: "2025",
+        description: "Longer write-up.",
+      },
+      {
+        title: "Joint Secretary",
+        start: "2023",
+        end: "2024",
+        description: "Short.",
+      },
+    ]);
+    expect(upgraded.education).toEqual([
+      expect.objectContaining({
+        organizationId: "metropolitan-university",
+        degree: "BSc",
+        field: "Computer Science and Engineering",
+        end: "2026-08",
+      }),
+    ]);
+    expect(upgraded.profile).not.toHaveProperty("education");
+    expect(upgraded.organizations.map((item) => item.name)).toEqual([
+      "Sports Club",
+      "Metropolitan University",
+      "EDGE, IICT SUST",
+    ]);
+    expect(upgraded.certifications[0]).toEqual(
+      expect.objectContaining({
+        organizationId: "edge-iict-sust",
+        kind: "certification",
+        issued: "2024-11",
+      }),
+    );
+    expect(upgraded.certifications[0]).not.toHaveProperty("issuer");
+    expect(upgraded.learningTracks).toEqual([]);
+  });
+
+  it("leaves upgraded content alone", () => {
+    const once = upgradeContent(legacy);
+    expect(upgradeContent(once)).toBe(once);
+  });
+
+  it("reads year and month-year dates", () => {
+    expect(toYearMonth("2024")).toBe("2024");
+    expect(toYearMonth("November 2024")).toBe("2024-11");
+    expect(toYearMonth("someday")).toBeUndefined();
   });
 });

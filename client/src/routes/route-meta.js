@@ -24,8 +24,18 @@ export const PAGE_META = {
     description:
       "Projects by Jahid Hasan: multi-role web platforms, React interfaces, and full-stack products built with React, Express, and MongoDB.",
   },
+  "/credentials": {
+    title: "Education & Certifications — Jahid Hasan",
+    description:
+      "Jahid Hasan's education (BSc in Computer Science and Engineering, Metropolitan University) and his licenses, certifications, and courses.",
+  },
   "/learning": {
     title: "Learning — Jahid Hasan",
+    description:
+      "How Jahid Hasan learns — learn, practise, build, write — and what he is learning now, linked to the courses, projects, and notes behind it.",
+  },
+  "/writing": {
+    title: "Writing — Jahid Hasan",
     description:
       "An index of Jahid Hasan's learning notes and technical writing — engineering notes, project lessons, and problem-solving reflections, published on Blogger.",
   },

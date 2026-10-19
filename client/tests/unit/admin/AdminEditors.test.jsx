@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { capabilityGroups } from "../../../src/data/capabilities";
+import snapshot from "../../../src/generated/content.json";
 import { installFakeAdminApi, renderAdmin } from "./fake-admin-api";
 
 afterEach(() => {
@@ -72,10 +74,13 @@ describe("admin editors", { timeout: 15_000 }, () => {
     const router = renderAdmin("/admin/certifications/new");
 
     await user.type(await screen.findByLabelText("ID"), "team-lead");
-    await user.type(screen.getByLabelText("Title"), "Team Leadership");
-    await user.type(screen.getByLabelText("Issued by"), "Example Org");
-    await user.selectOptions(screen.getByLabelText("Group"), "leadership");
-    await user.type(screen.getByLabelText(/Issued \(year/), "2025");
+    await user.type(screen.getByLabelText("Name"), "Team Leadership");
+    await user.selectOptions(
+      screen.getByLabelText("Issuing organization"),
+      "Wadhwani Foundation",
+    );
+    await user.selectOptions(screen.getByLabelText("Type"), "course");
+    await user.type(screen.getByLabelText(/Issue date/), "2025-03");
     await user.click(screen.getByRole("button", { name: "Add certification" }));
 
     await waitFor(() =>
@@ -88,9 +93,11 @@ describe("admin editors", { timeout: 15_000 }, () => {
       path: "/admin/lists/certifications",
       body: {
         id: "team-lead",
-        category: "leadership",
+        organizationId: "wadhwani-foundation",
+        kind: "course",
         status: "completed",
-        issued: "2025",
+        issued: "2025-03",
+        skills: [],
       },
     });
     // Optional fields left blank are omitted, not sent as "".
@@ -107,32 +114,96 @@ describe("admin editors", { timeout: 15_000 }, () => {
   it("reorders and deletes list items", async () => {
     const api = installFakeAdminApi();
     const user = userEvent.setup();
-    renderAdmin("/admin/certifications");
+    renderAdmin("/admin/skills");
+    const [first, second] = capabilityGroups;
 
     await user.click(
-      await screen.findByRole("button", {
-        name: "Move “Reactive Accelerator” up",
-      }),
+      await screen.findByRole("button", { name: `Move “${second.title}” up` }),
     );
     expect(await screen.findByText("Order saved.")).toBeInTheDocument();
-    expect(lastWrite(api).body.keys.slice(0, 2)).toEqual([
-      "learn-with-sumit-reactive-accelerator",
-      "programming-hero-complete-web-development",
-    ]);
+    expect(lastWrite(api).body.keys.slice(0, 2)).toEqual([second.id, first.id]);
 
     await user.click(
-      screen.getByRole("button", { name: "Delete “Reactive Accelerator”" }),
+      screen.getByRole("button", { name: `Delete “${second.title}”` }),
     );
     const row = screen.getByText("Delete?").closest("li");
     await user.click(within(row).getByRole("button", { name: "Delete" }));
 
     expect(
-      await screen.findByText("Deleted “Reactive Accelerator”."),
+      await screen.findByText(`Deleted “${second.title}”.`),
     ).toBeInTheDocument();
     expect(lastWrite(api)).toMatchObject({
       method: "DELETE",
-      path: "/admin/lists/certifications/learn-with-sumit-reactive-accelerator",
+      path: `/admin/lists/skills/${second.id}`,
     });
+  });
+
+  it("edits an organization's roles in one experience entry", async () => {
+    const api = installFakeAdminApi();
+    const user = userEvent.setup();
+    renderAdmin("/admin/experience/metropolitan-university-sports-club");
+
+    const roles = await screen.findByRole("group", { name: "Roles" });
+    const existing = snapshot.experience.find(
+      (entry) => entry.id === "metropolitan-university-sports-club",
+    ).roles.length;
+    expect(within(roles).getAllByLabelText("Title")).toHaveLength(existing);
+    await user.click(within(roles).getByRole("button", { name: "Add role" }));
+    const titles = within(roles).getAllByLabelText("Title");
+    await user.type(titles[existing], "President");
+    await user.type(
+      within(roles).getAllByLabelText(/^Start/)[existing],
+      "2025-06",
+    );
+    await user.click(
+      within(roles).getAllByLabelText(/I currently hold this role/)[existing],
+    );
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    await waitFor(() =>
+      expect(lastWrite(api)).toMatchObject({
+        method: "PUT",
+        path: "/admin/lists/experience/metropolitan-university-sports-club",
+      }),
+    );
+    const saved = lastWrite(api).body.roles;
+    expect(saved).toHaveLength(existing + 1);
+    expect(saved[existing]).toEqual({
+      title: "President",
+      start: "2025-06",
+      current: true,
+      skills: [],
+    });
+    // An unticked "current" box is left out, not saved as false.
+    expect(saved[0]).not.toHaveProperty("current");
+  });
+
+  it("links certifications and projects to a learning track", async () => {
+    const api = installFakeAdminApi({ withProjects: true });
+    const user = userEvent.setup();
+    renderAdmin("/admin/learningTracks/new");
+
+    await user.type(await screen.findByLabelText("ID"), "react");
+    await user.type(screen.getByLabelText("Topic"), "Advanced React");
+    await user.click(
+      screen.getByRole("checkbox", { name: "Reactive Accelerator" }),
+    );
+    await user.click(screen.getByRole("checkbox", { name: "Sarabo" }));
+    await user.click(screen.getByRole("button", { name: "Add track" }));
+
+    await waitFor(() =>
+      expect(lastWrite(api)).toMatchObject({
+        method: "POST",
+        path: "/admin/lists/learningTracks",
+        body: {
+          id: "react",
+          title: "Advanced React",
+          status: "learning",
+          certificationIds: ["learn-with-sumit-reactive-accelerator"],
+          projectSlugs: ["sarabo"],
+        },
+      }),
+    );
   });
 
   it("asks before leaving with unsaved changes", async () => {
@@ -141,7 +212,7 @@ describe("admin editors", { timeout: 15_000 }, () => {
     const router = renderAdmin("/admin/profile");
 
     await user.type(await screen.findByLabelText("Location"), " (edited)");
-    await user.click(screen.getByRole("link", { name: "Skills" }));
+    await user.click(screen.getByRole("link", { name: /^Skills/ }));
 
     const dialog = await screen.findByRole("alertdialog", {
       name: "Leave without saving?",
@@ -149,7 +220,7 @@ describe("admin editors", { timeout: 15_000 }, () => {
     await user.click(within(dialog).getByRole("button", { name: "Stay" }));
     expect(router.state.location.pathname).toBe("/admin/profile");
 
-    await user.click(screen.getByRole("link", { name: "Skills" }));
+    await user.click(screen.getByRole("link", { name: /^Skills/ }));
     await user.click(
       within(await screen.findByRole("alertdialog")).getByRole("button", {
         name: "Leave",

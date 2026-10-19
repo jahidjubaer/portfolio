@@ -44,11 +44,6 @@ export const profileSchema = z.object({
   linkedin: url,
   codeforces: url,
   leetcode: url,
-  education: z.object({
-    degree: text,
-    university: text,
-    graduation: text,
-  }),
   problemSolving: z.object({
     total: text,
     primaryLanguage: text,
@@ -137,63 +132,6 @@ export const projectSchema = z
     },
   );
 
-export const experienceSchema = z.object({
-  id: slug,
-  order,
-  date: text,
-  sortYear: z.number({ error: "Enter a year." }).int(),
-  category: z.enum(["education", "leadership", "community", "work"]),
-  title: text,
-  organization: text,
-  description: text,
-  // Longer write-up (from leadership.js) shown on /beyond; optional.
-  details: text.optional(),
-});
-
-export const skillGroupSchema = z.object({
-  id: slug,
-  order,
-  title: text,
-  description: text,
-  accent: z.enum(["primary", "secondary", "muted"]),
-  items: z.array(text).min(1),
-});
-
-/**
- * Certificates and training, grouped by kind so the profile can show
- * professional and leadership credentials separately. Completed entries
- * need an issue date; in-progress ones don't have one yet.
- */
-export const certificationSchema = z
-  .object({
-    id: slug,
-    order,
-    title: text,
-    issuer: text,
-    category: z.enum(["professional", "leadership", "other"]),
-    status: z.enum(["completed", "in-progress"]),
-    issued: text.optional(),
-    credentialUrl: url.optional(),
-    description: text.optional(),
-  })
-  .refine((item) => item.status !== "completed" || Boolean(item.issued), {
-    message: "A completed certification needs an issue date.",
-  });
-
-export const beyondSchema = z.object({
-  sports: z.array(
-    z.object({ title: text, description: text, tags: z.array(text) }),
-  ),
-  volunteering: z.array(
-    z.object({
-      organization: text,
-      period: text,
-      description: text,
-      tags: z.array(text),
-    }),
-  ),
-});
-
 /**
  * An uploaded image in the Vercel Blob store. Width and height are read
  * from the file before upload, so pages can reserve space (no layout shift).
@@ -211,6 +149,194 @@ export const blobImageSchema = z.object(
   },
   { error: "Upload an image." },
 );
+
+/**
+ * "2024" or "2024-06". Months are optional because most early dates are
+ * only known to the year; durations are computed from these, never typed.
+ */
+export const yearMonth = z
+  .string({ error: "Required." })
+  .regex(
+    /^\d{4}(?:-(?:0[1-9]|1[0-2]))?$/,
+    "Use a year or year-month, e.g. 2024 or 2024-06.",
+  );
+
+/**
+ * Companies, clubs, schools, and course providers. Experience, education,
+ * certifications, and learning resources point here by id, so a logo and
+ * link are entered once.
+ */
+export const organizationSchema = z.object({
+  id: slug,
+  order,
+  name: text,
+  logo: blobImageSchema.optional(),
+  url: url.optional(),
+  location: text.optional(),
+});
+
+export const EMPLOYMENT_TYPE_VALUES = [
+  "full-time",
+  "part-time",
+  "internship",
+  "contract",
+  "freelance",
+  "self-employed",
+  "volunteer",
+];
+export const WORKPLACE_VALUES = ["on-site", "hybrid", "remote"];
+
+// Compared at the precision both dates have: "2024" vs "2024-06" by year.
+function endsAfterStart(item) {
+  if (!item.end || !item.start) return true;
+  const length = Math.min(item.end.length, item.start.length);
+  return item.end.slice(0, length) >= item.start.slice(0, length);
+}
+
+export const roleSchema = z
+  .object({
+    title: text,
+    employmentType: z.enum(EMPLOYMENT_TYPE_VALUES).optional(),
+    start: yearMonth,
+    end: yearMonth.optional(),
+    // Explicit, so a forgotten end date never claims a current role.
+    current: z.boolean().optional(),
+    location: text.optional(),
+    workplace: z.enum(WORKPLACE_VALUES).optional(),
+    description: text.optional(),
+    skills: z.array(text).optional(),
+  })
+  .refine((role) => Boolean(role.end) !== Boolean(role.current), {
+    message: 'Add an end date, or tick "I currently hold this role".',
+    path: ["end"],
+  })
+  .refine(endsAfterStart, {
+    message: "The end date is before the start date.",
+    path: ["end"],
+  });
+
+export const EXPERIENCE_CATEGORY_VALUES = ["work", "leadership", "community"];
+
+/** One organization and every role held there (LinkedIn's grouping). */
+export const experienceSchema = z.object({
+  id: slug,
+  order,
+  organizationId: slug,
+  category: z.enum(EXPERIENCE_CATEGORY_VALUES),
+  roles: z.array(roleSchema).min(1, "Add at least one role."),
+});
+
+export const educationSchema = z
+  .object({
+    id: slug,
+    order,
+    organizationId: slug,
+    degree: text,
+    field: text.optional(),
+    start: yearMonth.optional(),
+    end: yearMonth.optional(),
+    grade: text.optional(),
+    // CLAUDE.md: a grade/CGPA is only shown once Jahid confirms it.
+    showGrade: z.boolean().optional(),
+    activities: text.optional(),
+    description: text.optional(),
+    skills: z.array(text).optional(),
+  })
+  .refine(endsAfterStart, {
+    message: "The end date is before the start date.",
+    path: ["end"],
+  });
+
+export const skillGroupSchema = z.object({
+  id: slug,
+  order,
+  title: text,
+  description: text,
+  accent: z.enum(["primary", "secondary", "muted"]),
+  items: z.array(text).min(1),
+});
+
+/**
+ * Licenses, certificates, and courses (LinkedIn's "Licenses &
+ * certifications"). Completed entries need an issue date; in-progress ones
+ * don't have one yet. Add `credentialUrl` only with a real verification link.
+ */
+export const certificationSchema = z
+  .object({
+    id: slug,
+    order,
+    title: text,
+    organizationId: slug,
+    kind: z.enum(["certification", "course"]),
+    status: z.enum(["completed", "in-progress"]),
+    issued: yearMonth.optional(),
+    expires: yearMonth.optional(),
+    credentialId: text.optional(),
+    credentialUrl: url.optional(),
+    description: text.optional(),
+    skills: z.array(text).optional(),
+    image: blobImageSchema.optional(),
+    imageAlt: text.optional(),
+    // Shown in the profile's short preview; the full list is on /credentials.
+    featured: z.boolean().optional(),
+  })
+  .refine((item) => item.status !== "completed" || Boolean(item.issued), {
+    message: "A completed certification needs an issue date.",
+    path: ["issued"],
+  })
+  .refine((item) => !item.image || item.imageAlt, {
+    message: "Describe the certificate image.",
+    path: ["imageAlt"],
+  });
+
+/** The "How I learn" steps at the top of /learning. */
+export const learningSchema = z.object({
+  intro: text.optional(),
+  steps: z
+    .array(z.object({ title: text, description: text }))
+    .min(1, "Add at least one step."),
+});
+
+export const LEARNING_STATUS_VALUES = ["learning", "applied", "exploring"];
+
+/**
+ * One topic and the path through it: what it was learned from, how it
+ * was practised, what was built with it, and the notes written about it.
+ * Projects and certifications are referenced by id, never retyped.
+ */
+export const learningTrackSchema = z.object({
+  id: slug,
+  order,
+  title: text,
+  status: z.enum(LEARNING_STATUS_VALUES),
+  since: yearMonth.optional(),
+  summary: text.optional(),
+  resources: z.array(
+    z.object({
+      label: text,
+      url: url.optional(),
+      organizationId: slug.optional(),
+    }),
+  ),
+  certificationIds: z.array(slug),
+  practice: text.optional(),
+  projectSlugs: z.array(slug),
+  notes: z.array(z.object({ label: text, url })),
+});
+
+export const beyondSchema = z.object({
+  sports: z.array(
+    z.object({ title: text, description: text, tags: z.array(text) }),
+  ),
+  volunteering: z.array(
+    z.object({
+      organization: text,
+      period: text,
+      description: text,
+      tags: z.array(text),
+    }),
+  ),
+});
 
 export const photoSchema = z.object({
   id: slug,
@@ -248,15 +374,70 @@ export const postSchema = z
     path: ["coverAlt"],
   });
 
+// [list, field, target list, target key]: every id must resolve.
+const REFERENCE_CHECKS = [
+  ["experience", "organizationId", "organizations", "id"],
+  ["education", "organizationId", "organizations", "id"],
+  ["certifications", "organizationId", "organizations", "id"],
+  ["learningTracks", "certificationIds", "certifications", "id"],
+  ["learningTracks", "projectSlugs", "projects", "slug"],
+];
+
+/**
+ * Ids that point at a missing item, as Zod-style issues. Used by the
+ * snapshot schema, and by the admin API before it saves or deletes.
+ * @param {Record<string, any>} content
+ * @returns {Array<{ path: Array<string | number>, message: string }>}
+ */
+export function findBrokenReferences(content) {
+  const issues = [];
+  const has = (target, key, value) =>
+    (content[target] ?? []).some((item) => item[key] === value);
+  for (const [list, field, target, key] of REFERENCE_CHECKS) {
+    (content[list] ?? []).forEach((item, index) => {
+      for (const value of [item[field]].flat().filter(Boolean)) {
+        if (!has(target, key, value)) {
+          issues.push({
+            path: [list, index, field],
+            message: `"${value}" isn't in ${target}.`,
+          });
+        }
+      }
+    });
+  }
+  (content.learningTracks ?? []).forEach((track, index) => {
+    (track.resources ?? []).forEach((resource, resourceIndex) => {
+      const id = resource.organizationId;
+      if (id && !has("organizations", "id", id)) {
+        issues.push({
+          path: ["learningTracks", index, "resources", resourceIndex],
+          message: `"${id}" isn't in organizations.`,
+        });
+      }
+    });
+  });
+  return issues;
+}
+
 /** Everything the public site renders, as one snapshot. */
-export const contentSchema = z.object({
-  profile: profileSchema,
-  projects: z.array(projectSchema),
-  experience: z.array(experienceSchema),
-  skills: z.array(skillGroupSchema),
-  certifications: z.array(certificationSchema),
-  beyond: beyondSchema,
-  photos: z.array(photoSchema),
-  // Published posts only; drafts never reach the public snapshot.
-  posts: z.array(postSchema),
-});
+export const contentSchema = z
+  .object({
+    profile: profileSchema,
+    projects: z.array(projectSchema),
+    organizations: z.array(organizationSchema),
+    experience: z.array(experienceSchema),
+    education: z.array(educationSchema),
+    skills: z.array(skillGroupSchema),
+    certifications: z.array(certificationSchema),
+    learning: learningSchema,
+    learningTracks: z.array(learningTrackSchema),
+    beyond: beyondSchema,
+    photos: z.array(photoSchema),
+    // Published posts only; drafts never reach the public snapshot.
+    posts: z.array(postSchema),
+  })
+  .superRefine((content, context) => {
+    for (const issue of findBrokenReferences(content)) {
+      context.addIssue({ code: "custom", ...issue });
+    }
+  });
