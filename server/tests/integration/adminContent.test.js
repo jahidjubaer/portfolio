@@ -163,6 +163,38 @@ describe("admin content API", () => {
     expect(removed.status).toBe(200);
   });
 
+  it("saves site settings and rejects a partial section list", async () => {
+    const read = await request(app).get("/api/public/content");
+    const settings = read.body.data.settings;
+    expect(settings.openToWorkBadge).toBe(true);
+
+    const hidden = {
+      ...settings,
+      openToWorkBadge: false,
+      navigation: {
+        ...settings.navigation,
+        writing: { label: "Notes", visible: false },
+      },
+    };
+    const saved = await as("put", "/api/admin/singletons/settings").send(
+      hidden,
+    );
+    expect(saved.status).toBe(200);
+    const after = await request(app).get("/api/public/content");
+    expect(after.body.data.settings.navigation.writing).toEqual({
+      label: "Notes",
+      visible: false,
+    });
+
+    const partial = await as("put", "/api/admin/singletons/settings").send({
+      ...settings,
+      profileSections: settings.profileSections.slice(1),
+    });
+    expect(partial.status).toBe(400);
+
+    await as("put", "/api/admin/singletons/settings").send(settings);
+  });
+
   it("saves the learning method", async () => {
     const response = await as("put", "/api/admin/singletons/learning").send({
       steps: [{ title: "Learn", description: "From the docs." }],

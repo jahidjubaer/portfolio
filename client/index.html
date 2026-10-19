@@ -11,17 +11,22 @@
     <meta name="theme-color" content="#09090b" />
     <!-- Applies the visitor's theme, accent and font before first paint (no
          flash of the wrong look). Mirrors getInitialTheme/Accent/Font() in
-         src/features/preferences/preference-storage.js. -->
+         src/features/preferences/preference-storage.js. The __SITE_*__
+         defaults are filled in from Site settings by vite.config.js. -->
     <script>
       (function () {
         var root = document.documentElement;
-        var theme = "dark";
-        var accent = "lime";
-        var font = "geist";
+        var siteTheme = "__SITE_THEME__";
+        var theme = siteTheme === "light" ? "light" : "dark";
+        var accent = "__SITE_ACCENT__";
+        var font = "__SITE_FONT__";
         try {
           var stored = localStorage.getItem("theme");
           if (stored === "light" || stored === "dark") theme = stored;
-          else if (matchMedia("(prefers-color-scheme: light)").matches)
+          else if (
+            siteTheme === "system" &&
+            matchMedia("(prefers-color-scheme: light)").matches
+          )
             theme = "light";
           var storedAccent = localStorage.getItem("accent");
           if (/^(violet|sky|lime|amber|rose)$/.test(storedAccent))

@@ -1,5 +1,5 @@
 /**
- * Collection names. `profile`, `beyond`, and `learning` hold a single document with
+ * Collection names. `profile`, `beyond`, `learning`, and `settings` hold a single document with
  * `_id: SINGLETON_ID`; the rest are lists keyed by `KEY_FIELDS` and shown
  * in ascending `order`.
  */
@@ -13,6 +13,7 @@ export const COLLECTIONS = {
   certifications: "certifications",
   learning: "learning",
   learningTracks: "learningTracks",
+  settings: "settings",
   beyond: "beyond",
   photos: "photos",
   posts: "posts",

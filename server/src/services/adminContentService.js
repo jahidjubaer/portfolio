@@ -13,6 +13,7 @@ import {
   postSchema,
   profileSchema,
   projectSchema,
+  settingsSchema,
   skillGroupSchema,
 } from "../schemas/content.js";
 import { deleteUpload } from "./uploadService.js";
@@ -24,6 +25,7 @@ export const SINGLETON_SCHEMAS = {
   profile: profileSchema,
   beyond: beyondSchema,
   learning: learningSchema,
+  settings: settingsSchema,
 };
 
 export const LIST_SCHEMAS = {

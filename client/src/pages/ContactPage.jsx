@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, Clock, Copy, FileText, Mail } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { siteSettings } from "../data/settings";
 import { PAGE_META } from "../routes/route-meta";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
 import { ButtonLink } from "../components/ui/ButtonLink";
@@ -90,10 +91,12 @@ export function ContactPage() {
             question? Send a message or email me directly.
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3 text-[0.9375rem] text-(--color-text-secondary)">
-            <span className="inline-flex items-center gap-2.5 rounded-full border border-(--color-accent-primary)/30 bg-(--color-accent-primary-soft) px-3.5 py-1.5 font-semibold text-(--color-accent-primary)">
-              <span className="status-dot" aria-hidden="true" />
-              Open to new roles
-            </span>
+            {siteSettings.openToWorkBadge ? (
+              <span className="inline-flex items-center gap-2.5 rounded-full border border-(--color-accent-primary)/30 bg-(--color-accent-primary-soft) px-3.5 py-1.5 font-semibold text-(--color-accent-primary)">
+                <span className="status-dot" aria-hidden="true" />
+                Open to new roles
+              </span>
+            ) : null}
             <span className="inline-flex items-center gap-2">
               <Clock size={16} aria-hidden="true" />
               Sylhet, GMT+6 · <LocalTime className="tabular-nums" />

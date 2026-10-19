@@ -6,6 +6,14 @@ import { SocialIcon } from "../icons/SocialIcon";
 import { profile, socialProfiles } from "../../data/profile";
 import { githubSnapshot } from "../../data/github";
 import { formatRelativeDate } from "../../lib/relativeTime";
+import { navSetting, siteSettings } from "../../data/settings";
+
+const FOOTER_LINKS = [
+  { to: "/resume", label: "Resume" },
+  { to: "/writing", label: "Writing" },
+]
+  .map((link) => ({ ...link, ...navSetting(link.to, link.label) }))
+  .filter((link) => link.visible);
 
 function OpenToCard() {
   return (
@@ -142,18 +150,27 @@ export function RightRail() {
   return (
     <aside aria-label="Highlights" className="hidden py-5 pl-6 xl:block">
       <div className="sticky top-5 grid gap-5">
-        <OpenToCard />
-        {githubSnapshot.recentRepos.length > 0 ? <RecentGitHubCard /> : null}
+        {siteSettings.openToWorkBadge ? <OpenToCard /> : null}
+        {siteSettings.showGithubActivity &&
+        githubSnapshot.recentRepos.length > 0 ? (
+          <RecentGitHubCard />
+        ) : null}
         <FindMeOn />
-        <p className="px-1 text-xs text-(--color-text-muted)">
-          <Link to="/resume" className="hover:underline underline-offset-4">
-            Resume
-          </Link>
-          {" · "}
-          <Link to="/writing" className="hover:underline underline-offset-4">
-            Writing
-          </Link>
-        </p>
+        {FOOTER_LINKS.length > 0 ? (
+          <p className="px-1 text-xs text-(--color-text-muted)">
+            {FOOTER_LINKS.map((link, index) => (
+              <span key={link.to}>
+                {index > 0 ? " · " : null}
+                <Link
+                  to={link.to}
+                  className="hover:underline underline-offset-4"
+                >
+                  {link.label}
+                </Link>
+              </span>
+            ))}
+          </p>
+        ) : null}
       </div>
     </aside>
   );

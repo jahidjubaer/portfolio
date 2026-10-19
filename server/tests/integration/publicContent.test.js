@@ -69,6 +69,7 @@ describe("GET /api/public/*", () => {
         "posts",
         "profile",
         "projects",
+        "settings",
         "skills",
       ].sort(),
     );

@@ -40,6 +40,18 @@ const LIST_HINTS = {
  */
 function Field({ field, path, draft, errors, onChange, isNew }) {
   const id = useId();
+  if (field.type === "heading") {
+    return (
+      <h2 className="mt-3 border-b border-(--color-border) pb-2 text-[1.0625rem] font-semibold text-(--color-text-primary)">
+        {field.label}
+        {field.hint ? (
+          <span className="mt-0.5 block text-sm font-normal text-(--color-text-secondary)">
+            {field.hint}
+          </span>
+        ) : null}
+      </h2>
+    );
+  }
   const type = field.type ?? "text";
   const value = getAt(draft, path);
   const error = errorFor(errors, path, type !== "objectList");
@@ -312,14 +324,20 @@ function ObjectListField({ field, path, draft, errors, onChange, isNew }) {
       {items.length === 0 ? (
         <p className="text-sm text-(--color-text-muted)">None yet.</p>
       ) : null}
-      {items.map((_item, index) => (
+      {items.map((item, index) => (
         <div
-          key={index}
+          key={field.fixed ? item.id : index}
           className="grid gap-3 rounded-(--radius-sm) bg-(--color-surface-raised) p-3"
         >
           <div className="flex items-center justify-between gap-2">
-            <p className="mono-meta text-(--color-text-muted)">
-              {itemLabel} {index + 1}
+            <p
+              className={
+                field.itemTitle
+                  ? "font-semibold text-(--color-text-primary)"
+                  : "mono-meta text-(--color-text-muted)"
+              }
+            >
+              {field.itemTitle?.(item) ?? `${itemLabel} ${index + 1}`}
             </p>
             <div className="flex gap-1.5">
               <button
@@ -327,7 +345,7 @@ function ObjectListField({ field, path, draft, errors, onChange, isNew }) {
                 className={SMALL_BUTTON}
                 onClick={() => move(index, -1)}
                 disabled={index === 0}
-                aria-label={`Move ${itemLabel} ${index + 1} up`}
+                aria-label={`Move ${field.itemTitle?.(item) ?? `${itemLabel} ${index + 1}`} up`}
               >
                 <ArrowUp size={14} aria-hidden="true" />
               </button>
@@ -336,18 +354,20 @@ function ObjectListField({ field, path, draft, errors, onChange, isNew }) {
                 className={SMALL_BUTTON}
                 onClick={() => move(index, 1)}
                 disabled={index === items.length - 1}
-                aria-label={`Move ${itemLabel} ${index + 1} down`}
+                aria-label={`Move ${field.itemTitle?.(item) ?? `${itemLabel} ${index + 1}`} down`}
               >
                 <ArrowDown size={14} aria-hidden="true" />
               </button>
-              <button
-                type="button"
-                className={SMALL_BUTTON}
-                onClick={() => update(items.filter((_, i) => i !== index))}
-                aria-label={`Remove ${itemLabel} ${index + 1}`}
-              >
-                <Trash2 size={14} aria-hidden="true" />
-              </button>
+              {field.fixed ? null : (
+                <button
+                  type="button"
+                  className={SMALL_BUTTON}
+                  onClick={() => update(items.filter((_, i) => i !== index))}
+                  aria-label={`Remove ${itemLabel} ${index + 1}`}
+                >
+                  <Trash2 size={14} aria-hidden="true" />
+                </button>
+              )}
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -368,16 +388,18 @@ function ObjectListField({ field, path, draft, errors, onChange, isNew }) {
           </div>
         </div>
       ))}
-      <button
-        type="button"
-        className={cn(SMALL_BUTTON, "justify-self-start")}
-        onClick={() =>
-          update([...items, toDraft(field.newItem ?? {}, field.fields)])
-        }
-      >
-        <Plus size={14} aria-hidden="true" />
-        Add {itemLabel}
-      </button>
+      {field.fixed ? null : (
+        <button
+          type="button"
+          className={cn(SMALL_BUTTON, "justify-self-start")}
+          onClick={() =>
+            update([...items, toDraft(field.newItem ?? {}, field.fields)])
+          }
+        >
+          <Plus size={14} aria-hidden="true" />
+          Add {itemLabel}
+        </button>
+      )}
     </fieldset>
   );
 }

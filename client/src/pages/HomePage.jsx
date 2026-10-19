@@ -1,6 +1,7 @@
 import { Mail } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
-import { PAGE_META } from "../routes/route-meta";
+import { homeMeta } from "../routes/route-meta";
+import { siteSettings } from "../data/settings";
 import { PageHeader } from "../components/layout/PageHeader";
 import { ButtonLink } from "../components/ui/ButtonLink";
 import { ImageWithFallback } from "../components/media/ImageWithFallback";
@@ -20,7 +21,7 @@ const PROFILE_TABS = [
 ];
 
 export function HomePage() {
-  usePageMeta(PAGE_META["/"]);
+  usePageMeta(homeMeta(siteSettings.seo));
   const portrait = assetManifest.profile.portraitSquare;
 
   return (

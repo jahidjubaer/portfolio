@@ -47,6 +47,7 @@ export async function seedDatabase(db, content, { overwrite = false } = {}) {
   await write("profile", [content.profile], singleton);
   await write("beyond", [content.beyond], singleton);
   await write("learning", [content.learning], singleton);
+  await write("settings", [content.settings], singleton);
   for (const name of Object.keys(KEY_FIELDS)) {
     const key = KEY_FIELDS[name];
     await write(name, content[name], (document) => ({ [key]: document[key] }));

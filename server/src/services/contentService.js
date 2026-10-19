@@ -1,6 +1,7 @@
 import { getDb } from "../db/client.js";
 import { COLLECTIONS, SINGLETON_ID } from "../db/collections.js";
 import { getGitHubSnapshot } from "./githubSyncService.js";
+import { withDefaultSettings } from "../schemas/settings-defaults.js";
 
 const HIDE_ID = { projection: { _id: 0 } };
 
@@ -23,6 +24,9 @@ async function findOrdered(name) {
 export const getProfile = () => findSingleton("profile");
 export const getBeyond = () => findSingleton("beyond");
 export const getLearning = () => findSingleton("learning");
+// Never empty: a database without settings gets the defaults.
+export const getSettings = async () =>
+  withDefaultSettings(await findSingleton("settings"));
 export const listProjects = () => findOrdered("projects");
 export const listOrganizations = () => findOrdered("organizations");
 export const listExperience = () => findOrdered("experience");
@@ -84,6 +88,7 @@ export async function getContentSnapshot({ includeDrafts = false } = {}) {
     certifications,
     learning,
     learningTracks,
+    settings,
     beyond,
     photos,
     posts,
@@ -97,6 +102,7 @@ export async function getContentSnapshot({ includeDrafts = false } = {}) {
     listCertifications(),
     getLearning(),
     listLearningTracks(),
+    getSettings(),
     getBeyond(),
     listPhotos(),
     listPosts({ includeDrafts }),
@@ -113,6 +119,7 @@ export async function getContentSnapshot({ includeDrafts = false } = {}) {
     certifications,
     learning,
     learningTracks,
+    settings,
     beyond,
     photos,
     posts,

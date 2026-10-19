@@ -171,6 +171,35 @@ describe("admin overview and editors", () => {
     );
   });
 
+  it("edits site settings", async () => {
+    const user = userEvent.setup();
+    const api = installFakeAdminApi({
+      overrides: { settings: structuredClone(snapshot.settings) },
+    });
+    renderAdmin("/admin/settings");
+
+    await user.click(
+      await screen.findByLabelText(/Show the "Open to new roles" badge/),
+    );
+    await user.click(screen.getByRole("button", { name: "Move Skills up" }));
+    await user.selectOptions(screen.getByLabelText("Style"), "split");
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    await waitFor(() =>
+      expect(lastWrite(api)).toMatchObject({
+        method: "PUT",
+        path: "/admin/singletons/settings",
+      }),
+    );
+    const saved = lastWrite(api).body;
+    expect(saved.openToWorkBadge).toBe(false);
+    expect(saved.intro.style).toBe("split");
+    const ids = saved.profileSections.map((section) => section.id);
+    expect(ids.indexOf("skills")).toBeLessThan(ids.indexOf("certifications"));
+    // Headings in the form are layout, not data.
+    expect(saved).not.toHaveProperty("appearanceHeading");
+  });
+
   it("links an item to its place on the site", async () => {
     installFakeAdminApi();
     renderAdmin("/admin/certifications/edge-python-data-science");

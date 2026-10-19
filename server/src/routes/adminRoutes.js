@@ -10,7 +10,7 @@ import * as controller from "../controllers/adminContentController.js";
  * so the API doesn't reveal what exists to signed-out callers.
  *
  *   GET    /content                  everything, for the editors
- *   PUT    /singletons/:name         profile | beyond | learning
+ *   PUT    /singletons/:name         profile | beyond | learning | settings
  *   POST   /lists/:name              projects | organizations | experience |
  *                                    education | skills | certifications |
  *                                    learningTracks | photos | posts

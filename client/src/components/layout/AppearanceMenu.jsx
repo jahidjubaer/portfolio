@@ -13,12 +13,14 @@ import {
 import { usePreferences } from "../../features/preferences/usePreferences";
 import {
   ACCENT_OPTIONS,
-  DEFAULT_ACCENT,
-  DEFAULT_FONT,
   FONT_OPTIONS,
 } from "../../features/preferences/appearance-options";
 import { loadFont } from "../../features/preferences/font-loader";
 import { replayOpening } from "../../features/intro/opening-state";
+import { siteSettings } from "../../data/settings";
+
+// The site's defaults (Site settings) are what "Reset" goes back to.
+const { accent: SITE_ACCENT, font: SITE_FONT } = siteSettings.appearance;
 import { ROUND_BUTTON } from "./PreferenceButtons";
 import { cn } from "../../lib/cn";
 
@@ -119,8 +121,8 @@ export function AppearanceMenu({ placement = "rail", className }) {
   }
 
   function resetAppearance() {
-    setAccent(DEFAULT_ACCENT);
-    setFont(DEFAULT_FONT);
+    setAccent(SITE_ACCENT);
+    setFont(SITE_FONT);
   }
 
   return (
@@ -253,14 +255,16 @@ export function AppearanceMenu({ placement = "rail", className }) {
               </div>
             </fieldset>
 
-            <button
-              type="button"
-              onClick={handleReplayOpening}
-              className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-(--radius-sm) border border-(--color-border) text-sm font-medium text-(--color-text-secondary) transition-colors hover:border-(--color-border-strong) hover:text-(--color-text-primary)"
-            >
-              <BookOpen size={16} aria-hidden="true" />
-              Play opening
-            </button>
+            {siteSettings.intro.enabled ? (
+              <button
+                type="button"
+                onClick={handleReplayOpening}
+                className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-(--radius-sm) border border-(--color-border) text-sm font-medium text-(--color-text-secondary) transition-colors hover:border-(--color-border-strong) hover:text-(--color-text-primary)"
+              >
+                <BookOpen size={16} aria-hidden="true" />
+                Play opening
+              </button>
+            ) : null}
 
             <div className="mt-4 flex items-center justify-between border-t border-(--color-border) pt-3">
               <button
@@ -280,7 +284,7 @@ export function AppearanceMenu({ placement = "rail", className }) {
               <button
                 type="button"
                 onClick={resetAppearance}
-                disabled={accent === DEFAULT_ACCENT && font === DEFAULT_FONT}
+                disabled={accent === SITE_ACCENT && font === SITE_FONT}
                 className="min-h-11 text-sm font-medium text-(--color-accent-primary) underline-offset-4 hover:underline disabled:cursor-default disabled:text-(--color-text-muted) disabled:no-underline"
               >
                 Reset

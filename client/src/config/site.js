@@ -6,7 +6,10 @@
  * does not exist yet.
  */
 
-import { PAGE_META, SITE } from "../routes/route-meta";
+import { SITE, homeMeta, shareImage } from "../routes/route-meta";
+import { siteSettings } from "../data/settings";
+
+const home = homeMeta(siteSettings.seo);
 
 const rawSiteUrl = import.meta.env.VITE_SITE_URL || "http://localhost:5173";
 
@@ -17,8 +20,10 @@ export const siteConfig = {
   ...SITE,
   url: SITE_URL,
   shortName: SITE.name,
-  title: PAGE_META["/"].title,
-  description: PAGE_META["/"].description,
+  title: home.title,
+  description: home.description,
+  // Site settings can replace the built-in link-preview image.
+  defaultOgImage: shareImage(siteSettings.seo).url,
   jobTitle: "Frontend Developer & Junior Software Engineer",
   // Verified public profiles only (mirrors client/src/data/profile.js).
   sameAs: [

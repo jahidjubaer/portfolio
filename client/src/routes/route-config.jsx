@@ -91,6 +91,7 @@ export const routeConfig = [
       { path: "profile", element: <AdminSingletonPage name="profile" /> },
       { path: "beyond", element: <AdminSingletonPage name="beyond" /> },
       { path: "learning", element: <AdminSingletonPage name="learning" /> },
+      { path: "settings", element: <AdminSingletonPage name="settings" /> },
       { path: "repositories", element: <AdminRepositoriesPage /> },
       ...ADMIN_LISTS.flatMap((name) => [
         { path: name, element: <AdminListPage name={name} /> },

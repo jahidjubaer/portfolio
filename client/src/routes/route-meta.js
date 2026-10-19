@@ -51,6 +51,29 @@ export const PAGE_META = {
   },
 };
 
+/**
+ * The home page's head, with the description from Site settings when one
+ * is set there.
+ * @param {{ homeDescription?: string } | undefined} seo
+ */
+export function homeMeta(seo) {
+  return seo?.homeDescription
+    ? { ...PAGE_META["/"], description: seo.homeDescription }
+    : PAGE_META["/"];
+}
+
+/**
+ * The link-preview image: the one uploaded in Site settings, or the
+ * built-in default (1200 × 630).
+ * @param {{ shareImage?: { url: string, width: number, height: number } } | undefined} seo
+ * @returns {{ url: string, width: number, height: number }}
+ */
+export function shareImage(seo) {
+  return (
+    seo?.shareImage ?? { url: SITE.defaultOgImage, width: 1200, height: 630 }
+  );
+}
+
 /** @param {boolean} resumeAvailable */
 export function resumeMeta(resumeAvailable) {
   return {
@@ -77,8 +100,12 @@ export function projectMeta(project) {
  * @returns {Array<{ path: string, title: string, description: string, type?: string }>}
  */
 export function getPublicRoutes(content) {
+  const seo = content.settings?.seo;
   return [
-    ...Object.entries(PAGE_META).map(([path, meta]) => ({ path, ...meta })),
+    ...Object.entries(PAGE_META).map(([path, meta]) => ({
+      path,
+      ...(path === "/" ? homeMeta(seo) : meta),
+    })),
     { path: "/resume", ...resumeMeta(Boolean(content.profile.resume.url)) },
     ...content.projects.map((project) => ({
       path: `/work/${project.slug}`,

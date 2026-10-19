@@ -1,10 +1,11 @@
 import {
   ArrowUpRight,
   Camera,
-  Trophy,
   Heart,
-  Users,
+  Languages,
   Sparkles,
+  Trophy,
+  Users,
 } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { PAGE_META } from "../routes/route-meta";
@@ -24,7 +25,12 @@ import {
   isPhotographyBlogConfigured,
 } from "../config/photographyBlog";
 import { leadershipRoles } from "../data/leadership";
-import { sportsHighlights, volunteeringHighlights } from "../data/beyond";
+import {
+  interests,
+  languages,
+  sportsHighlights,
+  volunteeringHighlights,
+} from "../data/beyond";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
 
 export function BeyondPage() {
@@ -202,6 +208,67 @@ export function BeyondPage() {
             ))}
           </div>
         </section>
+
+        {languages.length > 0 || interests.length > 0 ? (
+          <>
+            <Divider className="my-14" />
+
+            {/* Languages & interests */}
+            <section aria-labelledby="languages-heading">
+              <div className="flex items-center gap-2 border-b border-(--color-border) pb-4">
+                <Languages
+                  size={20}
+                  aria-hidden="true"
+                  className="text-(--color-accent-primary)"
+                />
+                <h2
+                  id="languages-heading"
+                  className="heading-md text-(--color-text-primary)"
+                >
+                  Languages &amp; interests
+                </h2>
+              </div>
+              <div className="mt-6 grid gap-5 md:grid-cols-2">
+                {languages.length > 0 ? (
+                  <Surface variant="raised" className="p-6">
+                    <h3 className="font-semibold text-(--color-text-primary)">
+                      Languages
+                    </h3>
+                    <dl className="mt-3 grid gap-2.5">
+                      {languages.map((language) => (
+                        <div
+                          key={language.name}
+                          className="flex flex-wrap items-baseline justify-between gap-x-3"
+                        >
+                          <dt className="font-medium text-(--color-text-primary)">
+                            {language.name}
+                          </dt>
+                          <dd className="text-sm text-(--color-text-secondary)">
+                            {language.level}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </Surface>
+                ) : null}
+                {interests.length > 0 ? (
+                  <Surface variant="raised" className="p-6">
+                    <h3 className="font-semibold text-(--color-text-primary)">
+                      Interests
+                    </h3>
+                    <ul className="mt-3 flex flex-wrap gap-2">
+                      {interests.map((interest) => (
+                        <li key={interest}>
+                          <Tag>{interest}</Tag>
+                        </li>
+                      ))}
+                    </ul>
+                  </Surface>
+                ) : null}
+              </div>
+            </section>
+          </>
+        ) : null}
 
         <Divider className="my-14" />
 

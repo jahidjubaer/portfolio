@@ -49,18 +49,22 @@ const LINE = tearLine();
  * for the lighter fibre strip that peeks out from under the paper.
  * Panels are `50% + TEAR_OVERLAP_PX` wide: the left one starts at the
  * viewport's left edge, the right one ends at its right edge.
+ * `straight` gives the clean-split style: the same overlap, no tear.
  * @param {"left" | "right"} side
  * @param {number} [grow]
+ * @param {boolean} [straight]
  */
-export function tornClipPath(side, grow = 0) {
+export function tornClipPath(side, grow = 0, straight = false) {
+  const line = straight ? LINE.map(({ y }) => ({ y, dx: 0 })) : LINE;
   if (side === "left") {
-    const edge = LINE.map(
+    const edge = line.map(
       ({ y, dx }) =>
         `calc(100% - ${TEAR_OVERLAP_PX - dx - grow}px) ${y.toFixed(2)}%`,
     );
     return `polygon(0 0, ${edge.join(", ")}, 0 100%)`;
   }
-  const edge = LINE.slice()
+  const edge = line
+    .slice()
     .reverse()
     .map(({ y, dx }) => `${TEAR_OVERLAP_PX + dx - grow}px ${y.toFixed(2)}%`);
   return `polygon(100% 0, 100% 100%, ${edge.join(", ")})`;

@@ -4,6 +4,7 @@ import { ImageWithFallback } from "../../components/media/ImageWithFallback";
 import { LocalTime } from "../../components/ui/LocalTime";
 import { cn } from "../../lib/cn";
 import { profile } from "../../data/profile";
+import { siteSettings } from "../../data/settings";
 import { capabilityGroups } from "../../data/capabilities";
 import { assetManifest } from "../../generated/asset-manifest";
 import { fadeUpVariants } from "../motion/motion-variants";
@@ -99,10 +100,12 @@ export function ProfileIntro() {
       <p className="mt-1 text-[1.0625rem] text-(--color-text-primary) sm:text-lg">
         {profile.heroHeadline}
       </p>
-      <p className="mt-3.5 inline-flex items-center gap-2.5 rounded-full border border-(--color-accent-primary)/30 bg-(--color-accent-primary-soft) px-3.5 py-1.5 text-[0.9375rem] font-semibold text-(--color-accent-primary)">
-        <span className="status-dot" aria-hidden="true" />
-        Open to new roles
-      </p>
+      {siteSettings.openToWorkBadge ? (
+        <p className="mt-3.5 inline-flex items-center gap-2.5 rounded-full border border-(--color-accent-primary)/30 bg-(--color-accent-primary-soft) px-3.5 py-1.5 text-[0.9375rem] font-semibold text-(--color-accent-primary)">
+          <span className="status-dot" aria-hidden="true" />
+          Open to new roles
+        </p>
+      ) : null}
 
       <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-[0.9375rem] text-(--color-text-secondary)">
         <span className="font-semibold text-(--color-text-primary)">

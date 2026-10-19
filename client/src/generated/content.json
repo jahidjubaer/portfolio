@@ -788,7 +788,110 @@
       "notes": []
     }
   ],
+  "settings": {
+    "appearance": {
+      "theme": "system",
+      "accent": "lime",
+      "font": "geist"
+    },
+    "intro": {
+      "enabled": true,
+      "sound": true,
+      "style": "torn"
+    },
+    "profileSections": [
+      {
+        "id": "about",
+        "visible": true
+      },
+      {
+        "id": "open-to",
+        "visible": true
+      },
+      {
+        "id": "experience",
+        "visible": true
+      },
+      {
+        "id": "education",
+        "visible": true
+      },
+      {
+        "id": "certifications",
+        "visible": true
+      },
+      {
+        "id": "skills",
+        "visible": true
+      },
+      {
+        "id": "resume",
+        "visible": true
+      }
+    ],
+    "showGithubActivity": true,
+    "navigation": {
+      "work": {
+        "label": "Projects",
+        "visible": true
+      },
+      "beyond": {
+        "label": "Beyond",
+        "visible": true
+      },
+      "contact": {
+        "label": "Contact",
+        "visible": true
+      },
+      "credentials": {
+        "label": "Credentials",
+        "visible": true
+      },
+      "learning": {
+        "label": "Learning",
+        "visible": true
+      },
+      "writing": {
+        "label": "Writing",
+        "visible": true
+      },
+      "resume": {
+        "label": "Resume",
+        "visible": true
+      }
+    },
+    "openToWorkBadge": true,
+    "seo": {}
+  },
   "beyond": {
+    "languages": [
+      {
+        "name": "Bangla",
+        "level": "Native"
+      },
+      {
+        "name": "English",
+        "level": "Upper-intermediate (B2)"
+      },
+      {
+        "name": "Hindi",
+        "level": "Understand when listening"
+      },
+      {
+        "name": "German",
+        "level": "Beginner"
+      }
+    ],
+    "interests": [
+      "Leadership",
+      "Photography",
+      "Community service",
+      "Sports",
+      "Organising events",
+      "Journal writing",
+      "Reading",
+      "Travel"
+    ],
     "sports": [
       {
         "title": "Sports Club Organizer & Cricket Umpire",

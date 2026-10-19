@@ -7,7 +7,9 @@
  * Field types: text, email, url, date, textarea, markdown, number, select,
  * checkbox, checkboxes (several values from `options`), lines,
  * paragraphs, json, image (an uploaded `{ url, width, height }`), pdf (URL
- * text with an upload button), objectList (with nested `fields`).
+ * text with an upload button), objectList (with nested `fields`; `fixed`
+ * lists can be reordered but not added to or removed from), and heading
+ * (a section title in the form, not a value).
  * Flags: `optional` (blank or unticked → field removed), `nullable`
  * (blank → null). A select's `placeholder` is its blank first option;
  * `quickAdd: "organizations"` adds a "New organization" button under it.
@@ -26,6 +28,8 @@
  *   placeholder?: string,
  *   quickAdd?: "organizations",
  *   half?: boolean,
+ *   fixed?: boolean,
+ *   itemTitle?: (item: Record<string, unknown>) => string,
  *   fields?: Field[],
  *   itemLabel?: string,
  *   newItem?: Record<string, unknown>,
@@ -82,6 +86,7 @@ function toDraftValue(field, value) {
 export function toDraft(value, fields) {
   let draft = { ...value };
   for (const field of fields) {
+    if (field.type === "heading") continue;
     draft = setAt(
       draft,
       field.name,
@@ -138,6 +143,7 @@ function fromDraftValue(field, raw) {
 export function fromDraft(draft, fields) {
   let value = { ...draft };
   for (const field of fields) {
+    if (field.type === "heading") continue;
     value = setAt(
       value,
       field.name,

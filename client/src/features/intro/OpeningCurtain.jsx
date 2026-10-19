@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { usePreferences } from "../preferences/usePreferences";
 import { profile } from "../../data/profile";
 import { cn } from "../../lib/cn";
+import { siteSettings } from "../../data/settings";
 import { TEAR_OVERLAP_PX, tornClipPath } from "./torn-edge";
 import { HOLD_MS, OPENING_SEEN_KEY, REPLAY_EVENT } from "./opening-state";
 
@@ -34,7 +35,12 @@ const PAPER_STYLE = {
   },
 };
 
+// Switched on or off, with or without sound, torn or clean, in Site settings.
+const { intro } = siteSettings;
+const STRAIGHT = intro.style === "split";
+
 function shouldPlayOnLoad() {
+  if (!intro.enabled) return false;
   // Automated browsers (Playwright, crawlers) go straight to the content.
   if (navigator.webdriver) return false;
   if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
@@ -108,13 +114,18 @@ function CurtainHalf({ side, open, fast, onOpened }) {
       style={{ width: `calc(50% + ${TEAR_OVERLAP_PX}px)` }}
     >
       {/* Lighter paper fibres peek out along the tear. */}
-      <div
-        className="absolute inset-0 bg-(--color-paper-fibre)"
-        style={{ clipPath: tornClipPath(side, FIBRE_PX) }}
-      />
+      {STRAIGHT ? null : (
+        <div
+          className="absolute inset-0 bg-(--color-paper-fibre)"
+          style={{ clipPath: tornClipPath(side, FIBRE_PX) }}
+        />
+      )}
       <div
         className="absolute inset-0 overflow-hidden"
-        style={{ ...PAPER_STYLE[side], clipPath: tornClipPath(side) }}
+        style={{
+          ...PAPER_STYLE[side],
+          clipPath: tornClipPath(side, 0, STRAIGHT),
+        }}
       >
         <SeamTitle side={side} />
       </div>
@@ -140,12 +151,13 @@ export function OpeningCurtain() {
   const showing = run > 0 && !reduceMotion;
 
   const playTearSound = useCallback(() => {
-    if (soundPlayedRef.current || !canPlayAudio()) return;
+    if (!intro.sound || soundPlayedRef.current || !canPlayAudio()) return;
     soundPlayedRef.current = true;
     play("pageOpen");
   }, [play]);
 
   useEffect(() => {
+    if (!intro.enabled) return undefined;
     function handleReplay() {
       soundPlayedRef.current = false;
       setOpen(false);

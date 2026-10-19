@@ -8,3 +8,9 @@ import { beyond } from "../generated/content.json";
 export const sportsHighlights = beyond.sports;
 
 export const volunteeringHighlights = beyond.volunteering;
+
+/** @type {Array<{ name: string, level: string }>} */
+export const languages = beyond.languages ?? [];
+
+/** @type {string[]} */
+export const interests = beyond.interests ?? [];

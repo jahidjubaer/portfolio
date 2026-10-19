@@ -18,7 +18,12 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolveSiteUrl } from "./site-url.js";
-import { PAGE_META, SITE, getPublicRoutes } from "../src/routes/route-meta.js";
+import {
+  SITE,
+  getPublicRoutes,
+  homeMeta,
+  shareImage,
+} from "../src/routes/route-meta.js";
 
 const CLIENT_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(CLIENT_ROOT, "dist");
@@ -37,15 +42,20 @@ function escapeHtml(value) {
  * The head tags for one route: the same set (and selectors) usePageMeta
  * manages in the browser. A route without a `path` (the SPA fallback)
  * gets no canonical URL and its own `robots`.
+ * `image` is the share image (Site settings, or the built-in default);
+ * an uploaded one already has an absolute URL.
  * @param {{ path?: string, title: string, description: string, type?: string, robots?: string }} route
  * @param {string} siteUrl
+ * @param {{ url: string, width: number, height: number }} [image]
  */
-export function renderHeadTags(route, siteUrl) {
+export function renderHeadTags(route, siteUrl, image = shareImage()) {
   let url = null;
   if (route.path) {
     url = route.path === "/" ? siteUrl : `${siteUrl}${route.path}`;
   }
-  const image = `${siteUrl}${SITE.defaultOgImage}`;
+  const imageUrl = /^https?:\/\//.test(image.url)
+    ? image.url
+    : `${siteUrl}${image.url}`;
   const meta = (key, name, content) =>
     `<meta ${key}="${name}" content="${escapeHtml(content)}" />`;
   return [
@@ -60,13 +70,13 @@ export function renderHeadTags(route, siteUrl) {
     meta("property", "og:title", route.title),
     meta("property", "og:description", route.description),
     url ? meta("property", "og:url", url) : null,
-    meta("property", "og:image", image),
-    meta("property", "og:image:width", "1200"),
-    meta("property", "og:image:height", "630"),
+    meta("property", "og:image", imageUrl),
+    meta("property", "og:image:width", String(image.width)),
+    meta("property", "og:image:height", String(image.height)),
     meta("name", "twitter:card", SITE.twitterCard),
     meta("name", "twitter:title", route.title),
     meta("name", "twitter:description", route.description),
-    meta("name", "twitter:image", image),
+    meta("name", "twitter:image", imageUrl),
     "<!-- /route-meta -->",
   ]
     .filter(Boolean)
@@ -74,12 +84,12 @@ export function renderHeadTags(route, siteUrl) {
 }
 
 /** @param {string} template built index.html */
-export function renderRoute(template, route, siteUrl) {
+export function renderRoute(template, route, siteUrl, image) {
   if (!BLOCK.test(template)) {
     throw new Error("index.html has no <!-- route-meta --> block.");
   }
   // A function replacement, so "$" in a title is never read as a pattern.
-  return template.replace(BLOCK, () => renderHeadTags(route, siteUrl));
+  return template.replace(BLOCK, () => renderHeadTags(route, siteUrl, image));
 }
 
 function outputFile(path) {
@@ -92,14 +102,21 @@ function main() {
   const template = readFileSync(join(DIST, "index.html"), "utf8");
   const content = JSON.parse(readFileSync(CONTENT_FILE, "utf8"));
   const routes = getPublicRoutes(content);
+  const seo = content.settings?.seo;
+  const image = shareImage(seo);
   for (const route of routes) {
     const file = outputFile(route.path);
     mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(file, renderRoute(template, route, siteUrl));
+    writeFileSync(file, renderRoute(template, route, siteUrl, image));
   }
   writeFileSync(
     join(DIST, "200.html"),
-    renderRoute(template, { ...PAGE_META["/"], robots: "noindex" }, siteUrl),
+    renderRoute(
+      template,
+      { ...homeMeta(seo), robots: "noindex" },
+      siteUrl,
+      image,
+    ),
   );
   console.log(
     `[prerender] wrote ${routes.length} routes + 200.html fallback (base ${siteUrl})`,

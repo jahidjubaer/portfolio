@@ -1,5 +1,6 @@
 import { profile } from "../../data/profile";
 import { projects } from "../../data/projects";
+import { navSetting } from "../../data/settings";
 
 /**
  * @typedef {{
@@ -32,11 +33,16 @@ const NAV_ROUTES = [
  */
 export function getCommands() {
   const commands = NAV_ROUTES.map((route) => ({
-    id: `nav-${route.to}`,
-    label: route.label,
-    category: "Navigation",
-    action: { type: "navigate", to: route.to },
-  }));
+    ...route,
+    ...navSetting(route.to, route.label),
+  }))
+    .filter((route) => route.visible)
+    .map((route) => ({
+      id: `nav-${route.to}`,
+      label: route.label,
+      category: "Navigation",
+      action: { type: "navigate", to: route.to },
+    }));
 
   const sarabo = projects.find((project) => project.slug === "sarabo");
   if (sarabo) {

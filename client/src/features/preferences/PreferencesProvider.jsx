@@ -8,6 +8,7 @@ import {
   getInitialAccent,
   getInitialFont,
   getInitialSoundEnabled,
+  followsSystemTheme,
   getInitialTheme,
   readPreference,
   writePreference,
@@ -47,8 +48,10 @@ export function PreferencesProvider({ children }) {
     loadFont(font).catch(() => {});
   }, [font]);
 
-  // With no explicit choice stored, keep following the OS setting live.
+  // With no explicit choice stored, keep following the OS setting live
+  // (unless Site settings fix the default theme).
   useEffect(() => {
+    if (!followsSystemTheme()) return undefined;
     const query = window.matchMedia?.("(prefers-color-scheme: light)");
     if (!query) return undefined;
     function handleChange(event) {

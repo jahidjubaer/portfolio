@@ -11,6 +11,7 @@ import {
   Package,
   PenLine,
   Route as RouteIcon,
+  Settings2,
   Sprout,
 } from "lucide-react";
 // The admin validates with the exact schemas the API enforces.
@@ -26,8 +27,17 @@ import {
   postSchema,
   profileSchema,
   projectSchema,
+  settingsSchema,
   skillGroupSchema,
 } from "../../../../server/src/schemas/content.js";
+import {
+  NAV_ITEMS,
+  PROFILE_SECTIONS,
+} from "../../../../server/src/schemas/settings-defaults.js";
+import {
+  ACCENT_OPTIONS,
+  FONT_OPTIONS,
+} from "../preferences/appearance-options";
 import { organizationUsage } from "./attention";
 
 const SOCIAL_OPTIONS = ["github", "linkedin", "codeforces", "leetcode"].map(
@@ -134,9 +144,139 @@ export const SINGLETONS = {
       },
     ],
   },
+  settings: {
+    label: "Site settings",
+    description:
+      "Defaults for visitors, the opening animation, what the profile and menus show, and link previews.",
+    schema: settingsSchema,
+    fields: [
+      {
+        name: "appearanceHeading",
+        type: "heading",
+        label: "Appearance",
+        hint: "What visitors see first. Anyone can still change these in the Appearance menu.",
+      },
+      {
+        name: "appearance.theme",
+        label: "Default theme",
+        type: "select",
+        half: true,
+        options: [
+          { value: "system", label: "Follow the visitor's device" },
+          { value: "dark", label: "Dark" },
+          { value: "light", label: "Light" },
+        ],
+      },
+      {
+        name: "appearance.accent",
+        label: "Default accent colour",
+        type: "select",
+        half: true,
+        options: ACCENT_OPTIONS.map((option) => ({
+          value: option.id,
+          label: option.label,
+        })),
+      },
+      {
+        name: "appearance.font",
+        label: "Default font",
+        type: "select",
+        half: true,
+        options: FONT_OPTIONS.map((option) => ({
+          value: option.id,
+          label: option.label,
+        })),
+      },
+      { name: "introHeading", type: "heading", label: "Opening animation" },
+      {
+        name: "intro.enabled",
+        label: "Play the opening animation (once per visit)",
+        type: "checkbox",
+      },
+      {
+        name: "intro.sound",
+        label: "With its paper sound, when the browser allows it",
+        type: "checkbox",
+      },
+      {
+        name: "intro.style",
+        label: "Style",
+        type: "select",
+        half: true,
+        options: [
+          { value: "torn", label: "Torn pages" },
+          { value: "split", label: "Clean split" },
+        ],
+      },
+      {
+        name: "profileHeading",
+        type: "heading",
+        label: "Profile page",
+        hint: "Order and show or hide the sections of the Resume tab.",
+      },
+      {
+        name: "profileSections",
+        label: "Sections",
+        type: "objectList",
+        fixed: true,
+        itemTitle: (item) =>
+          PROFILE_SECTIONS.find((section) => section.id === item.id)?.label ??
+          item.id,
+        fields: [{ name: "visible", label: "Show", type: "checkbox" }],
+      },
+      {
+        name: "showGithubActivity",
+        label: 'Show the "Recently on GitHub" card',
+        type: "checkbox",
+      },
+      {
+        name: "openToWorkBadge",
+        label: 'Show the "Open to new roles" badge',
+        type: "checkbox",
+        hint: "On the profile, the contact page, and the side card.",
+      },
+      {
+        name: "navigationHeading",
+        type: "heading",
+        label: "Menus",
+        hint: "Rename pages or hide them from the menus. Hidden pages still open from a direct link. Profile always shows.",
+      },
+      ...NAV_ITEMS.flatMap((item) => [
+        {
+          name: `navigation.${item.id}.label`,
+          label: `${item.label} page: menu label`,
+          half: true,
+        },
+        {
+          name: `navigation.${item.id}.visible`,
+          label: `Show ${item.label} in menus (${item.path})`,
+          type: "checkbox",
+          half: true,
+        },
+      ]),
+      { name: "seoHeading", type: "heading", label: "Search & link previews" },
+      {
+        name: "seo.homeDescription",
+        label: "Home page description",
+        type: "textarea",
+        rows: 3,
+        optional: true,
+        hint: "Shown by Google and in link previews. About 150–160 characters. Leave empty for the built-in one.",
+      },
+      {
+        name: "seo.shareImage",
+        label: "Link preview image",
+        type: "image",
+        uploadKind: "image",
+        optional: true,
+        hint: "1200 × 630 works best. Leave empty for the built-in one.",
+      },
+    ],
+  },
   beyond: {
     label: "Beyond",
-    description: "Sports and volunteering highlights on the Beyond page.",
+    description:
+      "Sports, volunteering, languages, and interests on the Beyond page.",
     schema: beyondSchema,
     fields: [
       {
@@ -172,6 +312,22 @@ export const SINGLETONS = {
           { name: "tags", label: "Tags", type: "lines" },
         ],
       },
+      {
+        name: "languages",
+        label: "Languages",
+        type: "objectList",
+        itemLabel: "language",
+        fields: [
+          { name: "name", label: "Language", half: true },
+          {
+            name: "level",
+            label: "Level",
+            half: true,
+            hint: 'e.g. "Native" or "Upper-intermediate (B2)"',
+          },
+        ],
+      },
+      { name: "interests", label: "Interests", type: "lines" },
     ],
   },
 };
@@ -998,6 +1154,7 @@ export const ADMIN_GROUPS = [
   {
     label: "Site",
     sections: [
+      { path: "settings", icon: Settings2, ...SINGLETONS.settings },
       { path: "profile", icon: CircleUserRound, ...SINGLETONS.profile },
       { path: "beyond", icon: Mountain, ...SINGLETONS.beyond },
     ],

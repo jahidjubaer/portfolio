@@ -1,4 +1,12 @@
 import { z } from "zod";
+import {
+  ACCENT_IDS,
+  FONT_IDS,
+  INTRO_STYLES,
+  NAV_ITEMS,
+  PROFILE_SECTIONS,
+  THEME_IDS,
+} from "./settings-defaults.js";
 
 /**
  * Zod schemas for every editable content collection. The seed script, the
@@ -325,6 +333,9 @@ export const learningTrackSchema = z.object({
 });
 
 export const beyondSchema = z.object({
+  // Optional: added after the first Beyond content (docs/09, P4).
+  languages: z.array(z.object({ name: text, level: text })).optional(),
+  interests: z.array(text).optional(),
   sports: z.array(
     z.object({ title: text, description: text, tags: z.array(text) }),
   ),
@@ -373,6 +384,58 @@ export const postSchema = z
     message: "Describe the cover image.",
     path: ["coverAlt"],
   });
+
+/**
+ * Site-wide settings (docs/09, P4): visitor defaults for appearance, the
+ * opening animation, which profile sections and pages show, the
+ * availability badge, and SEO. Ids and defaults live in
+ * settings-defaults.js, which the public site imports without Zod.
+ */
+export const settingsSchema = z.object({
+  appearance: z.object({
+    theme: z.enum(THEME_IDS),
+    accent: z.enum(ACCENT_IDS),
+    font: z.enum(FONT_IDS),
+  }),
+  intro: z.object({
+    enabled: z.boolean(),
+    sound: z.boolean(),
+    style: z.enum(INTRO_STYLES),
+  }),
+  profileSections: z
+    .array(
+      z.object({
+        id: z.enum(PROFILE_SECTIONS.map(({ id }) => id)),
+        visible: z.boolean(),
+      }),
+    )
+    .refine(
+      (sections) =>
+        sections.length === PROFILE_SECTIONS.length &&
+        new Set(sections.map((section) => section.id)).size ===
+          PROFILE_SECTIONS.length,
+      "Every profile section must be listed once.",
+    ),
+  showGithubActivity: z.boolean(),
+  navigation: z.object(
+    Object.fromEntries(
+      NAV_ITEMS.map(({ id }) => [
+        id,
+        z.object({
+          label: text.max(24, "Keep menu labels short (24 characters)."),
+          visible: z.boolean(),
+        }),
+      ]),
+    ),
+  ),
+  openToWorkBadge: z.boolean(),
+  seo: z.object({
+    homeDescription: text
+      .max(300, "Search engines show about 160 characters; keep it under 300.")
+      .optional(),
+    shareImage: blobImageSchema.optional(),
+  }),
+});
 
 // [list, field, target list, target key]: every id must resolve.
 const REFERENCE_CHECKS = [
@@ -431,6 +494,7 @@ export const contentSchema = z
     certifications: z.array(certificationSchema),
     learning: learningSchema,
     learningTracks: z.array(learningTrackSchema),
+    settings: settingsSchema,
     beyond: beyondSchema,
     photos: z.array(photoSchema),
     // Published posts only; drafts never reach the public snapshot.
