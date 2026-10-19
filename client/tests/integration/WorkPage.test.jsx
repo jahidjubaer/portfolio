@@ -9,19 +9,6 @@ import { projects } from "../../src/data/projects";
 // synchronous queries.
 
 describe("WorkPage", () => {
-  it("derives its project count from the project data set", async () => {
-    const router = createMemoryRouter(routeConfig, {
-      initialEntries: ["/work"],
-    });
-    render(<RouterProvider router={router} />);
-
-    expect(
-      await screen.findByText(
-        new RegExp(`${projects.length} projects? shown below`),
-      ),
-    ).toBeInTheDocument();
-  });
-
   it("lists Sarabo as the leading flagship case study", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work"],
@@ -57,33 +44,19 @@ describe("WorkPage", () => {
     expect(screen.queryByText("Archive")).not.toBeInTheDocument();
   });
 
-  it("shows role and timeline metadata for the case-study projects", async () => {
+  it("renders a real cover when available and a monogram otherwise", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work"],
     });
     render(<RouterProvider router={router} />);
 
-    // Sarabo and Bang Learner are both solo case studies now.
-    expect(await screen.findAllByText("Sole Developer")).toHaveLength(2);
-    expect(screen.getByText("July–August")).toBeInTheDocument();
-    expect(screen.getByText("March–April 2025")).toBeInTheDocument();
-  });
-
-  it("renders a real cover when available and a placeholder otherwise", async () => {
-    const router = createMemoryRouter(routeConfig, {
-      initialEntries: ["/work"],
-    });
-    render(<RouterProvider router={router} />);
-
-    // Bang Learner gained real product screenshots (2026-09-29).
     expect(
-      await screen.findByRole("img", { name: "Bang Learner project cover" }),
-    ).toHaveAttribute("src", "/assets/projects/bang-learner/cover.webp");
+      await screen.findByRole("img", { name: "Sarabo project cover" }),
+    ).toHaveAttribute("src", "/assets/projects/sarabo/cover.webp");
+    // Projects without a cover show a monogram tile, not a placeholder image.
     expect(
-      screen.getByRole("img", { name: "Bangladesh Landscape project cover" }),
-    ).toHaveAttribute(
-      "src",
-      "/assets/placeholders/project-cover-placeholder.svg",
-    );
+      screen.queryByRole("img", { name: "Bangladesh Landscape project cover" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("BL")).toBeInTheDocument();
   });
 });

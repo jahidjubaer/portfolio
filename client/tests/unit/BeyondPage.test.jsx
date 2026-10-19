@@ -45,14 +45,6 @@ describe("BeyondPage", () => {
       .mockResolvedValue({ success: true, configured: false, photos: [] });
   });
 
-  it("activates the STORY identity", async () => {
-    renderBeyond();
-    await screen.findByRole("heading", { level: 1 });
-    expect(document.documentElement.getAttribute("data-identity")).toBe(
-      "story",
-    );
-  });
-
   it("renders exactly one H1", async () => {
     renderBeyond();
     expect(await screen.findAllByRole("heading", { level: 1 })).toHaveLength(1);

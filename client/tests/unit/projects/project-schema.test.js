@@ -69,23 +69,29 @@ describe("validateProjects", () => {
     expect(errors).toEqual([]);
   });
 
-  it("flags a missing required field on a complete case study", () => {
+  it("flags a complete case study with no sections", () => {
+    const errors = validateProjects([
+      validProject({
+        caseStudyStatus: "complete",
+        caseStudy: { sections: [] },
+      }),
+    ]);
+    expect(
+      errors.some((error) => error.includes("need at least one section")),
+    ).toBe(true);
+  });
+
+  it("flags a text section without a Markdown body", () => {
     const errors = validateProjects([
       validProject({
         caseStudyStatus: "complete",
         caseStudy: {
-          overview: "Overview text.",
-          roles: [],
-          workflow: [{ label: "Step", description: "..." }],
-          capabilities: ["A capability"],
-          sections: [],
+          sections: [{ id: "overview", heading: "Overview", type: "text" }],
         },
       }),
     ]);
     expect(
-      errors.some((error) =>
-        error.includes("require a non-empty caseStudy.roles"),
-      ),
+      errors.some((error) => error.includes("text section needs a Markdown")),
     ).toBe(true);
   });
 
@@ -94,13 +100,9 @@ describe("validateProjects", () => {
       validProject({
         caseStudyStatus: "complete",
         caseStudy: {
-          overview: "Overview text.",
-          roles: [{ name: "Customer", description: "..." }],
-          workflow: [{ label: "Step", description: "..." }],
-          capabilities: ["A capability"],
           sections: [
-            { id: "overview", heading: "Overview" },
-            { id: "overview", heading: "Overview again" },
+            { id: "overview", heading: "Overview", type: "text", body: "A" },
+            { id: "overview", heading: "Again", type: "text", body: "B" },
           ],
         },
       }),

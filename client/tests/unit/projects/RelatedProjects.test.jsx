@@ -5,8 +5,8 @@ import { RelatedProjects } from "../../../src/features/projects/RelatedProjects"
 
 const projects = [
   {
-    slug: "bang-learner",
-    title: "Bang Learner",
+    slug: "ict-crack",
+    title: "ICT Crack",
     summary: "A responsive skill-learning platform.",
     status: "repository-available",
     caseStudyStatus: "in-preparation",
@@ -22,9 +22,9 @@ describe("RelatedProjects", () => {
         <RelatedProjects projects={projects} />
       </MemoryRouter>,
     );
-    expect(screen.getByRole("link", { name: "Bang Learner" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "ICT Crack" })).toHaveAttribute(
       "href",
-      "/work/bang-learner",
+      "/work/ict-crack",
     );
   });
 

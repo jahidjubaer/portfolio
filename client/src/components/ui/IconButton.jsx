@@ -3,7 +3,7 @@ import { cn } from "../../lib/cn";
 
 const VARIANT_CLASSES = {
   primary:
-    "bg-(--color-accent-primary) text-(--color-on-accent-primary) border border-transparent hover:brightness-110",
+    "bg-(--color-accent-fill) text-(--color-on-accent-primary) border border-transparent hover:brightness-110",
   secondary:
     "bg-transparent text-(--color-text-primary) border border-(--color-border) hover:border-(--color-accent-primary) hover:text-(--color-accent-primary)",
   ghost:

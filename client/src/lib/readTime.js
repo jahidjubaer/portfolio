@@ -6,27 +6,15 @@ function countWords(text) {
 }
 
 /**
- * Estimates reading time for a case study in minutes.
+ * Estimates reading time for a case study in minutes, from its section
+ * text (Markdown syntax adds a negligible handful of "words").
  * @param {import("../data/projects").CaseStudy} caseStudy
  * @returns {number}
  */
 export function estimateReadTime(caseStudy) {
-  const fields = [
-    caseStudy.overview,
-    caseStudy.responsibility,
-    caseStudy.workflow,
-    caseStudy.challenge,
-    caseStudy.outcome,
-    caseStudy.reflection,
-  ];
-
-  let totalWords = fields.reduce((sum, field) => sum + countWords(field), 0);
-
-  totalWords += (caseStudy.capabilities?.length ?? 0) * 4;
-  totalWords += (caseStudy.decisions?.length ?? 0) * 12;
-  totalWords += (caseStudy.architecture?.length ?? 0) * 10;
-  totalWords += (caseStudy.roles?.length ?? 0) * 8;
-
-  const minutes = Math.max(1, Math.round(totalWords / WORDS_PER_MINUTE));
-  return minutes;
+  const totalWords = (caseStudy.sections ?? []).reduce(
+    (sum, section) => sum + countWords(section.body),
+    0,
+  );
+  return Math.max(1, Math.round(totalWords / WORDS_PER_MINUTE));
 }

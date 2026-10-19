@@ -3,23 +3,32 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/server.js",
+    "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "seed": "vite-node scripts/seed.js --",
+    "migrate": "vite-node scripts/migrate.js --"
   },
   "dependencies": {
-    "express": "^5",
+    "@vercel/blob": "^2.8.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2",
+    "dotenv": "^17",
+    "express": "^5",
+    "express-rate-limit": "^8.7.1",
     "helmet": "^8",
-    "dotenv": "^17"
+    "jose": "^6.2.12",
+    "mongodb": "^7.7.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@eslint/js": "^9",
     "eslint": "^9",
     "globals": "^15",
-    "nodemon": "^3",
+    "mongodb-memory-server": "^11.3.0",
     "supertest": "^7",
+    "vite-node": "^3.2.4",
     "vitest": "^3"
   }
 }

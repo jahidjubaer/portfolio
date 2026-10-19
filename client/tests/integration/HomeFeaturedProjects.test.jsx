@@ -4,9 +4,12 @@ import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routeConfig } from "../../src/routes/route-config";
 import { projects } from "../../src/data/projects";
 
+// Featured projects live in the profile's Work tab (/?tab=work).
 describe("Homepage featured projects", () => {
   it("links Sarabo directly to its case study route", () => {
-    const router = createMemoryRouter(routeConfig, { initialEntries: ["/"] });
+    const router = createMemoryRouter(routeConfig, {
+      initialEntries: ["/?tab=work"],
+    });
     render(<RouterProvider router={router} />);
 
     expect(screen.getByRole("link", { name: "Sarabo" })).toHaveAttribute(
@@ -16,7 +19,9 @@ describe("Homepage featured projects", () => {
   });
 
   it("renders every featured project from the central data source", () => {
-    const router = createMemoryRouter(routeConfig, { initialEntries: ["/"] });
+    const router = createMemoryRouter(routeConfig, {
+      initialEntries: ["/?tab=work"],
+    });
     render(<RouterProvider router={router} />);
 
     projects

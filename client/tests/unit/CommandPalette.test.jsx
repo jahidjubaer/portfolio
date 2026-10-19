@@ -99,22 +99,24 @@ describe("CommandPalette", () => {
     renderPalette();
 
     await openWithCtrlK(user);
-    expect(screen.getByRole("option", { name: /home/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: /profile/i }),
+    ).toBeInTheDocument();
 
     await user.type(
       screen.getByRole("combobox", { name: "Search commands" }),
-      "learning",
+      "writing",
     );
 
     expect(
-      screen.getByRole("option", { name: /learning/i }),
+      screen.getByRole("option", { name: /writing/i }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("option", { name: /^home$/i }),
+      screen.queryByRole("option", { name: /^profile$/i }),
     ).not.toBeInTheDocument();
   });
 
-  it("finds 'Résumé' when searching the unaccented 'resume'", async () => {
+  it("finds Resume when searching in lowercase", async () => {
     const user = userEvent.setup();
     renderPalette();
 
@@ -125,7 +127,7 @@ describe("CommandPalette", () => {
     );
 
     expect(
-      screen.getByRole("option", { name: /^résumé$/i }),
+      screen.getByRole("option", { name: /^resume$/i }),
     ).toBeInTheDocument();
   });
 
@@ -148,8 +150,8 @@ describe("CommandPalette", () => {
 
     await openWithCtrlK(user);
     const input = screen.getByRole("combobox", { name: "Search commands" });
-    const firstOption = screen.getByRole("option", { name: /home/i });
-    const secondOption = screen.getByRole("option", { name: /work/i });
+    const firstOption = screen.getByRole("option", { name: /profile/i });
+    const secondOption = screen.getByRole("option", { name: /projects/i });
 
     expect(firstOption).toHaveAttribute("aria-selected", "true");
 
@@ -168,7 +170,7 @@ describe("CommandPalette", () => {
     await openWithCtrlK(user);
     await user.type(
       screen.getByRole("combobox", { name: "Search commands" }),
-      "About",
+      "Contact",
     );
     await user.keyboard("{Enter}");
 
@@ -196,7 +198,7 @@ describe("CommandPalette", () => {
     });
   });
 
-  it("includes a résumé download command when a résumé is available", async () => {
+  it("includes a resume download command when a resume is available", async () => {
     const user = userEvent.setup();
     renderPalette();
 
@@ -204,11 +206,11 @@ describe("CommandPalette", () => {
 
     if (profile.resume.available) {
       expect(
-        screen.getByRole("option", { name: /download résumé/i }),
+        screen.getByRole("option", { name: /download resume/i }),
       ).toBeInTheDocument();
     } else {
       expect(
-        screen.queryByRole("option", { name: /download résumé/i }),
+        screen.queryByRole("option", { name: /download resume/i }),
       ).not.toBeInTheDocument();
     }
   });

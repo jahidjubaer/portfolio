@@ -168,7 +168,7 @@ function buildBeyond() {
 function buildManifest() {
   const projectSlugDirs = {
     sarabo: "sarabo",
-    bangLearner: "bang-learner",
+    ictCrack: "ict-crack",
     bangladeshLandscape: "bangladesh-landscape",
   };
 

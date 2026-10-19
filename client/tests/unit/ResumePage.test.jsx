@@ -24,7 +24,7 @@ describe("ResumePage", () => {
     vi.resetModules();
   });
 
-  it("shows a download link when the résumé PDF is available", async () => {
+  it("shows a download link when the resume PDF is available", async () => {
     mockManifest({
       available: true,
       src: "/assets/resume/jahid-hasan-resume.pdf",
@@ -43,7 +43,7 @@ describe("ResumePage", () => {
     );
   });
 
-  it("does not link to a résumé PDF while none is available", async () => {
+  it("does not link to a resume PDF while none is available", async () => {
     mockManifest({ available: false, src: null });
     const { ResumePage } = await import("../../src/pages/ResumePage");
 
@@ -58,7 +58,7 @@ describe("ResumePage", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("uses the correct download filename when the résumé is available", async () => {
+  it("uses the correct download filename when the resume is available", async () => {
     mockManifest({
       available: true,
       src: "/assets/resume/jahid-hasan-resume.pdf",
@@ -94,7 +94,7 @@ describe("ResumePage", () => {
       screen.getByRole("heading", { name: "Featured Engineering Projects" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Sarabo")).toBeInTheDocument();
-    expect(screen.getByText("Bang Learner")).toBeInTheDocument();
+    expect(screen.getByText("ICT Crack")).toBeInTheDocument();
     expect(screen.getByText("Bangladesh Landscape")).toBeInTheDocument();
   });
 

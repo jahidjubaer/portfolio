@@ -120,7 +120,7 @@ test("has no automatically detectable accessibility violations with posts loaded
   expect(seriousOrCritical).toEqual([]);
 });
 
-test("navigating to Learning from the primary nav shows real posts", async ({
+test("navigating to Writing from the sidebar shows real posts", async ({
   page,
 }) => {
   await mockLearningPosts(page, {
@@ -131,9 +131,10 @@ test("navigating to Learning from the primary nav shows real posts", async ({
   });
 
   await page.goto("/");
-  const nav = page.getByRole("navigation", { name: "Primary" });
-  await nav.getByRole("button", { name: "More" }).click();
-  await nav.getByRole("link", { name: "Learning" }).click();
+  await page
+    .getByRole("complementary", { name: "Sidebar" })
+    .getByRole("link", { name: "Writing" })
+    .click();
 
   await expect(
     page.getByRole("heading", { level: 1, name: "Blog / Learning" }),

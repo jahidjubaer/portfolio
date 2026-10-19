@@ -22,7 +22,7 @@ export function ProjectSectionNav({ sections, className = "" }) {
     <nav
       aria-label="Case study sections"
       className={cn(
-        "sticky top-(--header-height) z-30 -mx-4 overflow-x-auto border-b border-(--color-border) bg-(--color-canvas) px-4 py-3",
+        "header-blur sticky top-(--header-height) z-30 -mx-4 overflow-x-auto border-b border-(--color-border) bg-(--color-canvas)/85 px-4 py-3",
         className,
       )}
     >

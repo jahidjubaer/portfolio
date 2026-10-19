@@ -1,73 +1,82 @@
 /*
- * Design tokens for the SYSTEM (default, professional) and STORY (/beyond)
- * identities. Selected by `data-identity` on the root <html> element via
- * client/src/features/identity-mode. See docs/01-master-product-design-spec.md
- * section 7 for the source palette.
+ * Design tokens. Dark is the default (bare :root); light applies when the
+ * user picks it (data-theme="light") or, with no stored choice, when the OS
+ * prefers light. ThemeProvider + the inline script in index.html set
+ * data-theme before first paint, so there is no flash of the wrong theme.
+ *
+ * Accent: signal lime. --color-accent-primary is the readable "ink" form
+ * (text, borders, focus rings) and changes per theme to keep contrast;
+ * --color-accent-fill-* is the bright fill used behind dark text on
+ * buttons and badges, identical in both themes.
  */
 
-:root,
-:root[data-identity="system"] {
+:root {
+  color-scheme: dark;
+
   /* Surfaces */
-  --color-canvas: #070a0d;
-  --color-canvas-subtle: #090d12;
-  --color-surface: #0d1116;
-  --color-surface-raised: #121820;
-  --color-surface-soft: #171d24;
+  --color-canvas: #09090b;
+  --color-canvas-subtle: #0d0d10;
+  --color-surface: #111114;
+  --color-surface-raised: #16161a;
+  --color-surface-soft: #1c1c21;
 
   /* Text */
-  --color-text-primary: #f4f1e8;
-  --color-text-secondary: #b4bdc8;
-  --color-text-muted: #8b95a3;
+  --color-text-primary: #ededef;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #8b8b94;
 
   /* Borders */
-  --color-border: rgba(255, 255, 255, 0.12);
-  --color-border-strong: rgba(255, 255, 255, 0.22);
+  --color-border: #232328;
+  --color-border-strong: #34343a;
 
-  /* Accents */
-  --color-accent-primary: #b9ff46;
-  --color-accent-primary-soft: rgba(185, 255, 70, 0.12);
-  --color-accent-secondary: #71d7ff;
-  --color-accent-secondary-soft: rgba(113, 215, 255, 0.12);
-
-  /* On-accent text: pure black fails contrast on #b9ff46 far less than a
-     near-black graphite tone. #06210a keeps the signal-lime button legible
-     (documented adjustment, not part of the original suggested values). */
-  --color-on-accent-primary: #06210a;
+  /* Accent */
+  --color-accent-primary: #bef264;
+  --color-accent-primary-soft: rgba(163, 230, 53, 0.12);
+  --color-accent-secondary: #7dd3fc;
+  --color-accent-secondary-soft: rgba(125, 211, 252, 0.12);
+  --color-accent-fill-from: #c8f27a;
+  --color-accent-fill: #a3e635;
+  --color-accent-fill-to: #84cc16;
+  --color-accent-edge: #4d7c0f;
+  --color-on-accent-primary: #142303;
   --color-on-accent-secondary: #04141c;
+  --color-accent-glow: rgba(163, 230, 53, 0.16);
+
+  /* Dot-matrix banner (ProfileBanner) */
+  --color-banner-hi: #d9f99d;
+  --color-banner-mid: #84cc16;
+  --color-banner-lo: #3f6212;
 
   /* Status */
-  --color-success: #68e0a0;
+  --color-success: #4ade80;
   --color-warning: #e7b75f;
   --color-danger: #ff766f;
 }
 
-:root[data-identity="story"] {
-  --color-canvas: #151310;
-  --color-canvas-subtle: #1b1814;
-  --color-surface: #201c17;
-  --color-surface-raised: #29231d;
-  --color-surface-soft: #302920;
-
-  --color-text-primary: #eee8dc;
-  --color-text-secondary: #c8bdac;
-  --color-text-muted: #a09486;
-
-  --color-border: rgba(238, 232, 220, 0.14);
-  --color-border-strong: rgba(238, 232, 220, 0.24);
-
-  --color-accent-primary: #ff6b3d;
-  --color-accent-primary-soft: rgba(255, 107, 61, 0.12);
-  --color-accent-secondary: #e7b75f;
-  --color-accent-secondary-soft: rgba(231, 183, 95, 0.12);
-
-  /* #ff6b3d and #e7b75f are both light/warm enough that near-black text
-     reads far better on them than white does (documented adjustment). */
-  --color-on-accent-primary: #1b0e06;
-  --color-on-accent-secondary: #1f1509;
-
-  --color-success: #7fcf9a;
-  --color-warning: #e7b75f;
-  --color-danger: #f0806f;
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-canvas: #ffffff;
+  --color-canvas-subtle: #fafafa;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f7f7f8;
+  --color-surface-soft: #f1f1f3;
+  --color-text-primary: #141416;
+  --color-text-secondary: #52525b;
+  --color-text-muted: #6b6b74;
+  --color-border: #e7e7ea;
+  --color-border-strong: #d4d4d8;
+  --color-accent-primary: #3f6212;
+  --color-accent-primary-soft: rgba(101, 163, 13, 0.12);
+  --color-accent-secondary: #0369a1;
+  --color-accent-secondary-soft: rgba(3, 105, 161, 0.1);
+  --color-accent-edge: #65a30d;
+  --color-accent-glow: rgba(132, 204, 22, 0.2);
+  --color-banner-hi: #4d7c0f;
+  --color-banner-mid: #84cc16;
+  --color-banner-lo: #bef264;
+  --color-success: #15803d;
+  --color-warning: #a16207;
+  --color-danger: #b91c1c;
 }
 
 :root {
@@ -82,29 +91,30 @@
   --space-2xl: 4rem;
   --space-3xl: 6rem;
 
-  /* Section rhythm — 96-160px desktop, 72-104px mobile per the design spec */
-  --space-section-mobile: 4.5rem;
-  --space-section-desktop: 8rem;
+  /* Section rhythm inside the ~55rem center column */
+  --space-section-mobile: 2.5rem;
+  --space-section-desktop: 3rem;
 
   /* Containers */
   --container-content: 65ch;
   --container-max: 80rem; /* 1280px */
   --container-wide: 96rem; /* 1536px, full-bleed visual ceiling */
-  --gutter-mobile: 1.25rem;
-  --gutter-tablet: 2rem;
-  --gutter-desktop: 3rem;
+  --gutter-mobile: 1rem;
+  --gutter-tablet: 1.5rem;
+  --gutter-desktop: 1.75rem;
 
   /* Radii */
   --radius-sm: 0.625rem;
-  --radius-md: 1rem;
-  --radius-lg: 1.375rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.375rem;
   --radius-pill: 999px;
 
   /* Borders */
   --border-width-hairline: 1px;
   --border-width-strong: 1.5px;
 
-  /* Shadow (used sparingly — SYSTEM/STORY favor borders over shadow depth) */
+  /* Shadow (used sparingly — the design favors borders over shadow depth) */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.5);
 
@@ -121,12 +131,18 @@
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
 
-  /* Layout metadata */
-  --header-height: 4rem;
+  /* Layout metadata — three-column app shell (see AppShell.jsx) */
+  --header-height: 4.75rem;
+  --rail-left: 17.5rem;
+  --rail-left-compact: 5.5rem;
+  --rail-right: 23.5rem;
+  --center-max: 55rem;
+  --bottom-nav-height: 4.25rem;
 
   /* Z-index scale */
   --z-header: 50;
   --z-mobile-menu: 40;
+  --z-rail: 55; /* above the sticky page header so rail popovers overlap it */
   --z-overlay: 60;
   --z-skip-link: 100;
 }

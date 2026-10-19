@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { afterEach, describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -123,5 +123,23 @@ describe("ContactForm", () => {
     await user.clear(subject);
     await user.type(subject, "Senior React role");
     expect(subject).toHaveValue("Senior React role");
+  });
+});
+
+describe("ContactForm subject pre-fill", () => {
+  afterEach(() => {
+    window.history.replaceState(null, "", "/");
+  });
+
+  it("pre-fills a known subject from ?subject=", () => {
+    window.history.replaceState(null, "", "/contact?subject=Collaboration");
+    render(<ContactForm />);
+    expect(screen.getByLabelText(/subject/i)).toHaveValue("Collaboration");
+  });
+
+  it("ignores an unknown subject", () => {
+    window.history.replaceState(null, "", "/contact?subject=Spam%20offer");
+    render(<ContactForm />);
+    expect(screen.getByLabelText(/subject/i)).toHaveValue("");
   });
 });

@@ -1,177 +1,205 @@
 import { useEffect, useRef, useState } from "react";
-import { Mail, MapPin, Copy, Check, Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight, Check, Clock, Copy, FileText, Mail } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
-import { Container } from "../components/ui/Container";
-import { SectionLabel } from "../components/ui/SectionLabel";
-import { Surface } from "../components/ui/Surface";
+import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
 import { ButtonLink } from "../components/ui/ButtonLink";
+import { SpotlightCard } from "../components/ui/SpotlightCard";
+import { LocalTime } from "../components/ui/LocalTime";
 import { GitHubIcon, LinkedInIcon } from "../components/icons/BrandIcons";
 import { Reveal } from "../features/motion/Reveal";
 import { ContactForm } from "../features/contact/ContactForm";
+import { usePreferences } from "../features/preferences/usePreferences";
 import { profile } from "../data/profile";
 
-const CONTACT_ENTRIES = [
+const REACH_OPTIONS = [
   {
-    label: "Email Direct",
-    value: profile.email,
-    href: `mailto:${profile.email}`,
-    icon: Mail,
-    copyable: true,
-  },
-  {
-    label: "GitHub Profile",
-    value: profile.github.replace("https://", ""),
-    href: profile.github,
-    icon: GitHubIcon,
-    copyable: false,
-  },
-  {
-    label: "LinkedIn Profile",
-    value: profile.linkedin.replace("https://", ""),
-    href: profile.linkedin,
+    id: "linkedin",
     icon: LinkedInIcon,
-    copyable: false,
+    title: "LinkedIn",
+    text: "Connect with me and see my background and activity.",
+    action: "Open LinkedIn",
+    href: profile.linkedin,
+  },
+  {
+    id: "resume",
+    icon: FileText,
+    title: "Resume",
+    text: "A one-page summary of my education, projects, and leadership.",
+    action: "View resume",
+    to: "/resume",
+  },
+  {
+    id: "github",
+    icon: GitHubIcon,
+    title: "GitHub",
+    text: "Browse my public repositories and recent commits.",
+    action: "Open GitHub",
+    href: profile.github,
   },
 ];
 
+function IconTile({ icon: Icon }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="grid size-12 shrink-0 place-items-center rounded-(--radius-md) border border-(--color-border) bg-(--color-surface-raised) text-(--color-accent-primary)"
+    >
+      <Icon size={20} />
+    </span>
+  );
+}
+
 export function ContactPage() {
+  const { play } = usePreferences();
   const [copied, setCopied] = useState(false);
   const copyResetTimerRef = useRef(null);
 
   usePageMeta({
     title: "Contact — Jahid Hasan",
     description:
-      "Get in touch with Jahid Hasan about frontend and junior software engineering opportunities, projects, or collaboration.",
+      "Get in touch with Jahid Hasan about frontend developer, junior software engineer, MTO, or technical management roles, projects, or questions.",
   });
 
   useEffect(() => () => clearTimeout(copyResetTimerRef.current), []);
 
-  const handleCopyEmail = (e) => {
-    e.preventDefault();
-    navigator.clipboard.writeText(profile.email);
+  async function handleCopyEmail() {
+    try {
+      await navigator.clipboard.writeText(profile.email);
+    } catch {
+      return;
+    }
+    play("success");
     setCopied(true);
     clearTimeout(copyResetTimerRef.current);
     copyResetTimerRef.current = setTimeout(() => setCopied(false), 2200);
-  };
+  }
 
   return (
-    <Container as="div" className="section-spacing max-w-4xl">
-      <Reveal>
-        <SectionLabel>Contact</SectionLabel>
-        <h1 className="heading-xl mt-3 text-(--color-text-primary)">
-          Let&apos;s build something together.
-        </h1>
-        <p className="body-lg mt-4 max-w-prose text-(--color-text-secondary)">
-          {profile.availabilityStatement}
-        </p>
+    <>
+      <PageHeader>
+        <PageHeaderTitle as="h1">Contact</PageHeaderTitle>
+      </PageHeader>
 
-        <div className="mt-6 flex flex-wrap items-center gap-4">
-          <span className="mono-meta inline-flex items-center gap-1.5 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-soft) px-3 py-1 text-xs text-(--color-text-muted)">
-            <MapPin aria-hidden="true" size={13} />
-            {profile.location}
-          </span>
-        </div>
-
-        {/* Contact Cards */}
-        <ul className="mt-10 grid list-none gap-5 sm:grid-cols-3">
-          {CONTACT_ENTRIES.map(
-            ({ label, value, href, icon: Icon, copyable }) => (
-              <Surface
-                key={label}
-                as="li"
-                variant="raised"
-                className="group relative flex flex-col justify-between p-5 transition-all duration-300 hover:border-(--color-accent-primary)/60 hover:shadow-md"
-              >
-                <div>
-                  <div className="label flex items-center justify-between text-(--color-text-muted)">
-                    <span className="inline-flex items-center gap-2 font-mono text-xs uppercase text-(--color-text-secondary)">
-                      <Icon
-                        size={16}
-                        className="text-(--color-accent-primary)"
-                      />
-                      {label}
-                    </span>
-                    {copyable && (
-                      <button
-                        type="button"
-                        onClick={handleCopyEmail}
-                        className="inline-flex min-touch-target items-center gap-1.5 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-soft) px-3 text-[11px] font-mono text-(--color-accent-primary) transition-all hover:border-(--color-accent-primary) hover:bg-(--color-accent-primary-soft)"
-                        aria-label="Copy email address"
-                      >
-                        {copied ? <Check size={12} /> : <Copy size={12} />}
-                        <span>{copied ? "Copied!" : "Copy"}</span>
-                      </button>
-                    )}
-                  </div>
-                  <div className="mt-4">
-                    <a
-                      href={href}
-                      target={label === "Email Direct" ? undefined : "_blank"}
-                      rel={label === "Email Direct" ? undefined : "noreferrer"}
-                      className="body-sm font-medium break-all text-(--color-text-primary) transition-colors group-hover:text-(--color-accent-primary)"
-                    >
-                      {value}
-                    </a>
-                  </div>
-                </div>
-              </Surface>
-            ),
-          )}
-        </ul>
-      </Reveal>
-
-      {/* Direct Email — Primary Contact Action */}
-      <Reveal className="mt-10">
-        <Surface variant="accent" className="p-6 sm:p-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex-1">
-              <h2 className="heading-md text-(--color-text-primary)">
-                Email me directly
-              </h2>
-              <p className="body-sm mt-2 text-(--color-text-secondary)">
-                For the fastest response, send me an email.
-              </p>
-            </div>
-            <ButtonLink
-              href={`mailto:${profile.email}`}
-              variant="primary"
-              size="lg"
-              trailingIcon={<ArrowRight size={16} />}
-            >
-              {profile.email}
-            </ButtonLink>
-          </div>
-        </Surface>
-      </Reveal>
-
-      {/* Form Section */}
-      <Reveal className="mt-14">
-        <Surface
-          variant="default"
-          className="relative p-8 border border-(--color-border) shadow-lg"
+      <div className="grid gap-8 px-4 py-7 sm:px-7">
+        <Reveal
+          as="section"
+          className="glow-surface rounded-[1.375rem] border border-(--color-accent-primary)/25 p-6 sm:p-8"
         >
-          <div className="flex items-center gap-2 text-(--color-accent-primary)">
-            <Sparkles size={18} />
-            <span className="eyebrow text-xs">Direct Inquiry</span>
+          <h2 className="text-[1.625rem] font-bold tracking-[-0.02em] text-(--color-text-primary)">
+            Let&apos;s work together
+          </h2>
+          <p className="mt-2.5 max-w-[34em] text-[1.0625rem] text-(--color-text-secondary)">
+            Hiring for a frontend, software engineering, or MTO role, or have a
+            question? Send a message or email me directly.
+          </p>
+          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3 text-[0.9375rem] text-(--color-text-secondary)">
+            <span className="inline-flex items-center gap-2.5 rounded-full border border-(--color-accent-primary)/30 bg-(--color-accent-primary-soft) px-3.5 py-1.5 font-semibold text-(--color-accent-primary)">
+              <span className="status-dot" aria-hidden="true" />
+              Open to new roles
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <Clock size={16} aria-hidden="true" />
+              Sylhet, GMT+6 · <LocalTime className="tabular-nums" />
+            </span>
           </div>
-          <h2 className="heading-md mt-2 text-(--color-text-primary)">
+        </Reveal>
+
+        <section aria-labelledby="reach-heading">
+          <h2
+            id="reach-heading"
+            className="mb-4 text-[1.3125rem] font-semibold text-(--color-text-primary)"
+          >
+            Reach me
+          </h2>
+          <SpotlightCard className="grid gap-4 p-5 sm:grid-cols-[3rem_minmax(0,1fr)] sm:p-6">
+            <IconTile icon={Mail} />
+            <div className="min-w-0">
+              <h3 className="text-lg font-semibold text-(--color-text-primary)">
+                Email
+              </h3>
+              <p className="mt-1 text-[0.9375rem] text-(--color-text-secondary)">
+                The fastest way to reach me about roles, projects, or questions.
+              </p>
+              <p className="mono-meta mt-3 inline-block max-w-full break-all rounded-(--radius-sm) border border-(--color-border) bg-(--color-surface-raised) px-3 py-2 text-sm text-(--color-text-primary) select-all">
+                {profile.email}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2.5">
+                <ButtonLink
+                  href={`mailto:${profile.email}`}
+                  size="sm"
+                  trailingIcon={<ArrowRight size={15} />}
+                >
+                  Email me
+                </ButtonLink>
+                <button
+                  type="button"
+                  onClick={handleCopyEmail}
+                  aria-label="Copy email address"
+                  className="inline-flex min-h-10 items-center gap-2 rounded-(--radius-md) border border-(--color-border-strong) bg-(--color-surface-raised) px-3.5 text-sm font-semibold text-(--color-text-primary) transition-colors hover:border-(--color-text-muted)"
+                >
+                  {copied ? (
+                    <Check size={15} aria-hidden="true" />
+                  ) : (
+                    <Copy size={15} aria-hidden="true" />
+                  )}
+                  {copied ? "Copied" : "Copy"}
+                </button>
+                <span role="status" className="sr-only">
+                  {copied ? "Email address copied" : ""}
+                </span>
+              </div>
+            </div>
+          </SpotlightCard>
+
+          <ul className="mt-4 grid gap-4 sm:grid-cols-3">
+            {REACH_OPTIONS.map((option) => (
+              <SpotlightCard
+                key={option.id}
+                as="li"
+                className="flex flex-col p-5"
+              >
+                <IconTile icon={option.icon} />
+                <h3 className="mt-4 text-lg font-semibold text-(--color-text-primary)">
+                  {option.title}
+                </h3>
+                <p className="mt-1 mb-5 text-[0.9375rem] text-(--color-text-secondary)">
+                  {option.text}
+                </p>
+                <ButtonLink
+                  to={option.to}
+                  href={option.href}
+                  target={option.href ? "_blank" : undefined}
+                  rel={option.href ? "noreferrer" : undefined}
+                  variant="secondary"
+                  size="sm"
+                  trailingIcon={<ArrowRight size={15} />}
+                  className="mt-auto self-start"
+                >
+                  {option.action}
+                </ButtonLink>
+              </SpotlightCard>
+            ))}
+          </ul>
+        </section>
+
+        <section
+          aria-labelledby="message-heading"
+          className="rounded-[1.375rem] border border-(--color-border) bg-(--color-surface) p-5 sm:p-7"
+        >
+          <h2
+            id="message-heading"
+            className="text-[1.3125rem] font-semibold text-(--color-text-primary)"
+          >
             Send a message
           </h2>
-          <p className="body-sm mt-2 max-w-prose text-(--color-text-secondary)">
-            Have a project in mind or an open role? Fill out the form below or
-            email me directly at{" "}
-            <a
-              href={`mailto:${profile.email}`}
-              className="text-(--color-accent-primary) font-mono underline underline-offset-4"
-            >
-              {profile.email}
-            </a>
+          <p className="mt-1.5 text-[0.9375rem] text-(--color-text-secondary)">
+            Tell me about the role, project, or question.
           </p>
           <div className="mt-6">
             <ContactForm />
           </div>
-        </Surface>
-      </Reveal>
-    </Container>
+        </section>
+      </div>
+    </>
   );
 }

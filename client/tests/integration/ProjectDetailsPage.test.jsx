@@ -125,40 +125,29 @@ describe("Project detail route", () => {
     expect(screen.getByText(/still in preparation/)).toBeInTheDocument();
   });
 
-  it("renders the complete Bang Learner case study structure", async () => {
+  it("shows ICT Crack's verified live site and public repositories", async () => {
     const router = createMemoryRouter(routeConfig, {
-      initialEntries: ["/work/bang-learner"],
+      initialEntries: ["/work/ict-crack"],
     });
     render(<RouterProvider router={router} />);
 
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Bang Learner" }),
+      await screen.findByRole("heading", { level: 1, name: "ICT Crack" }),
     ).toBeInTheDocument();
-    // Confirmed role and timeline (intake Q7, 2026-09-29).
-    expect(screen.getByText("Sole Developer")).toBeInTheDocument();
-    expect(screen.getByText("March–April 2025")).toBeInTheDocument();
-    // Complete case-study sections, including the captioned gallery.
-    for (const heading of [
-      "Overview",
-      "Roles",
-      "Capabilities",
-      "Gallery",
-      "Architecture",
-      "Implementation approach",
-      "Challenge, outcome and reflection",
-    ]) {
-      expect(
-        screen.getAllByRole("heading", { name: heading }).length,
-      ).toBeGreaterThan(0);
-    }
-    expect(
-      screen.getByAltText("Browsing the skill catalog by category"),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/publicly deployed platform/)).toBeInTheDocument();
-    expect(screen.queryByText(/still in preparation/)).not.toBeInTheDocument();
+    expect(screen.getByText(/still in preparation/)).toBeInTheDocument();
+    const hrefs = screen
+      .getAllByRole("link")
+      .map((link) => link.getAttribute("href"));
+    expect(hrefs).toContain("https://hsc-ict-creck-client.vercel.app");
+    expect(hrefs).toContain(
+      "https://github.com/jahidjubaer/hsc-ict-creck-client",
+    );
+    expect(hrefs).toContain(
+      "https://github.com/jahidjubaer/hsc-ict-creck-server",
+    );
   });
 
-  it("shows Bangladesh Landscape's verified capabilities and repositories on its project-overview page", async () => {
+  it("shows Bangladesh Landscape's verified capabilities without linking its private repositories", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work/bangladesh-landscape"],
     });
@@ -173,16 +162,12 @@ describe("Project detail route", () => {
     expect(
       screen.getByText("Verified guide and partner bookings"),
     ).toBeInTheDocument();
-    // Links appear in both the hero and body, and related-project cards
-    // contribute their own repository links — assert by href membership.
+    expect(screen.getAllByText("Private repository").length).toBeGreaterThan(0);
     const hrefs = screen
       .getAllByRole("link")
       .map((link) => link.getAttribute("href"));
-    expect(hrefs).toContain(
-      "https://github.com/jahidjubaer/bangladesh-landscape-client",
-    );
-    expect(hrefs).toContain(
-      "https://github.com/jahidjubaer/bangladesh-landscape-server",
+    expect(hrefs.some((href) => href?.includes("bangladesh-landscape-"))).toBe(
+      false,
     );
   });
 
@@ -198,9 +183,7 @@ describe("Project detail route", () => {
         name: "Related projects",
       }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: "Bang Learner" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "ICT Crack" })).toBeInTheDocument();
   });
 
   it("sets project-specific document metadata", async () => {

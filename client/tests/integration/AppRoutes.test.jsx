@@ -4,11 +4,12 @@ import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { routeConfig } from "../../src/routes/route-config";
 
 const routes = [
-  { path: "/", heading: "I build clear interfaces for real product problems." },
-  { path: "/work", heading: "Projects I've built" },
-  { path: "/about", heading: "About Jahid" },
+  { path: "/", heading: "Jahid Hasan" },
+  { path: "/work", heading: "Projects" },
+  // /about redirects to the profile, which now holds its content.
+  { path: "/about", heading: "Jahid Hasan" },
   { path: "/beyond", heading: "Beyond the code." },
-  { path: "/contact", heading: "Let's build something together." },
+  { path: "/contact", heading: "Contact" },
   { path: "/resume", heading: "Jahid Hasan" },
 ];
 
@@ -22,7 +23,7 @@ describe("Main application routes", () => {
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: "I build clear interfaces for real product problems.",
+        name: "Jahid Hasan",
       }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Loading page…")).not.toBeInTheDocument();

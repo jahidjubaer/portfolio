@@ -7,9 +7,6 @@
     <loc>http://localhost:5173/work</loc>
   </url>
   <url>
-    <loc>http://localhost:5173/about</loc>
-  </url>
-  <url>
     <loc>http://localhost:5173/learning</loc>
   </url>
   <url>
@@ -25,7 +22,7 @@
     <loc>http://localhost:5173/work/sarabo</loc>
   </url>
   <url>
-    <loc>http://localhost:5173/work/bang-learner</loc>
+    <loc>http://localhost:5173/work/ict-crack</loc>
   </url>
   <url>
     <loc>http://localhost:5173/work/bangladesh-landscape</loc>

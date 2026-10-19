@@ -1,14 +1,25 @@
 import { test, expect } from "@playwright/test";
 
 const routes = [
-  { path: "/", heading: "I build clear interfaces for real product problems." },
-  { path: "/work", heading: "Projects I've built" },
-  { path: "/about", heading: "About Jahid" },
+  { path: "/", heading: "Jahid Hasan" },
+  { path: "/work", heading: "Projects" },
   { path: "/learning", heading: "Blog / Learning" },
   { path: "/beyond", heading: "Beyond the code" },
-  { path: "/contact", heading: "Let's build something together." },
+  { path: "/contact", heading: "Contact" },
   { path: "/resume", heading: "Jahid Hasan" },
 ];
+
+function sidebar(page) {
+  return page.getByRole("complementary", { name: "Sidebar" });
+}
+
+async function hasHorizontalOverflow(page) {
+  return page.evaluate(
+    () =>
+      document.documentElement.scrollWidth >
+      document.documentElement.clientWidth,
+  );
+}
 
 for (const { path, heading } of routes) {
   test(`${path} loads and renders its H1`, async ({ page }) => {
@@ -26,37 +37,11 @@ test("unknown route renders the 404 page", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("navigation to Work works", async ({ page }) => {
-  await page.goto("/");
-  await page
-    .getByRole("navigation", { name: "Primary" })
-    .getByRole("link", { name: "Work" })
-    .click();
+test("/about redirects to the profile", async ({ page }) => {
+  await page.goto("/about");
+  await expect(page).toHaveURL(/\/$/);
   await expect(
-    page.getByRole("heading", { level: 1, name: "Projects I've built" }),
-  ).toBeVisible();
-});
-
-test("navigation to About works", async ({ page }) => {
-  await page.goto("/");
-  await page
-    .getByRole("navigation", { name: "Primary" })
-    .getByRole("link", { name: "About" })
-    .click();
-  await expect(
-    page.getByRole("heading", { level: 1, name: "About Jahid" }),
-  ).toBeVisible();
-});
-
-test("navigation to Learning works via the More disclosure", async ({
-  page,
-}) => {
-  await page.goto("/");
-  const nav = page.getByRole("navigation", { name: "Primary" });
-  await nav.getByRole("button", { name: "More" }).click();
-  await nav.getByRole("link", { name: "Learning" }).click();
-  await expect(
-    page.getByRole("heading", { level: 1, name: "Blog / Learning" }),
+    page.getByRole("heading", { level: 1, name: "Jahid Hasan" }),
   ).toBeVisible();
 });
 
@@ -68,143 +53,161 @@ test("/blog redirects to /learning", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("navigation to Beyond works via the More disclosure", async ({ page }) => {
+test("sidebar navigation reaches every primary route", async ({ page }) => {
   await page.goto("/");
-  const nav = page.getByRole("navigation", { name: "Primary" });
-  await nav.getByRole("button", { name: "More" }).click();
-  await nav.getByRole("link", { name: "Beyond" }).click();
-  await expect(
-    page.getByRole("heading", { level: 1, name: "Beyond the code" }),
-  ).toBeVisible();
-});
-
-test("navigation to Contact works via the header action", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("banner").getByRole("link", { name: "Contact" }).click();
-  await expect(
-    page.getByRole("heading", {
-      level: 1,
-      name: "Let's build something together.",
-    }),
-  ).toBeVisible();
-});
-
-test("browser back/forward works between routes", async ({ page }) => {
-  await page.goto("/");
-  await page.goto("/about");
-  await expect(
-    page.getByRole("heading", { level: 1, name: "About Jahid" }),
-  ).toBeVisible();
-
-  await page.goBack();
-  await expect(
-    page.getByRole("heading", {
-      level: 1,
-      name: "I build clear interfaces for real product problems.",
-    }),
-  ).toBeVisible();
-
-  await page.goForward();
-  await expect(
-    page.getByRole("heading", { level: 1, name: "About Jahid" }),
-  ).toBeVisible();
-});
-
-test("direct navigation (refresh) on a non-home route works", async ({
-  page,
-}) => {
-  await page.goto("/about");
-  await page.reload();
-  await expect(
-    page.getByRole("heading", { level: 1, name: "About Jahid" }),
-  ).toBeVisible();
-});
-
-test("mobile navigation works", async ({ page }) => {
-  await page.setViewportSize({ width: 375, height: 812 });
-  await page.goto("/");
-
-  const toggle = page.getByRole("button", { name: "Open menu" });
-  await toggle.click();
-
-  const mobileNav = page.getByRole("navigation", { name: "Mobile" });
-  await expect(mobileNav).toBeVisible();
-
-  await mobileNav.getByRole("link", { name: "About" }).click();
-  await expect(
-    page.getByRole("heading", { level: 1, name: "About Jahid" }),
-  ).toBeVisible();
-  await expect(mobileNav).toBeHidden();
-});
-
-test("mobile menu opens and closes via its toggle button", async ({ page }) => {
-  await page.setViewportSize({ width: 375, height: 812 });
-  await page.goto("/");
-
-  const toggle = page.getByRole("button", { name: "Open menu" });
-  await expect(toggle).toHaveAttribute("aria-expanded", "false");
-
-  await toggle.click();
-  const closeToggle = page.getByRole("button", { name: "Close menu" });
-  await expect(closeToggle).toHaveAttribute("aria-expanded", "true");
-  await expect(page.getByRole("navigation", { name: "Mobile" })).toBeVisible();
-
-  await closeToggle.click();
-  await expect(page.getByRole("navigation", { name: "Mobile" })).toBeHidden();
-  await expect(page.getByRole("button", { name: "Open menu" })).toHaveAttribute(
-    "aria-expanded",
-    "false",
-  );
-});
-
-test("Escape closes the mobile menu and returns focus to the toggle", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 375, height: 812 });
-  await page.goto("/");
-
-  const toggle = page.getByRole("button", { name: "Open menu" });
-  await toggle.click();
-  await expect(page.getByRole("navigation", { name: "Mobile" })).toBeVisible();
-
-  await page.keyboard.press("Escape");
-
-  await expect(page.getByRole("navigation", { name: "Mobile" })).toBeHidden();
-  await expect(page.getByRole("button", { name: "Open menu" })).toBeFocused();
+  for (const [label, heading] of [
+    ["Projects", "Projects"],
+    ["Beyond", "Beyond the code"],
+    ["Contact", "Contact"],
+    ["Writing", "Blog / Learning"],
+    ["Profile", "Jahid Hasan"],
+  ]) {
+    await sidebar(page).getByRole("link", { name: label, exact: true }).click();
+    await expect(
+      page.getByRole("heading", { level: 1, name: heading }),
+    ).toBeVisible();
+  }
 });
 
 test("active route indicator updates as navigation changes", async ({
   page,
 }) => {
   await page.goto("/");
-  const nav = page.getByRole("navigation", { name: "Primary" });
-
-  await expect(nav.getByRole("link", { name: "Home" })).toHaveAttribute(
-    "aria-current",
-    "page",
-  );
-
-  await nav.getByRole("link", { name: "Work" }).click();
+  const nav = sidebar(page);
   await expect(
-    page.getByRole("heading", { level: 1, name: "Projects I've built" }),
+    nav.getByRole("link", { name: "Profile", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+
+  await nav.getByRole("link", { name: "Projects" }).click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Projects" }),
   ).toBeVisible();
-  await expect(nav.getByRole("link", { name: "Work" })).toHaveAttribute(
+  await expect(nav.getByRole("link", { name: "Projects" })).toHaveAttribute(
     "aria-current",
     "page",
   );
-  await expect(nav.getByRole("link", { name: "Home" })).not.toHaveAttribute(
-    "aria-current",
-    "page",
+  await expect(
+    nav.getByRole("link", { name: "Profile", exact: true }),
+  ).not.toHaveAttribute("aria-current", "page");
+});
+
+test("profile tabs switch panels and keep the tab in the URL", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("tab", { name: "Work" }).click();
+  await expect(page).toHaveURL(/\?tab=work$/);
+  await expect(
+    page.getByRole("link", { name: "Sarabo", exact: true }),
+  ).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByRole("tab", { name: "Work" })).toHaveAttribute(
+    "aria-selected",
+    "true",
   );
 });
 
-test("focus remains visible when tabbing through primary navigation", async ({
+test("theme choice persists across a reload", async ({ page }) => {
+  await page.goto("/");
+  const html = page.locator("html");
+  const initial = await html.getAttribute("data-theme");
+  const next = initial === "dark" ? "light" : "dark";
+
+  await sidebar(page)
+    .getByRole("button", { name: /switch to (light|dark) mode/i })
+    .click();
+  await expect(html).toHaveAttribute("data-theme", next);
+
+  await page.reload();
+  await expect(html).toHaveAttribute("data-theme", next);
+});
+
+test("browser back/forward works between routes", async ({ page }) => {
+  await page.goto("/");
+  await page.goto("/work");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Projects" }),
+  ).toBeVisible();
+
+  await page.goBack();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Jahid Hasan" }),
+  ).toBeVisible();
+
+  await page.goForward();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Projects" }),
+  ).toBeVisible();
+});
+
+test("direct navigation (refresh) on a non-home route works", async ({
+  page,
+}) => {
+  await page.goto("/work");
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Projects" }),
+  ).toBeVisible();
+});
+
+test("mobile bottom navigation works", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+
+  const bottomNav = page.getByRole("navigation", { name: "Main" });
+  await expect(bottomNav).toBeVisible();
+  await bottomNav.getByRole("link", { name: "Projects" }).click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Projects" }),
+  ).toBeVisible();
+  await expect(
+    bottomNav.getByRole("link", { name: "Projects" }),
+  ).toHaveAttribute("aria-current", "page");
+});
+
+test("appearance menu works on mobile (theme, accent, font)", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Customize appearance" }).click();
+  await expect(page.getByRole("switch", { name: "UI sounds" })).toBeVisible();
+
+  await page.getByRole("radio", { name: "Light" }).check();
+  await page.getByTitle("Sky").click();
+  await page.getByText("Space Grotesk", { exact: true }).click();
+  const html = page.locator("html");
+  await expect(html).toHaveAttribute("data-theme", "light");
+  await expect(html).toHaveAttribute("data-accent", "sky");
+  await expect(html).toHaveAttribute("data-font", "grotesk");
+
+  // Survives a reload without a flash (applied by the inline script).
+  await page.reload();
+  await expect(html).toHaveAttribute("data-accent", "sky");
+  await expect(html).toHaveAttribute("data-font", "grotesk");
+});
+
+test("greeting popup appears and its quick reply pre-fills contact", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const greeting = page.getByRole("complementary", {
+    name: /message from jahid/i,
+  });
+  await expect(greeting).toBeVisible({ timeout: 10000 });
+  await greeting.getByRole("link", { name: "I'm hiring" }).click();
+  await expect(page).toHaveURL(/\/contact\?subject=Job/);
+  await expect(page.getByLabel(/subject/i)).toHaveValue("Job opportunity");
+});
+
+test("focus remains visible when tabbing into the sidebar", async ({
   page,
 }) => {
   await page.goto("/");
 
   await page.keyboard.press("Tab"); // skip link
-  await page.keyboard.press("Tab"); // JH. monogram / home link
+  await page.keyboard.press("Tab"); // brand / profile link
 
   const activeElement = page.locator(":focus");
   await expect(activeElement).toBeVisible();
@@ -212,28 +215,6 @@ test("focus remains visible when tabbing through primary navigation", async ({
     (el) => getComputedStyle(el).outlineStyle,
   );
   expect(outlineStyle).not.toBe("none");
-});
-
-test("/beyond uses the STORY identity", async ({ page }) => {
-  await page.goto("/beyond");
-  await expect(page.locator("html")).toHaveAttribute("data-identity", "story");
-});
-
-test("professional routes use the SYSTEM identity", async ({ page }) => {
-  for (const path of [
-    "/",
-    "/work",
-    "/about",
-    "/learning",
-    "/contact",
-    "/resume",
-  ]) {
-    await page.goto(path);
-    await expect(page.locator("html")).toHaveAttribute(
-      "data-identity",
-      "system",
-    );
-  }
 });
 
 test("known project route renders project details", async ({ page }) => {
@@ -262,7 +243,15 @@ test("unknown project route renders a controlled recovery state", async ({
   ).toBeVisible();
   await page.getByRole("link", { name: "View Work" }).click();
   await expect(
-    page.getByRole("heading", { level: 1, name: "Projects I've built" }),
+    page.getByRole("heading", { level: 1, name: "Projects" }),
+  ).toBeVisible();
+});
+
+test("project header links back to the projects index", async ({ page }) => {
+  await page.goto("/work/sarabo");
+  await page.getByRole("link", { name: "Back to projects" }).click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Projects" }),
   ).toBeVisible();
 });
 
@@ -282,84 +271,52 @@ test("Sarabo case-study section navigation jumps to the target section", async (
   ).toBeInViewport();
 });
 
-test("no horizontal overflow on the Sarabo case study at 360px", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 360, height: 800 });
-  await page.goto("/work/sarabo");
-
-  const hasOverflow = await page.evaluate(
-    () =>
-      document.documentElement.scrollWidth >
-      document.documentElement.clientWidth,
-  );
-  expect(hasOverflow).toBe(false);
-});
-
 test("reduced-motion mode still renders and navigates correctly", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(
-    page.getByRole("heading", {
-      level: 1,
-      name: "I build clear interfaces for real product problems.",
-    }),
+    page.getByRole("heading", { level: 1, name: "Jahid Hasan" }),
   ).toBeVisible();
 
-  await page
-    .getByRole("navigation", { name: "Primary" })
-    .getByRole("link", { name: "Work" })
-    .click();
+  await sidebar(page).getByRole("link", { name: "Projects" }).click();
   await expect(
-    page.getByRole("heading", { level: 1, name: "Projects I've built" }),
+    page.getByRole("heading", { level: 1, name: "Projects" }),
   ).toBeVisible();
-});
-
-test("no horizontal overflow at 360px", async ({ page }) => {
-  await page.setViewportSize({ width: 360, height: 800 });
-  await page.goto("/");
-
-  const hasOverflow = await page.evaluate(
-    () =>
-      document.documentElement.scrollWidth >
-      document.documentElement.clientWidth,
-  );
-  expect(hasOverflow).toBe(false);
 });
 
 test("unknown route provides working recovery navigation", async ({ page }) => {
   await page.goto("/this-route-does-not-exist");
   await page.getByRole("link", { name: "Return home" }).click();
   await expect(
-    page.getByRole("heading", {
-      level: 1,
-      name: "I build clear interfaces for real product problems.",
-    }),
+    page.getByRole("heading", { level: 1, name: "Jahid Hasan" }),
   ).toBeVisible();
 });
 
-for (const path of ["/about", "/work", "/resume", "/beyond", "/learning"]) {
+for (const path of [
+  "/",
+  "/?tab=work",
+  "/work",
+  "/work/sarabo",
+  "/contact",
+  "/resume",
+  "/beyond",
+  "/learning",
+]) {
   test(`no horizontal overflow on ${path} at 360px`, async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await page.goto(path);
-
-    const hasOverflow = await page.evaluate(
-      () =>
-        document.documentElement.scrollWidth >
-        document.documentElement.clientWidth,
-    );
-    expect(hasOverflow).toBe(false);
+    await page.locator("h1").first().waitFor();
+    expect(await hasHorizontalOverflow(page)).toBe(false);
   });
 }
 
-test("About page portrait renders visibly on a mobile viewport", async ({
+test("profile portrait renders visibly on a mobile viewport", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.goto("/about");
-
+  await page.goto("/");
   await expect(
     page.getByRole("img", { name: "Portrait of Jahid Hasan" }),
   ).toBeVisible();
@@ -374,16 +331,18 @@ test("Work page flagship project is usable on a mobile viewport", async ({
   await expect(
     page.getByRole("heading", { level: 2, name: "Sarabo" }),
   ).toBeVisible();
-  await expect(page.getByRole("link", { name: "Sarabo" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Sarabo", exact: true }),
+  ).toBeVisible();
 });
 
-test("Résumé download action is visible on a mobile viewport", async ({
+test("Resume download action is visible on a mobile viewport", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/resume");
   // ResumePage is lazy-loaded (see route-config.jsx) — wait past the
-  // RouteLoading fallback before checking which résumé state rendered.
+  // RouteLoading fallback before checking which resume state rendered.
   await page.locator("h1").first().waitFor();
 
   const downloadLink = page.getByRole("link", { name: /download pdf/i });
@@ -396,13 +355,9 @@ test("Résumé download action is visible on a mobile viewport", async ({
 test("Beyond page renders its sections on a mobile viewport", async ({
   page,
 }) => {
-  // /api/photography doesn't really exist in this static-preview e2e
-  // server (no Express backend) — without this mock the real fetch would
-  // hit Vite preview's SPA fallback (200 + index.html) instead of a clean
-  // 404/JSON, which the client can't distinguish from a genuine upstream
-  // error. Mock the same "not configured" shape production returns before
-  // a Photography Blogger URL is set, so this test exercises the same
-  // honest empty state it always has.
+  // /api/photography doesn't exist in this static-preview e2e server (no
+  // Express backend) — mock the same "not configured" shape production
+  // returns before a Photography Blogger URL is set.
   await page.route("**/api/photography", async (route) => {
     await route.fulfill({
       status: 200,
@@ -423,23 +378,4 @@ test("Beyond page renders its sections on a mobile viewport", async ({
   await expect(
     page.getByText("A curated photography selection is being prepared."),
   ).toBeVisible();
-});
-
-test("About page renders the verified timeline with no horizontal overflow at 360px", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 360, height: 800 });
-  await page.goto("/about");
-
-  await expect(
-    page.getByRole("heading", { level: 2, name: "Timeline" }),
-  ).toBeVisible();
-  await expect(page.getByText("Graduation")).toBeVisible();
-
-  const hasOverflow = await page.evaluate(
-    () =>
-      document.documentElement.scrollWidth >
-      document.documentElement.clientWidth,
-  );
-  expect(hasOverflow).toBe(false);
 });

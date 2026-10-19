@@ -16,16 +16,16 @@ test("opens with the keyboard shortcut, searches, navigates, and returns focus",
   const searchInput = page.getByRole("combobox", { name: "Search commands" });
   await expect(searchInput).toBeFocused();
 
-  await searchInput.fill("About");
-  await expect(dialog.getByRole("option", { name: "About" })).toBeVisible();
+  await searchInput.fill("Projects");
+  await expect(dialog.getByRole("option", { name: "Projects" })).toBeVisible();
   await expect(
-    dialog.getByRole("option", { name: /^home$/i }),
+    dialog.getByRole("option", { name: /^profile$/i }),
   ).not.toBeVisible();
 
   await page.keyboard.press("Enter");
   await expect(dialog).toBeHidden();
   await expect(
-    page.getByRole("heading", { level: 1, name: "About Jahid" }),
+    page.getByRole("heading", { level: 1, name: "Projects" }),
   ).toBeVisible();
 });
 
@@ -35,8 +35,8 @@ test("closes with Escape and returns focus to the previously focused element", a
   await page.goto("/");
 
   const homeLink = page
-    .getByRole("navigation", { name: "Primary" })
-    .getByRole("link", { name: "Home" });
+    .getByRole("complementary", { name: "Sidebar" })
+    .getByRole("link", { name: "Profile", exact: true });
   await homeLink.focus();
 
   await page.keyboard.press("Control+k");

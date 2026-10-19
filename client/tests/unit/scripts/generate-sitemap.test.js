@@ -6,7 +6,7 @@ import {
 } from "../../../scripts/generate-sitemap.js";
 
 describe("buildSitemap", () => {
-  const xml = buildSitemap("https://example.com", ["sarabo", "bang-learner"]);
+  const xml = buildSitemap("https://example.com", ["sarabo", "ict-crack"]);
 
   it("is well-formed sitemap XML", () => {
     expect(xml).toContain('<?xml version="1.0" encoding="UTF-8"?>');
@@ -23,7 +23,6 @@ describe("buildSitemap", () => {
   it("includes every static route and derived project route", () => {
     for (const path of [
       "/work",
-      "/about",
       "/learning",
       "/beyond",
       "/contact",
@@ -32,7 +31,7 @@ describe("buildSitemap", () => {
       expect(xml).toContain(`<loc>https://example.com${path}</loc>`);
     }
     expect(xml).toContain("<loc>https://example.com/work/sarabo</loc>");
-    expect(xml).toContain("<loc>https://example.com/work/bang-learner</loc>");
+    expect(xml).toContain("<loc>https://example.com/work/ict-crack</loc>");
   });
 
   it("never lists error or not-found routes", () => {
@@ -50,6 +49,7 @@ describe("buildRobots", () => {
     const robots = buildRobots("https://example.com");
     expect(robots).toContain("User-agent: *");
     expect(robots).toContain("Allow: /");
+    expect(robots).toContain("Disallow: /admin");
     expect(robots).toContain("Sitemap: https://example.com/sitemap.xml");
   });
 });

@@ -3,7 +3,8 @@ import { useReducedMotion } from "motion/react";
 
 /**
  * Thin decorative reading-progress indicator pinned under the sticky
- * header on case-study routes. Fixed-position (no layout shift), updated
+ * header on case-study routes. Sticky with a negative margin (no layout
+ * shift), updated
  * via requestAnimationFrame with a transform (no layout work), and not
  * rendered at all under prefers-reduced-motion — it is purely a motion
  * affordance, and scroll position itself already carries the information.
@@ -47,11 +48,11 @@ export function ReadingProgressBar() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-x-0 top-(--header-height) z-(--z-header) h-0.5"
+      className="pointer-events-none sticky top-(--header-height) z-(--z-header) -mb-0.5 h-0.5"
     >
       <div
         ref={barRef}
-        className="h-full origin-left bg-(--color-accent-primary)"
+        className="h-full origin-left bg-(--color-accent-fill)"
         style={{ transform: "scaleX(0)" }}
       />
     </div>

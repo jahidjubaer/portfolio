@@ -32,7 +32,7 @@ export function Timeline() {
               className={cn(
                 "absolute -left-[1.9rem] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-(--color-canvas)",
                 isEducation
-                  ? "bg-(--color-accent-primary)"
+                  ? "bg-(--color-accent-fill)"
                   : "bg-(--color-text-muted)",
               )}
             />

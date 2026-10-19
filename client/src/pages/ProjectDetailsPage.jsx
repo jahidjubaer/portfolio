@@ -1,47 +1,85 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { ArrowLeft, Mail } from "lucide-react";
+import { PageHeader } from "../components/layout/PageHeader";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { Container } from "../components/ui/Container";
 import { ButtonLink } from "../components/ui/ButtonLink";
 import { Divider } from "../components/ui/Divider";
+import { Markdown } from "../components/ui/Markdown";
 import { Reveal } from "../features/motion/Reveal";
 import { ProjectHero } from "../features/projects/ProjectHero";
 import { ProjectSection } from "../features/projects/ProjectSection";
 import { ProjectSectionNav } from "../features/projects/ProjectSectionNav";
-import { ProjectWorkflow } from "../features/projects/ProjectWorkflow";
-import { ProjectArchitecture } from "../features/projects/ProjectArchitecture";
 import { ProjectMediaGallery } from "../features/projects/ProjectMediaGallery";
 import { RelatedProjects } from "../features/projects/RelatedProjects";
 import { CaseStudyPager } from "../features/projects/CaseStudyPager";
 import { CaseStudyUnavailable } from "../features/projects/CaseStudyUnavailable";
 import { ReadingProgressBar } from "../features/projects/ReadingProgressBar";
-import { StickyContactFab } from "../features/projects/StickyContactFab";
 import {
   getProjectBySlug,
   getRelatedProjects,
 } from "../features/projects/project-selectors";
 import { getProjectMedia } from "../lib/project-assets";
 
+/**
+ * Header for project routes: a back link to the index plus the project
+ * name. The page body owns the H1, so the name here is plain text.
+ * @param {{ title?: string }} props
+ */
+function ProjectPageHeader({ title }) {
+  return (
+    <PageHeader
+      actions={
+        <ButtonLink
+          to="/contact"
+          size="sm"
+          leadingIcon={<Mail size={15} />}
+          className="max-sm:hidden"
+        >
+          Contact
+        </ButtonLink>
+      }
+    >
+      <Link
+        to="/work"
+        aria-label="Back to projects"
+        className="grid size-11 shrink-0 place-items-center rounded-full text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-raised) hover:text-(--color-text-primary)"
+      >
+        <ArrowLeft size={20} aria-hidden="true" />
+      </Link>
+      <p className="min-w-0 truncate text-[1.0625rem] font-semibold text-(--color-text-primary)">
+        <span className="text-(--color-text-muted)">Projects</span>
+        {title ? <span aria-hidden="true"> / </span> : null}
+        {title}
+      </p>
+    </PageHeader>
+  );
+}
+
 function ProjectNotFound({ slug }) {
   return (
-    <Container as="div" className="section-spacing text-center">
-      <Reveal>
-        <h1 className="heading-xl text-(--color-text-primary)">
-          Project not found
-        </h1>
-        <p className="body-md mx-auto mt-4 max-w-prose text-(--color-text-secondary)">
-          No project matches &quot;{slug}&quot;. See the work index for
-          available projects.
-        </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <ButtonLink to="/work" variant="primary">
-            View Work
-          </ButtonLink>
-          <ButtonLink to="/" variant="secondary">
-            Return home
-          </ButtonLink>
-        </div>
-      </Reveal>
-    </Container>
+    <>
+      <ProjectPageHeader />
+      <Container as="div" className="section-spacing text-center">
+        <Reveal>
+          <h1 className="heading-xl text-(--color-text-primary)">
+            Project not found
+          </h1>
+          <p className="body-md mx-auto mt-4 max-w-prose text-(--color-text-secondary)">
+            No project matches &quot;{slug}&quot;. See the work index for
+            available projects.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <ButtonLink to="/work" variant="primary">
+              View Work
+            </ButtonLink>
+            <ButtonLink to="/" variant="secondary">
+              Return home
+            </ButtonLink>
+          </div>
+        </Reveal>
+      </Container>
+    </>
   );
 }
 
@@ -91,7 +129,7 @@ function ProjectInPreparation({ project, relatedProjects }) {
                 >
                   <span
                     aria-hidden="true"
-                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-(--color-accent-primary)"
+                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-(--color-accent-fill)"
                   />
                   {capability}
                 </li>
@@ -131,16 +169,13 @@ function ProjectInPreparation({ project, relatedProjects }) {
 
 function CompleteCaseStudy({ project, relatedProjects }) {
   const caseStudy = project.caseStudy;
-  const hasReflectionContent =
-    caseStudy.challenge || caseStudy.outcome || caseStudy.reflection;
-
   const { gallery: galleryImages } = getProjectMedia(project.slug);
-  const hasGallery = galleryImages.length > 0;
   const captionsByFile = Object.fromEntries(
     (caseStudy.gallery ?? []).map((entry) => [entry.file, entry.caption]),
   );
+  // A gallery section without screenshots would be an empty heading.
   const visibleSections = caseStudy.sections.filter(
-    (section) => hasGallery || section.id !== "gallery",
+    (section) => section.type !== "gallery" || galleryImages.length > 0,
   );
 
   return (
@@ -152,133 +187,23 @@ function CompleteCaseStudy({ project, relatedProjects }) {
       <ProjectSectionNav sections={visibleSections} className="mt-10" />
 
       <div className="mt-10 space-y-14">
-        <ProjectSection id="overview" heading="Overview">
-          <p className="prose-body text-(--color-text-secondary)">
-            {caseStudy.overview}
-          </p>
-          {caseStudy.responsibility ? (
-            <p className="prose-body mt-3 text-(--color-text-secondary)">
-              {caseStudy.responsibility}
-            </p>
-          ) : null}
-        </ProjectSection>
-
-        <ProjectSection id="roles" heading="Roles">
-          {caseStudy.roles?.length ? (
-            <ul className="grid gap-4 sm:grid-cols-3">
-              {caseStudy.roles.map((role) => (
-                <li
-                  key={role.name}
-                  className="rounded-(--radius-md) border border-(--color-border) bg-(--color-surface) p-4"
-                >
-                  <p className="font-medium text-(--color-text-primary)">
-                    {role.name}
-                  </p>
-                  <p className="body-sm mt-1 text-(--color-text-secondary)">
-                    {role.description}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </ProjectSection>
-
-        <ProjectSection id="workflow" heading="Workflow">
-          {typeof caseStudy.workflow === "string" && caseStudy.workflow ? (
-            <p className="prose-body text-(--color-text-secondary)">
-              {caseStudy.workflow}
-            </p>
-          ) : null}
-          {Array.isArray(caseStudy.workflow) && caseStudy.workflow.length ? (
-            <ProjectWorkflow steps={caseStudy.workflow} />
-          ) : null}
-        </ProjectSection>
-
-        <ProjectSection id="capabilities" heading="Capabilities">
-          {caseStudy.capabilities?.length ? (
-            <ul className="grid gap-2 sm:grid-cols-2">
-              {caseStudy.capabilities.map((capability) => (
-                <li
-                  key={capability}
-                  className="body-sm flex items-start gap-2 text-(--color-text-secondary)"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-(--color-accent-primary)"
-                  />
-                  {capability}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </ProjectSection>
-
-        {hasGallery ? (
-          <ProjectSection id="gallery" heading="Gallery">
-            <ProjectMediaGallery
-              title={project.title}
-              images={galleryImages}
-              captionsByFile={captionsByFile}
-            />
+        {visibleSections.map((section) => (
+          <ProjectSection
+            key={section.id}
+            id={section.id}
+            heading={section.heading}
+          >
+            {section.type === "gallery" ? (
+              <ProjectMediaGallery
+                title={project.title}
+                images={galleryImages}
+                captionsByFile={captionsByFile}
+              />
+            ) : (
+              <Markdown>{section.body}</Markdown>
+            )}
           </ProjectSection>
-        ) : null}
-
-        <ProjectSection id="architecture" heading="Architecture">
-          {caseStudy.architecture?.length ? (
-            <ProjectArchitecture layers={caseStudy.architecture} />
-          ) : null}
-        </ProjectSection>
-
-        <ProjectSection id="decisions" heading="Implementation approach">
-          {caseStudy.decisions?.length ? (
-            <ul className="space-y-3">
-              {caseStudy.decisions.map((decision) => (
-                <li
-                  key={decision}
-                  className="prose-body text-(--color-text-secondary)"
-                >
-                  {decision}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </ProjectSection>
-
-        <ProjectSection
-          id="reflection"
-          heading="Challenge, outcome and reflection"
-        >
-          {hasReflectionContent ? (
-            <div className="space-y-4">
-              {caseStudy.challenge ? (
-                <p className="prose-body text-(--color-text-secondary)">
-                  <strong className="text-(--color-text-primary)">
-                    Challenge:{" "}
-                  </strong>
-                  {caseStudy.challenge}
-                </p>
-              ) : null}
-              {caseStudy.outcome ? (
-                <p className="prose-body text-(--color-text-secondary)">
-                  <strong className="text-(--color-text-primary)">
-                    Outcome:{" "}
-                  </strong>
-                  {caseStudy.outcome}
-                </p>
-              ) : null}
-              {caseStudy.reflection ? (
-                <p className="prose-body text-(--color-text-secondary)">
-                  <strong className="text-(--color-text-primary)">
-                    Reflection:{" "}
-                  </strong>
-                  {caseStudy.reflection}
-                </p>
-              ) : null}
-            </div>
-          ) : (
-            <CaseStudyUnavailable />
-          )}
-        </ProjectSection>
+        ))}
       </div>
 
       <RelatedProjectsSection relatedProjects={relatedProjects} />
@@ -322,9 +247,9 @@ export function ProjectDetailsPage() {
 
   return (
     <>
-      {/* Route-specific reading aids — deliberately not in AppLayout. */}
+      <ProjectPageHeader title={project.title} />
+      {/* Route-specific reading aid — deliberately not in AppLayout. */}
       {isCompleteCaseStudy ? <ReadingProgressBar /> : null}
-      <StickyContactFab />
       {isCompleteCaseStudy ? (
         <CompleteCaseStudy
           project={project}

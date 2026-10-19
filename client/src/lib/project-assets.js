@@ -2,7 +2,7 @@ import { assetManifest } from "../generated/asset-manifest";
 
 const SLUG_TO_MANIFEST_KEY = {
   sarabo: "sarabo",
-  "bang-learner": "bangLearner",
+  "ict-crack": "ictCrack",
   "bangladesh-landscape": "bangladeshLandscape",
 };
 

@@ -8,32 +8,24 @@ import { assertValidProjects } from "./project-schema";
  * project's `missingContent` list for what is still outstanding.
  *
  * @typedef {{ label: string, url: string | null, type: "live" | "repository" | "documentation" }} ProjectLink
- * @typedef {{ name: string, description: string }} ProjectRole
- * @typedef {{ label: string, description: string }} WorkflowStep
- * @typedef {{ name: string, description: string }} ArchitectureLayer
- * @typedef {{ id: string, heading: string }} CaseStudySectionMeta
  * @typedef {{
- *   overview: string,
+ *   id: string,
+ *   heading: string,
+ *   type: "text" | "gallery",
+ *   body?: string,
+ * }} CaseStudySection  `body` is Markdown; a gallery section has none.
+ * @typedef {{
  *   role?: string,
  *   timeline?: string,
- *   responsibility?: string,
- *   roles?: ProjectRole[],
- *   workflow?: string | WorkflowStep[],
- *   capabilities?: string[],
- *   architecture?: ArchitectureLayer[],
- *   decisions?: string[],
- *   challenge?: string | null,
- *   outcome?: string | null,
- *   reflection?: string | null,
+ *   sections: CaseStudySection[],
  *   gallery?: { file: string, caption: string }[],
- *   sections: CaseStudySectionMeta[],
  * }} CaseStudy
  * @typedef {{
  *   slug: string,
  *   title: string,
  *   summary: string,
  *   projectType: string,
- *   status: "live" | "repository-available" | "archived",
+ *   status: "live" | "repository-available" | "private" | "archived",
  *   featured: boolean,
  *   stack: string[],
  *   capabilities: string[],
@@ -96,98 +88,89 @@ const rawProjects = [
         type: "live",
       },
       {
-        // Public repository verified 2026-09-29 (source: Jahid's résumé +
-        // GitHub API). The server repository is not public, so it is not
-        // linked.
+        // Public repositories verified via the GitHub API (client
+        // 2026-09-29, server made public and confirmed 2026-10-18).
         label: "Client repository",
         url: "https://github.com/jahidjubaer/sarabo-client",
+        type: "repository",
+      },
+      {
+        label: "Server repository",
+        url: "https://github.com/jahidjubaer/sarabo-server",
         type: "repository",
       },
     ],
     caseStudyStatus: "complete",
     caseStudy: {
-      overview:
-        "Sarabo is a multi-role electronics-repair service platform. Customers submit repair requests and track progress; technicians manage assigned repairs; administrators oversee accounts, requests, and technician assignment across the platform.",
       role: "Sole Developer",
       timeline: "July–August",
-      responsibility:
-        "This was a solo project. Jahid was responsible for the end-to-end development of the client and server applications.",
-      roles: [
-        {
-          name: "Customer",
-          description:
-            "Submits repair requests, tracks progress, reviews quotations, pays through Stripe, and leaves reviews.",
-        },
-        {
-          name: "Technician",
-          description:
-            "Receives assigned repair requests and updates their progress through the repair lifecycle.",
-        },
-        {
-          name: "Administrator",
-          description:
-            "Manages accounts and repair requests, and assigns technicians across the platform.",
-        },
-      ],
-      workflow:
-        "Sarabo supports a repair-request lifecycle covering service selection, request submission, quotation and review, assignment-related handling, progress tracking and payment-related states.",
-      capabilities: SARABO_CAPABILITIES,
-      architecture: [
-        {
-          name: "React client",
-          description:
-            "The customer, technician, and administrator interfaces.",
-        },
-        {
-          name: "Firebase authentication",
-          description:
-            "Handles sign-in and role-based access across the client.",
-        },
-        {
-          name: "Express API",
-          description:
-            "A Node.js and Express API deployed separately from the client, handling repair-request, quotation, and role logic.",
-        },
-        {
-          name: "MongoDB",
-          description:
-            "Persists repair requests, quotations, roles, and reviews.",
-        },
-        {
-          name: "Stripe",
-          description: "Processes customer payments for completed quotations.",
-        },
-      ],
-      decisions: [
-        "The React client and the Express API are deployed separately — the client via Firebase Hosting, the API on its own deployment.",
-        "Firebase handles authentication while a custom Express and MongoDB API manages repair-request, quotation, and role data.",
-      ],
-      challenge:
-        "Validation was one of the main implementation challenges during development. Detailed notes about the specific validation cases and the final solution are still being documented.",
-      outcome:
-        "The project resulted in a working full-stack service platform that demonstrates role-based workflows, repair-request management, authentication, tracking and payment-related integration. Quantitative product outcomes and usage metrics are not currently available.",
-      reflection:
-        "Building Sarabo as a solo project provided practical experience managing a full-stack application from client-side flows through server-side functionality. Validation emerged as an important area for further refinement and documentation.",
       gallery: SARABO_GALLERY,
       sections: [
-        { id: "overview", heading: "Overview" },
-        { id: "roles", heading: "Roles" },
-        { id: "workflow", heading: "Workflow" },
-        { id: "capabilities", heading: "Capabilities" },
-        { id: "gallery", heading: "Gallery" },
-        { id: "architecture", heading: "Architecture" },
-        { id: "decisions", heading: "Implementation approach" },
-        { id: "reflection", heading: "Challenge, outcome and reflection" },
+        {
+          id: "overview",
+          heading: "Overview",
+          type: "text",
+          body: `Sarabo is a multi-role electronics-repair service platform. Customers submit repair requests and track progress; technicians manage assigned repairs; administrators oversee accounts, requests, and technician assignment across the platform.
+
+This was a solo project. Jahid was responsible for the end-to-end development of the client and server applications.`,
+        },
+        {
+          id: "roles",
+          heading: "Roles",
+          type: "text",
+          body: `- **Customer** — Submits repair requests, tracks progress, reviews quotations, pays through Stripe, and leaves reviews.
+- **Technician** — Receives assigned repair requests and updates their progress through the repair lifecycle.
+- **Administrator** — Manages accounts and repair requests, and assigns technicians across the platform.`,
+        },
+        {
+          id: "workflow",
+          heading: "Workflow",
+          type: "text",
+          body: "Sarabo supports a repair-request lifecycle covering service selection, request submission, quotation and review, assignment-related handling, progress tracking and payment-related states.",
+        },
+        {
+          id: "capabilities",
+          heading: "Capabilities",
+          type: "text",
+          body: SARABO_CAPABILITIES.map((item) => `- ${item}`).join("\n"),
+        },
+        { id: "gallery", heading: "Gallery", type: "gallery" },
+        {
+          id: "architecture",
+          heading: "Architecture",
+          type: "text",
+          body: `- **React client** — The customer, technician, and administrator interfaces.
+- **Firebase authentication** — Handles sign-in and role-based access across the client.
+- **Express API** — A Node.js and Express API deployed separately from the client, handling repair-request, quotation, and role logic.
+- **MongoDB** — Persists repair requests, quotations, roles, and reviews.
+- **Stripe** — Processes customer payments for completed quotations.`,
+        },
+        {
+          id: "decisions",
+          heading: "Implementation approach",
+          type: "text",
+          body: `- The React client and the Express API are deployed separately — the client via Firebase Hosting, the API on its own deployment.
+- Firebase handles authentication while a custom Express and MongoDB API manages repair-request, quotation, and role data.`,
+        },
+        {
+          id: "reflection",
+          heading: "Challenge, outcome and reflection",
+          type: "text",
+          body: `**Challenge:** Validation was one of the main implementation challenges during development. Detailed notes about the specific validation cases and the final solution are still being documented.
+
+**Outcome:** The project resulted in a working full-stack service platform that demonstrates role-based workflows, repair-request management, authentication, tracking and payment-related integration. Quantitative product outcomes and usage metrics are not currently available.
+
+**Reflection:** Building Sarabo as a solo project provided practical experience managing a full-stack application from client-side flows through server-side functionality. Validation emerged as an important area for further refinement and documentation.`,
+        },
       ],
     },
-    relatedSlugs: ["bang-learner", "bangladesh-landscape"],
+    relatedSlugs: ["ict-crack", "bangladesh-landscape"],
     seo: {
       title: "Sarabo — Case study — Jahid Hasan",
       description:
         "How Sarabo, a multi-role electronics-repair service platform, handles authentication, repair-request tracking, technician assignment, and payments across customer, technician, and administrator roles.",
     },
     missingContent: [
-      "server repository URL (repository exists but is not public)",
       "public documentation URL",
       "current status detail",
       "validation challenge solution",
@@ -195,140 +178,82 @@ const rawProjects = [
     ],
   },
   {
-    slug: "bang-learner",
-    title: "Bang Learner",
-    // Summary, stack, and capabilities verified 2026-09-29 against the
-    // public repository (README + package.json) and the live deployment.
-    // The previously listed MongoDB was not present in the repository's
-    // dependencies — persistence and auth run on Firebase.
+    // Added on Jahid's instruction (2026-10-18) as the most recent public
+    // project. No README exists, so every claim below is verified against
+    // the live deployment's own description and the two public
+    // repositories' source trees and package.json files. Role, timeline,
+    // challenges, and outcomes are not yet confirmed by Jahid.
+    slug: "ict-crack",
+    title: "ICT Crack",
     summary:
-      "A responsive React platform for offering, learning, and trading skills locally, with Firebase authentication and session booking.",
-    projectType: "Web application",
+      "A Bangla-first learning platform for HSC ICT students with chapter-based interactive lessons and labs, MCQ and creative-question exams, and AI-assisted answer evaluation.",
+    projectType: "Full-stack web application",
     status: "live",
     featured: true,
-    stack: ["React", "React Router", "Tailwind CSS", "DaisyUI", "Firebase"],
+    stack: [
+      "React",
+      "TanStack Query",
+      "Tailwind CSS",
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "Zod",
+    ],
     capabilities: [
-      "Responsive UI",
-      "Firebase authentication (email/password and Google)",
-      "Password reset and protected routes",
-      "Skill browsing and session booking",
-      "Profile management",
+      "Chapter-based lessons following the NCTB HSC ICT textbook",
+      "In-browser interactive labs, including logic gates, number systems, a SQL playground, and a C code tracer",
+      "Separate MCQ and creative-question exams with model tests",
+      "AI-assisted grading of creative answers (Gemini or Anthropic, configurable)",
+      "Subscription plans with a free trial period",
+      "Study plans, badges, and daily activity tracking",
+      "Installable progressive web app",
     ],
     links: [
       {
         label: "Live site",
-        url: "https://bang-learner.web.app",
+        url: "https://hsc-ict-creck-client.vercel.app",
         type: "live",
       },
       {
-        label: "Repository",
-        url: "https://github.com/jahidjubaer/bang-learner",
+        label: "Client repository",
+        url: "https://github.com/jahidjubaer/hsc-ict-creck-client",
+        type: "repository",
+      },
+      {
+        label: "Server repository",
+        url: "https://github.com/jahidjubaer/hsc-ict-creck-server",
         type: "repository",
       },
     ],
-    caseStudyStatus: "complete",
-    // Role and timeline confirmed by Jahid (2026-09-29, intake Q7).
-    // Challenge/outcome wording delegated by Jahid and restricted to
-    // claims verifiable from the repository and the live deployment —
-    // no invented struggles, metrics, or results.
-    caseStudy: {
-      overview:
-        "Bang Learner is a responsive skill-exchange platform where people offer, learn, and trade skills within their local area. Visitors browse skills across categories such as music, language, technology, fitness, and the arts; registered users unlock skill details and book sessions with providers.",
-      role: "Sole Developer",
-      timeline: "March–April 2025",
-      responsibility:
-        "End-to-end design, implementation, and deployment as a solo project.",
-      roles: [
-        {
-          name: "Visitor",
-          description:
-            "Browses the skill catalog with provider ratings and pricing across every category.",
-        },
-        {
-          name: "Registered learner",
-          description:
-            "Signs in with email/password or Google to open skill details, book sessions, and manage a profile.",
-        },
-      ],
-      workflow:
-        "Built as a project-based learning build: interface and routing first, then Firebase authentication and route protection, then the booking flow — deployed continuously to Firebase Hosting.",
-      capabilities: [
-        "Responsive UI",
-        "Firebase authentication (email/password and Google)",
-        "Password reset and protected routes",
-        "Skill browsing and session booking",
-        "Profile management",
-      ],
-      architecture: [
-        {
-          name: "React client",
-          description:
-            "The browsing, booking, and account interfaces, built with React Router and styled with Tailwind CSS and DaisyUI.",
-        },
-        {
-          name: "Firebase Authentication",
-          description:
-            "Email/password and Google sign-in with password reset and persistent sessions, gating the protected detail and booking routes.",
-        },
-        {
-          name: "Firebase Hosting",
-          description: "Serves the production deployment.",
-        },
-      ],
-      decisions: [
-        "Client-side password validation enforces the registration rules in real time and blocks sign-up until every criterion is met.",
-        "Protected routes keep skill details and booking behind authentication, while persistent login keeps returning users signed in across sessions.",
-        "Google sign-in is offered alongside email/password registration to lower sign-up friction.",
-      ],
-      challenge:
-        "The most involved part of the build was the authentication and access-control layer: combining email/password registration with real-time password validation, Google sign-in, and password reset, while protecting the detail and booking routes so they are only reachable signed in — without losing the session on a page reload.",
-      outcome:
-        "The project shipped as a working, publicly deployed platform: visitors browse the skill catalog and registered users book sessions with providers, all running on Firebase in production. Quantitative usage outcomes are not tracked.",
-      gallery: [
-        {
-          file: "screenshot-01.webp",
-          caption: "Browsing the skill catalog by category",
-        },
-        {
-          file: "screenshot-02.webp",
-          caption: "Signing in with email/password or Google",
-        },
-        {
-          file: "screenshot-03.webp",
-          caption: "Account registration with validated passwords",
-        },
-      ],
-      sections: [
-        { id: "overview", heading: "Overview" },
-        { id: "roles", heading: "Roles" },
-        { id: "workflow", heading: "Workflow" },
-        { id: "capabilities", heading: "Capabilities" },
-        { id: "gallery", heading: "Gallery" },
-        { id: "architecture", heading: "Architecture" },
-        { id: "decisions", heading: "Implementation approach" },
-        { id: "reflection", heading: "Challenge, outcome and reflection" },
-      ],
-    },
-    relatedSlugs: ["sarabo"],
+    caseStudyStatus: "in-preparation",
+    caseStudy: null,
+    relatedSlugs: ["sarabo", "bangladesh-landscape"],
     seo: {
-      title: "Bang Learner — Case study — Jahid Hasan",
+      title: "ICT Crack — Jahid Hasan",
       description:
-        "How Bang Learner, a responsive skill-exchange platform, handles Firebase authentication, protected routes, and session booking — a solo React project by Jahid Hasan.",
+        "ICT Crack is a Bangla-first HSC ICT learning platform with interactive lessons and labs, MCQ and creative-question exams, and AI-assisted answer evaluation, built with React, Express, and MongoDB.",
     },
-    missingContent: ["reflection", "optional demo video"],
+    missingContent: [
+      "exact role and team context",
+      "timeline",
+      "challenges",
+      "outcomes",
+      "screenshots",
+    ],
   },
   {
     // Replaced Note Bank as the third featured project on Jahid's
-    // instruction (2026-09-29). Summary, stack, and capabilities are
-    // verified against the two public repositories' READMEs and
-    // package.json files; no live deployment is confirmed yet, so none
-    // is linked.
+    // instruction (2026-09-29). Summary, stack, and capabilities were
+    // verified against the repositories' READMEs and package.json files
+    // while they were public. Both repositories are now private (Jahid,
+    // 2026-10-18) and no live deployment is confirmed, so nothing is
+    // linked.
     slug: "bangladesh-landscape",
     title: "Bangladesh Landscape",
     summary:
       "A district-by-district travel portal for Bangladesh with AI-assisted tour plans, verified local guides, blogs, and stay and transport bookings — Bangla-first with full English support.",
     projectType: "Full-stack web application",
-    status: "repository-available",
+    status: "private",
     featured: true,
     stack: [
       "React",
@@ -346,21 +271,10 @@ const rawProjects = [
       "JWT cookie authentication and admin operations",
       "Bangla-first bilingual interface",
     ],
-    links: [
-      {
-        label: "Client repository",
-        url: "https://github.com/jahidjubaer/bangladesh-landscape-client",
-        type: "repository",
-      },
-      {
-        label: "Server repository",
-        url: "https://github.com/jahidjubaer/bangladesh-landscape-server",
-        type: "repository",
-      },
-    ],
+    links: [],
     caseStudyStatus: "in-preparation",
     caseStudy: null,
-    relatedSlugs: ["sarabo"],
+    relatedSlugs: ["sarabo", "ict-crack"],
     seo: {
       title: "Bangladesh Landscape — Jahid Hasan",
       description:

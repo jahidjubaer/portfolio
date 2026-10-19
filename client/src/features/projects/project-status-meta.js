@@ -1,6 +1,7 @@
 export const STATUS_META = {
   live: { tone: "positive", label: "Live" },
   "repository-available": { tone: "neutral", label: "Repository available" },
+  private: { tone: "neutral", label: "Private repository" },
   archived: { tone: "warning", label: "Archived" },
 };
 

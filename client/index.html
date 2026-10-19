@@ -5,7 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <meta name="theme-color" content="#14161a" />
+    <meta name="theme-color" content="#09090b" />
+    <!-- Applies the visitor's theme, accent and font before first paint (no
+         flash of the wrong look). Mirrors getInitialTheme/Accent/Font() in
+         src/features/preferences/preference-storage.js. -->
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var theme = "dark";
+        var accent = "lime";
+        var font = "geist";
+        try {
+          var stored = localStorage.getItem("theme");
+          if (stored === "light" || stored === "dark") theme = stored;
+          else if (matchMedia("(prefers-color-scheme: light)").matches)
+            theme = "light";
+          var storedAccent = localStorage.getItem("accent");
+          if (/^(violet|sky|lime|amber|rose)$/.test(storedAccent))
+            accent = storedAccent;
+          var storedFont = localStorage.getItem("font");
+          if (/^(geist|inter|grotesk|system)$/.test(storedFont))
+            font = storedFont;
+        } catch (e) {}
+        root.setAttribute("data-theme", theme);
+        root.setAttribute("data-accent", accent);
+        root.setAttribute("data-font", font);
+      })();
+    </script>
     <title>
       Jahid Hasan — Frontend Developer &amp; Junior Software Engineer
     </title>

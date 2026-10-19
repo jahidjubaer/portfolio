@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { cn } from "../../lib/cn";
 
 const BASE_CLASSES =
-  "text-(--color-accent-primary) underline-offset-4 hover:underline focus-visible:underline";
+  "text-(--color-accent-primary) underline decoration-(--color-accent-primary)/40 underline-offset-4 transition-colors hover:decoration-(--color-accent-primary)";
 
 /**
  * @param {{

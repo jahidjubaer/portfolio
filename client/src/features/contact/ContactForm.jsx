@@ -24,12 +24,23 @@ const SUBJECT_SUGGESTIONS = [
 ];
 
 /**
+ * `?subject=` (set by the greeting popup's quick replies) pre-fills the
+ * subject, but only with one of the known suggestions.
+ */
+function getInitialValues() {
+  const requested = new URLSearchParams(window.location.search).get("subject");
+  return SUBJECT_SUGGESTIONS.includes(requested)
+    ? { ...INITIAL_VALUES, subject: requested }
+    : INITIAL_VALUES;
+}
+
+/**
  * Professional contact form: client + server validation, a honeypot field,
  * and loading/success/failure states. Typed content is preserved on
  * failure so the user never has to retype their message.
  */
 export function ContactForm() {
-  const [values, setValues] = useState(INITIAL_VALUES);
+  const [values, setValues] = useState(getInitialValues);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState(null); // null | "loading" | "success" | "error"
   const [statusMessage, setStatusMessage] = useState("");

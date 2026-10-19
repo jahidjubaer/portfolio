@@ -28,7 +28,6 @@ const OG_IMAGE_PATH = "/assets/og/og-default.png";
 const STATIC_ROUTES = [
   "/",
   "/work",
-  "/about",
   "/learning",
   "/beyond",
   "/contact",
@@ -59,7 +58,7 @@ export function buildSitemap(siteUrl, slugs) {
 }
 
 export function buildRobots(siteUrl) {
-  return `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`;
+  return `User-agent: *\nAllow: /\nDisallow: /admin\n\nSitemap: ${siteUrl}/sitemap.xml\n`;
 }
 
 /**

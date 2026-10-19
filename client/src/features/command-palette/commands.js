@@ -14,19 +14,18 @@ import { projects } from "../../data/projects";
  */
 
 const NAV_ROUTES = [
-  { label: "Home", to: "/" },
-  { label: "Work", to: "/work" },
-  { label: "Learning", to: "/learning" },
-  { label: "About", to: "/about" },
+  { label: "Profile", to: "/" },
+  { label: "Projects", to: "/work" },
   { label: "Beyond", to: "/beyond" },
   { label: "Contact", to: "/contact" },
-  { label: "Résumé", to: "/resume" },
+  { label: "Writing", to: "/learning" },
+  { label: "Resume", to: "/resume" },
 ];
 
 /**
  * Every command here is derived from real routes/data — never a fake
  * action. A command only appears when its target genuinely exists (e.g.
- * "Download résumé" is omitted entirely while no résumé file is available).
+ * "Download resume" is omitted entirely while no resume file is available).
  * @returns {Command[]}
  */
 export function getCommands() {
@@ -68,7 +67,7 @@ export function getCommands() {
   if (profile.resume.available) {
     commands.push({
       id: "action-download-resume",
-      label: "Download résumé",
+      label: "Download resume",
       category: "Action",
       action: {
         type: "download",
@@ -86,8 +85,8 @@ const CATEGORY_ORDER = ["Navigation", "Project", "External", "Action"];
 /**
  * Case-insensitive substring match against label and category — enough for
  * a short, hand-authored command list; no fuzzy-matching library needed.
- * Diacritics are stripped before comparing (e.g. "resume" must still find
- * "Résumé") since that's how most people actually type a quick search.
+ * Diacritics are stripped before comparing (e.g. "cafe" finds "Café")
+ * since that's how most people actually type a quick search.
  * @param {string} text
  * @returns {string}
  */

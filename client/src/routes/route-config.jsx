@@ -1,13 +1,14 @@
-import { lazy } from "react";
+import { Suspense, lazy } from "react";
 import { Navigate } from "react-router-dom";
 import { AppLayout } from "../layouts/AppLayout";
 import { HomePage } from "../pages/HomePage";
 import { ErrorPage } from "../pages/ErrorPage";
+import { RouteLoading } from "../components/feedback/RouteLoading";
 
 // Route-level code splitting: the homepage stays eager (it's the initial
 // SYSTEM entry point and must render with no extra network round-trip),
 // while every secondary route loads on demand so its route-specific
-// features (contact form, photography gallery, project galleries, résumé)
+// features (contact form, photography gallery, project galleries, resume)
 // never inflate the initial homepage bundle. AppLayout wraps the outlet in
 // a Suspense boundary (see RouteLoading) so this needs no per-route
 // fallback wiring here.
@@ -18,9 +19,6 @@ const ProjectDetailsPage = lazy(() =>
   import("../pages/ProjectDetailsPage").then((m) => ({
     default: m.ProjectDetailsPage,
   })),
-);
-const AboutPage = lazy(() =>
-  import("../pages/AboutPage").then((m) => ({ default: m.AboutPage })),
 );
 const BeyondPage = lazy(() =>
   import("../pages/BeyondPage").then((m) => ({ default: m.BeyondPage })),
@@ -34,11 +32,61 @@ const LearningPage = lazy(() =>
 const ResumePage = lazy(() =>
   import("../pages/ResumePage").then((m) => ({ default: m.ResumePage })),
 );
+// Admin lives outside the public shell (no rails, greeting, or palette)
+// and loads as one chunk, only when /admin is visited.
+const loadAdmin = () => import("../pages/admin");
+const AdminLayout = lazy(() =>
+  loadAdmin().then((m) => ({ default: m.AdminLayout })),
+);
+const AdminOverview = lazy(() =>
+  loadAdmin().then((m) => ({ default: m.AdminOverview })),
+);
+const AdminSingletonPage = lazy(() =>
+  loadAdmin().then((m) => ({ default: m.AdminSingletonPage })),
+);
+const AdminListPage = lazy(() =>
+  loadAdmin().then((m) => ({ default: m.AdminListPage })),
+);
+const AdminItemPage = lazy(() =>
+  loadAdmin().then((m) => ({ default: m.AdminItemPage })),
+);
+const AdminRepositoriesPage = lazy(() =>
+  loadAdmin().then((m) => ({ default: m.AdminRepositoriesPage })),
+);
+
+const ADMIN_LISTS = [
+  "projects",
+  "experience",
+  "skills",
+  "certifications",
+  "posts",
+  "photos",
+];
 const NotFoundPage = lazy(() =>
   import("../pages/NotFoundPage").then((m) => ({ default: m.NotFoundPage })),
 );
 
 export const routeConfig = [
+  {
+    path: "/admin",
+    element: (
+      <Suspense fallback={<RouteLoading />}>
+        <AdminLayout />
+      </Suspense>
+    ),
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <AdminOverview /> },
+      { path: "profile", element: <AdminSingletonPage name="profile" /> },
+      { path: "beyond", element: <AdminSingletonPage name="beyond" /> },
+      { path: "repositories", element: <AdminRepositoriesPage /> },
+      ...ADMIN_LISTS.flatMap((name) => [
+        { path: name, element: <AdminListPage name={name} /> },
+        { path: `${name}/new`, element: <AdminItemPage name={name} /> },
+        { path: `${name}/:key`, element: <AdminItemPage name={name} /> },
+      ]),
+    ],
+  },
   {
     path: "/",
     element: <AppLayout />,
@@ -47,7 +95,8 @@ export const routeConfig = [
       { index: true, element: <HomePage /> },
       { path: "work", element: <WorkPage /> },
       { path: "work/:slug", element: <ProjectDetailsPage /> },
-      { path: "about", element: <AboutPage /> },
+      // /about content now lives in the profile's Resume tab.
+      { path: "about", element: <Navigate to="/" replace /> },
       { path: "learning", element: <LearningPage /> },
       // /blog is an alias, not a second page — it redirects so /learning
       // stays the single canonical URL (see LearningPage's usePageMeta).

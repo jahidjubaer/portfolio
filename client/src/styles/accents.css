@@ -1,0 +1,102 @@
+/*
+ * Visitor-selectable accent palettes (AccentFontPicker). Lime is the
+ * default and lives in tokens.css; each palette below overrides only the
+ * accent tokens, per theme, keeping the same lightness steps as lime so
+ * contrast holds (ink = 300 dark / 800 light, fill = 400 behind 950 text).
+ */
+
+:root[data-accent="sky"] {
+  --color-accent-primary: #7dd3fc;
+  --color-accent-primary-soft: rgba(56, 189, 248, 0.12);
+  --color-accent-fill-from: #7dd3fc;
+  --color-accent-fill: #38bdf8;
+  --color-accent-fill-to: #0ea5e9;
+  --color-accent-edge: #0369a1;
+  --color-on-accent-primary: #082f49;
+  --color-accent-glow: rgba(56, 189, 248, 0.16);
+  --color-banner-hi: #bae6fd;
+  --color-banner-mid: #0ea5e9;
+  --color-banner-lo: #075985;
+}
+
+:root[data-theme="light"][data-accent="sky"] {
+  --color-accent-primary: #075985;
+  --color-accent-primary-soft: rgba(2, 132, 199, 0.12);
+  --color-accent-edge: #0284c7;
+  --color-accent-glow: rgba(14, 165, 233, 0.2);
+  --color-banner-hi: #0369a1;
+  --color-banner-mid: #0ea5e9;
+  --color-banner-lo: #7dd3fc;
+}
+
+:root[data-accent="violet"] {
+  --color-accent-primary: #c4b5fd;
+  --color-accent-primary-soft: rgba(167, 139, 250, 0.12);
+  --color-accent-fill-from: #c4b5fd;
+  --color-accent-fill: #a78bfa;
+  --color-accent-fill-to: #8b5cf6;
+  --color-accent-edge: #6d28d9;
+  --color-on-accent-primary: #2e1065;
+  --color-accent-glow: rgba(167, 139, 250, 0.16);
+  --color-banner-hi: #ddd6fe;
+  --color-banner-mid: #8b5cf6;
+  --color-banner-lo: #5b21b6;
+}
+
+:root[data-theme="light"][data-accent="violet"] {
+  --color-accent-primary: #5b21b6;
+  --color-accent-primary-soft: rgba(124, 58, 237, 0.12);
+  --color-accent-edge: #7c3aed;
+  --color-accent-glow: rgba(139, 92, 246, 0.2);
+  --color-banner-hi: #6d28d9;
+  --color-banner-mid: #8b5cf6;
+  --color-banner-lo: #c4b5fd;
+}
+
+:root[data-accent="rose"] {
+  --color-accent-primary: #fda4af;
+  --color-accent-primary-soft: rgba(251, 113, 133, 0.12);
+  --color-accent-fill-from: #fda4af;
+  --color-accent-fill: #fb7185;
+  --color-accent-fill-to: #f43f5e;
+  --color-accent-edge: #be123c;
+  --color-on-accent-primary: #4c0519;
+  --color-accent-glow: rgba(251, 113, 133, 0.16);
+  --color-banner-hi: #fecdd3;
+  --color-banner-mid: #f43f5e;
+  --color-banner-lo: #9f1239;
+}
+
+:root[data-theme="light"][data-accent="rose"] {
+  --color-accent-primary: #9f1239;
+  --color-accent-primary-soft: rgba(225, 29, 72, 0.12);
+  --color-accent-edge: #e11d48;
+  --color-accent-glow: rgba(244, 63, 94, 0.2);
+  --color-banner-hi: #be123c;
+  --color-banner-mid: #f43f5e;
+  --color-banner-lo: #fda4af;
+}
+
+:root[data-accent="amber"] {
+  --color-accent-primary: #fcd34d;
+  --color-accent-primary-soft: rgba(251, 191, 36, 0.12);
+  --color-accent-fill-from: #fcd34d;
+  --color-accent-fill: #fbbf24;
+  --color-accent-fill-to: #f59e0b;
+  --color-accent-edge: #b45309;
+  --color-on-accent-primary: #451a03;
+  --color-accent-glow: rgba(251, 191, 36, 0.16);
+  --color-banner-hi: #fde68a;
+  --color-banner-mid: #f59e0b;
+  --color-banner-lo: #92400e;
+}
+
+:root[data-theme="light"][data-accent="amber"] {
+  --color-accent-primary: #92400e;
+  --color-accent-primary-soft: rgba(217, 119, 6, 0.12);
+  --color-accent-edge: #d97706;
+  --color-accent-glow: rgba(245, 158, 11, 0.2);
+  --color-banner-hi: #b45309;
+  --color-banner-mid: #f59e0b;
+  --color-banner-lo: #fcd34d;
+}

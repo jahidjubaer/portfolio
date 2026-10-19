@@ -6,6 +6,8 @@ export function errorHandler(err, _req, res, _next) {
   res.status(status).json({
     success: false,
     error: status === 500 ? "Internal server error" : err.message,
+    // Per-field validation issues ({ path, message }) for admin forms.
+    ...(err.details ? { issues: err.details } : {}),
     ...(env.nodeEnv !== "production" && status === 500
       ? { detail: err.message }
       : {}),

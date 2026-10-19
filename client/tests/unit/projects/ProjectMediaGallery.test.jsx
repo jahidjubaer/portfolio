@@ -34,7 +34,7 @@ describe("ProjectMediaGallery", () => {
 
   it("renders nothing when there are no images", () => {
     const { container } = render(
-      <ProjectMediaGallery title="Bang Learner" images={[]} />,
+      <ProjectMediaGallery title="ICT Crack" images={[]} />,
     );
     expect(container).toBeEmptyDOMElement();
   });

@@ -19,16 +19,16 @@ describe("ButtonLink", () => {
     render(
       <MemoryRouter>
         <ButtonLink to="/resume" disabled>
-          Download résumé
+          Download resume
         </ButtonLink>
       </MemoryRouter>,
     );
 
     expect(
-      screen.queryByRole("link", { name: "Download résumé" }),
+      screen.queryByRole("link", { name: "Download resume" }),
     ).not.toBeInTheDocument();
 
-    const disabledEl = screen.getByText("Download résumé");
+    const disabledEl = screen.getByText("Download resume");
     expect(disabledEl.tagName).toBe("SPAN");
     expect(disabledEl).toHaveAttribute("aria-disabled", "true");
   });

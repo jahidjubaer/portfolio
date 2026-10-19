@@ -60,26 +60,13 @@ export const assetManifest = {
         },
       ],
     },
-    bangLearner: {
+    ictCrack: {
       cover: {
-        available: true,
-        src: "/assets/projects/bang-learner/cover.webp",
+        available: false,
+        src: null,
         fallback: "/assets/placeholders/project-cover-placeholder.svg",
       },
-      gallery: [
-        {
-          file: "screenshot-01.webp",
-          src: "/assets/projects/bang-learner/screenshot-01.webp",
-        },
-        {
-          file: "screenshot-02.webp",
-          src: "/assets/projects/bang-learner/screenshot-02.webp",
-        },
-        {
-          file: "screenshot-03.webp",
-          src: "/assets/projects/bang-learner/screenshot-03.webp",
-        },
-      ],
+      gallery: [],
     },
     bangladeshLandscape: {
       cover: {

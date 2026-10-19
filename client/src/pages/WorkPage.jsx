@@ -1,99 +1,68 @@
 import { usePageMeta } from "../hooks/usePageMeta";
-import { Container } from "../components/ui/Container";
-import { SectionHeader } from "../components/ui/SectionHeader";
-import { SectionLabel } from "../components/ui/SectionLabel";
+import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
 import { StaggerGroup, StaggerItem } from "../features/motion/StaggerGroup";
-import { FeaturedProjectDossier } from "../features/projects/FeaturedProjectDossier";
 import { ProjectCard } from "../features/projects/ProjectCard";
 import { getAllProjects } from "../features/projects/project-selectors";
 
 export function WorkPage() {
   const allProjects = getAllProjects();
-  const completeCaseStudies = allProjects.filter(
-    (project) => project.caseStudyStatus === "complete",
-  );
-  const inPreparation = allProjects.filter(
-    (project) => project.caseStudyStatus === "in-preparation",
+  const current = allProjects.filter(
+    (project) => project.status !== "archived",
   );
   const archived = allProjects.filter(
     (project) => project.status === "archived",
   );
 
   usePageMeta({
-    title: "Selected Work — Jahid Hasan",
+    title: "Projects — Jahid Hasan",
     description:
-      "Case studies and web projects by Jahid Hasan, covering React interfaces, authentication, multi-role workflows, full-stack systems, and responsive product development.",
+      "Projects by Jahid Hasan: multi-role web platforms, React interfaces, and full-stack products built with React, Express, and MongoDB.",
   });
 
   return (
-    <Container as="div" className="section-spacing">
-      <SectionHeader
-        as="h1"
-        label="Selected Work"
-        heading="Projects I've built"
-        description={`${allProjects.length} project${allProjects.length === 1 ? "" : "s"} shown below. ${completeCaseStudies.length} full case ${completeCaseStudies.length === 1 ? "study is" : "studies are"} available today; the rest are shown as verified project overviews while their full case studies are prepared.`}
-      />
-      <p className="body-sm mt-4 max-w-prose text-(--color-text-muted)">
-        I build focused, working products end-to-end and document them with
-        evidence I can actually stand behind — no invented metrics, no rewritten
-        history.
+    <>
+      <PageHeader>
+        <PageHeaderTitle as="h1">Projects</PageHeaderTitle>
+      </PageHeader>
+      <p className="px-4 pt-7 text-[1.0625rem] text-(--color-text-secondary) sm:px-7">
+        Products I&apos;ve designed, built, and shipped, with the code behind
+        them.
       </p>
-
-      {completeCaseStudies.length > 0 ? (
-        <div className="mt-12">
-          <SectionLabel>
-            {completeCaseStudies.length === 1
-              ? "Flagship project"
-              : "Flagship projects"}
-          </SectionLabel>
-          <div className="mt-6 space-y-6">
-            {completeCaseStudies.map((project, index) => (
-              <FeaturedProjectDossier
-                key={project.slug}
-                project={project}
-                index={index + 1}
-                headingLevel="h2"
-                showMeta
-                priorityImage={index === 0}
-              />
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      {inPreparation.length > 0 ? (
-        <div className="mt-16">
-          <SectionLabel>Supporting projects</SectionLabel>
-          <p className="body-sm mt-3 max-w-prose text-(--color-text-secondary)">
-            Verified project overviews — technologies, known features, and
-            current status — while their full narrative case studies are
-            prepared.
-          </p>
-          <StaggerGroup as="ul" className="mt-6 grid gap-6 sm:grid-cols-2">
-            {inPreparation.map((project) => (
-              <StaggerItem key={project.slug} as="li">
-                <ProjectCard project={project} headingLevel="h2" />
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
-        </div>
-      ) : null}
+      <StaggerGroup
+        as="ul"
+        className="grid gap-5 px-4 py-6 sm:grid-cols-2 sm:px-7"
+      >
+        {current.map((project, index) => (
+          <StaggerItem key={project.slug} as="li">
+            <ProjectCard
+              project={project}
+              headingLevel="h2"
+              priorityImage={index === 0}
+            />
+          </StaggerItem>
+        ))}
+      </StaggerGroup>
 
       {archived.length > 0 ? (
-        <div className="mt-16">
-          <SectionLabel>Archive</SectionLabel>
-          <StaggerGroup
-            as="ul"
-            className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        <section
+          aria-labelledby="archive-heading"
+          className="border-t border-(--color-border) px-4 py-8 sm:px-7"
+        >
+          <h2
+            id="archive-heading"
+            className="text-[1.3125rem] font-semibold text-(--color-text-primary)"
           >
+            Archive
+          </h2>
+          <ul className="mt-5 grid gap-5 sm:grid-cols-2">
             {archived.map((project) => (
-              <StaggerItem key={project.slug} as="li">
-                <ProjectCard project={project} headingLevel="h2" />
-              </StaggerItem>
+              <li key={project.slug}>
+                <ProjectCard project={project} />
+              </li>
             ))}
-          </StaggerGroup>
-        </div>
+          </ul>
+        </section>
       ) : null}
-    </Container>
+    </>
   );
 }

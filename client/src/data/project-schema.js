@@ -8,6 +8,7 @@
 export const PROJECT_STATUS_VALUES = [
   "live",
   "repository-available",
+  "private",
   "archived",
 ];
 export const CASE_STUDY_STATUS_VALUES = ["complete", "in-preparation", "none"];
@@ -88,12 +89,6 @@ function validateCaseStudy(caseStudy, slug, caseStudyStatus) {
     return errors;
   }
 
-  if (!isNonEmptyString(caseStudy.overview)) {
-    errors.push(
-      `Project "${slug}": caseStudy.overview must be a non-empty string.`,
-    );
-  }
-
   const seenSectionIds = new Set();
   (caseStudy.sections ?? []).forEach((section, index) => {
     const where = `Project "${slug}" caseStudy.sections[${index}]`;
@@ -111,23 +106,17 @@ function validateCaseStudy(caseStudy, slug, caseStudyStatus) {
     if (!isNonEmptyString(section.heading)) {
       errors.push(`${where}: heading must be a non-empty string.`);
     }
+    if (section.type !== "text" && section.type !== "gallery") {
+      errors.push(`${where}: type must be "text" or "gallery".`);
+    } else if (section.type === "text" && !isNonEmptyString(section.body)) {
+      errors.push(`${where}: a text section needs a Markdown body.`);
+    }
   });
 
-  if (caseStudyStatus === "complete") {
-    const required = ["overview", "roles", "workflow", "capabilities"];
-    required.forEach((field) => {
-      const value = caseStudy[field];
-      const isEmpty =
-        value === undefined ||
-        value === null ||
-        (Array.isArray(value) && value.length === 0) ||
-        (typeof value === "string" && value.trim().length === 0);
-      if (isEmpty) {
-        errors.push(
-          `Project "${slug}": complete case studies require a non-empty caseStudy.${field}.`,
-        );
-      }
-    });
+  if (!caseStudy.sections?.length) {
+    errors.push(
+      `Project "${slug}": complete case studies need at least one section.`,
+    );
   }
 
   return errors;
