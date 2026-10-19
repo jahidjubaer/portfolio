@@ -6,7 +6,7 @@
   "crons": [{ "path": "/api/cron/github-sync", "schedule": "0 3 * * *" }],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/(.*)", "destination": "/200.html" }
+    { "source": "/(.*)", "destination": "/200" }
   ],
   "headers": [
     {
