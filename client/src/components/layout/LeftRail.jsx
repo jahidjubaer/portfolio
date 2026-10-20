@@ -9,6 +9,7 @@ import { AppearanceMenu } from "./AppearanceMenu";
 import { cn } from "../../lib/cn";
 import { profile } from "../../data/profile";
 import { useIsHydrating, useNow } from "../../lib/hydration";
+import { calendarDate } from "../../lib/dates";
 
 const ACTIVE_LAYOUT_ID = "left-rail-active";
 
@@ -126,7 +127,7 @@ export function LeftRail() {
           <AppearanceMenu />
         </div>
         <p className="hidden text-sm text-(--color-text-muted) xl:block">
-          © {now.getFullYear()} {profile.name}
+          © {calendarDate(now).year} {profile.name}
         </p>
       </div>
     </aside>

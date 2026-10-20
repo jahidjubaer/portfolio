@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
+import { SITE_TIME_ZONE } from "../../lib/dates";
 import { useIsHydrating } from "../../lib/hydration";
-
-const TIME_ZONE = "Asia/Dhaka";
 
 function formatNow() {
   try {
     return new Intl.DateTimeFormat("en-US", {
       hour: "numeric",
       minute: "2-digit",
-      timeZone: TIME_ZONE,
+      timeZone: SITE_TIME_ZONE,
     }).format(new Date());
   } catch {
     return "";

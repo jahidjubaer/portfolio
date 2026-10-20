@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { SocialIcon } from "../icons/SocialIcon";
 import { profile, socialProfiles } from "../../data/profile";
 import { useNow } from "../../lib/hydration";
+import { calendarDate } from "../../lib/dates";
 
 /**
  * Footer at the end of the center column for screens without the right
@@ -28,7 +29,7 @@ export function ShellFooter() {
         ))}
       </ul>
       <p className="mt-5 text-sm text-(--color-text-muted)">
-        © {now.getFullYear()} {profile.name} ·{" "}
+        © {calendarDate(now).year} {profile.name} ·{" "}
         <Link to="/resume" className="underline-offset-4 hover:underline">
           Resume
         </Link>

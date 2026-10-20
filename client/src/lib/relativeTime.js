@@ -1,4 +1,12 @@
+import { calendarDate } from "./dates";
+
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+// Day boundaries in the site's time zone, so the build and the visitor agree.
+const startOfDay = (date) => {
+  const { year, month, day } = calendarDate(date);
+  return Date.UTC(year, month - 1, day);
+};
 
 /**
  * Short, human relative date for "last updated" labels: "today",
@@ -8,8 +16,6 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  */
 export function formatRelativeDate(date, now = new Date()) {
   const then = new Date(date);
-  const startOfDay = (d) =>
-    new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
   const days = Math.round((startOfDay(now) - startOfDay(then)) / DAY_MS);
 
   if (days <= 0) return "today";

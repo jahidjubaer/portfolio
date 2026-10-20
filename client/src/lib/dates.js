@@ -32,9 +32,38 @@ export function formatYearMonth(value) {
   return month ? `${MONTH_NAMES[month - 1]} ${year}` : String(year);
 }
 
+/** Jahid's time zone (Sylhet). */
+export const SITE_TIME_ZONE = "Asia/Dhaka";
+
+const CALENDAR = new Intl.DateTimeFormat("en-US", {
+  timeZone: SITE_TIME_ZONE,
+  year: "numeric",
+  month: "numeric",
+  day: "numeric",
+});
+
+/**
+ * The calendar date in the site's time zone, not the visitor's: pages are
+ * prerendered on a UTC build machine, and a visitor-dependent "today"
+ * would make the hydration render differ from the HTML near midnight.
+ * @param {Date} [date]
+ * @returns {{ year: number, month: number, day: number }}
+ */
+export function calendarDate(date = new Date()) {
+  const parts = Object.fromEntries(
+    CALENDAR.formatToParts(date).map((part) => [part.type, part.value]),
+  );
+  return {
+    year: Number(parts.year),
+    month: Number(parts.month),
+    day: Number(parts.day),
+  };
+}
+
 /** @param {Date} [date] */
 export function currentYearMonth(date = new Date()) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+  const { year, month } = calendarDate(date);
+  return `${year}-${String(month).padStart(2, "0")}`;
 }
 
 /**
