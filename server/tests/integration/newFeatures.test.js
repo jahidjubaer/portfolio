@@ -141,7 +141,7 @@ beforeEach(async () => {
   Object.assign(env, {
     cronSecret: "",
     deployHookUrl: "",
-    aiGatewayApiKey: "",
+    geminiApiKey: "",
   });
   const db = await getDb();
   await db.dropDatabase();
@@ -424,7 +424,7 @@ describe("AI drafts", () => {
     },
   };
 
-  it("answers 503 until AI Gateway is configured", async () => {
+  it("answers 503 until Gemini is configured", async () => {
     const fetchMock = stubFetch(REPO_ROUTES);
     await as("post", "/api/admin/ai/project-draft")
       .send({ repo: "sarabo" })
@@ -433,7 +433,7 @@ describe("AI drafts", () => {
   });
 
   it("drafts project fields from the repo without saving anything", async () => {
-    env.aiGatewayApiKey = "test-key";
+    env.geminiApiKey = "test-key";
     stubFetch(REPO_ROUTES);
     generateText.mockResolvedValue({
       output: {
@@ -480,7 +480,7 @@ describe("AI drafts", () => {
   });
 
   it("drafts a learning track, with the start month from the repo", async () => {
-    env.aiGatewayApiKey = "test-key";
+    env.geminiApiKey = "test-key";
     stubFetch(REPO_ROUTES);
     generateText.mockResolvedValue({
       output: {
@@ -502,7 +502,7 @@ describe("AI drafts", () => {
   });
 
   it("reads every repo of a project in one prompt", async () => {
-    env.aiGatewayApiKey = "test-key";
+    env.geminiApiKey = "test-key";
     stubFetch({ ...SERVER_ROUTES, ...REPO_ROUTES });
     generateText.mockResolvedValue({
       output: {
@@ -535,7 +535,7 @@ describe("AI drafts", () => {
   });
 
   it("rejects a bad repo name and reports a busy model", async () => {
-    env.aiGatewayApiKey = "test-key";
+    env.geminiApiKey = "test-key";
     await as("post", "/api/admin/ai/project-draft")
       .send({ repo: "../etc" })
       .expect(400);
@@ -546,7 +546,7 @@ describe("AI drafts", () => {
     const busy = await as("post", "/api/admin/ai/project-draft")
       .send({ repo: "sarabo" })
       .expect(429);
-    expect(busy.body.error).toMatch(/free credit/);
+    expect(busy.body.error).toMatch(/daily limit/);
   });
 });
 

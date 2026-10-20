@@ -35,10 +35,9 @@ export const env = {
   // Deploy Hooks). Anyone with the URL can trigger a build, so it's a
   // secret. Blank → the admin's Publish button answers 503.
   deployHookUrl: process.env.VERCEL_DEPLOY_HOOK_URL || "",
-  // "Draft with AI" in the admin, through Vercel AI Gateway. Needs
-  // AI_GATEWAY_API_KEY on Vercel too (the OIDC fallback wasn't available
-  // to the deployed server). Blank → the draft buttons answer 503.
-  aiGatewayApiKey: process.env.AI_GATEWAY_API_KEY || "",
-  // A model id from https://ai-gateway.vercel.sh/v1/models.
-  aiModel: process.env.AI_GATEWAY_MODEL || "anthropic/claude-haiku-5.5",
+  // "Draft with AI" in the admin, through the Gemini API's free tier (a
+  // key from Google AI Studio). Blank → the draft buttons answer 503.
+  geminiApiKey: process.env.GEMINI_API_KEY || "",
+  // A Gemini model id on the free tier (ai.google.dev/gemini-api/docs/pricing).
+  aiModel: process.env.GEMINI_MODEL || "gemini-3.8-flash",
 };

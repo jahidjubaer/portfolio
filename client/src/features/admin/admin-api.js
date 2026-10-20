@@ -139,7 +139,7 @@ export async function publishSite() {
 }
 
 /**
- * Asks AI Gateway to draft fields from public repos. Nothing is saved.
+ * Asks Gemini to draft fields from public repos. Nothing is saved.
  * A project can be drafted from several repos at once (client + server);
  * a learning track from one.
  * @param {"project" | "learning"} kind

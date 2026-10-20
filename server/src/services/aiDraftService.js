@@ -1,4 +1,5 @@
 import { generateText, Output } from "ai";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { z } from "zod";
 import { env } from "../config/env.js";
 import { fetchRepoContext } from "./githubApi.js";
@@ -10,7 +11,7 @@ function httpError(status, message) {
 }
 
 export function isAiConfigured() {
-  return Boolean(env.aiGatewayApiKey);
+  return Boolean(env.geminiApiKey);
 }
 
 // CLAUDE.md content rules, restated for the model: nothing that isn't in
@@ -95,7 +96,7 @@ function requireAi() {
   if (!isAiConfigured()) {
     throw httpError(
       503,
-      "AI drafting isn't configured. Set AI_GATEWAY_API_KEY (Vercel → AI Gateway → API keys).",
+      "AI drafting isn't configured. Set GEMINI_API_KEY (a free key from Google AI Studio).",
     );
   }
 }
@@ -103,7 +104,9 @@ function requireAi() {
 async function draft(schema, prompt) {
   try {
     const { output } = await generateText({
-      model: env.aiModel,
+      model: createGoogleGenerativeAI({ apiKey: env.geminiApiKey })(
+        env.aiModel,
+      ),
       instructions: INSTRUCTIONS,
       prompt,
       output: Output.object({ schema }),
@@ -116,11 +119,11 @@ async function draft(schema, prompt) {
     if (status === 429) {
       throw httpError(
         429,
-        "The AI service is busy or the free credit is used up. Try again later.",
+        "Gemini's free tier is busy or its daily limit is used up. Try again later.",
       );
     }
     if (status === 401 || status === 403) {
-      throw httpError(502, "AI Gateway rejected the credentials.");
+      throw httpError(502, "Gemini rejected the API key.");
     }
     throw httpError(502, "The AI draft failed. Try again in a moment.");
   }

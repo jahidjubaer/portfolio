@@ -16,6 +16,7 @@
     "add:portfolio-project": "node scripts/add-portfolio-project.js"
   },
   "dependencies": {
+    "@ai-sdk/google": "^4.0.101",
     "@vercel/blob": "^2.8.2",
     "ai": "^7.0.146",
     "cookie-parser": "^1.4.7",
