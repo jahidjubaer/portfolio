@@ -142,7 +142,6 @@ beforeEach(async () => {
     cronSecret: "",
     deployHookUrl: "",
     aiGatewayApiKey: "",
-    onVercel: false,
   });
   const db = await getDb();
   await db.dropDatabase();

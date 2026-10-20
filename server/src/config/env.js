@@ -35,11 +35,10 @@ export const env = {
   // Deploy Hooks). Anyone with the URL can trigger a build, so it's a
   // secret. Blank → the admin's Publish button answers 503.
   deployHookUrl: process.env.VERCEL_DEPLOY_HOOK_URL || "",
-  // "Draft with AI" in the admin, through Vercel AI Gateway. On Vercel the
-  // deployment's OIDC token authenticates it; locally set
-  // AI_GATEWAY_API_KEY. Neither → the draft buttons answer 503.
+  // "Draft with AI" in the admin, through Vercel AI Gateway. Needs
+  // AI_GATEWAY_API_KEY on Vercel too (the OIDC fallback wasn't available
+  // to the deployed server). Blank → the draft buttons answer 503.
   aiGatewayApiKey: process.env.AI_GATEWAY_API_KEY || "",
-  onVercel: Boolean(process.env.VERCEL),
   // A model id from https://ai-gateway.vercel.sh/v1/models.
   aiModel: process.env.AI_GATEWAY_MODEL || "anthropic/claude-haiku-5.5",
 };

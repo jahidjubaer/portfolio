@@ -10,7 +10,7 @@ function httpError(status, message) {
 }
 
 export function isAiConfigured() {
-  return Boolean(env.aiGatewayApiKey || env.onVercel);
+  return Boolean(env.aiGatewayApiKey);
 }
 
 // CLAUDE.md content rules, restated for the model: nothing that isn't in
@@ -95,7 +95,7 @@ function requireAi() {
   if (!isAiConfigured()) {
     throw httpError(
       503,
-      "AI drafting isn't configured. Set AI_GATEWAY_API_KEY locally (on Vercel it works without one).",
+      "AI drafting isn't configured. Set AI_GATEWAY_API_KEY (Vercel → AI Gateway → API keys).",
     );
   }
 }

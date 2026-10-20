@@ -133,8 +133,9 @@ export function AiDraftPanel({ kind, content, values, apply }) {
 
       {content.aiConfigured ? null : (
         <p className="mt-2 text-sm text-(--color-danger)">
-          Not configured on this server: set <code>AI_GATEWAY_API_KEY</code> (on
-          Vercel it works without one).
+          Not configured on this server: add <code>AI_GATEWAY_API_KEY</code> to
+          the Vercel project&apos;s environment variables (Vercel → AI Gateway →
+          API keys), then publish.
         </p>
       )}
 
