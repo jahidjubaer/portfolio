@@ -357,6 +357,9 @@ function ObjectListField({ field, path, draft, errors, onChange, isNew }) {
       <legend className="px-1 text-sm font-semibold text-(--color-text-primary)">
         {field.label}
       </legend>
+      {field.hint ? (
+        <p className="text-xs text-(--color-text-muted)">{field.hint}</p>
+      ) : null}
       {listError ? (
         <p className="text-sm text-(--color-danger)">{listError}</p>
       ) : null}

@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { fadeUpVariants } from "./motion-variants";
-import { useIsHydrating } from "../../lib/hydration";
+import { useSkipEntrance } from "./route-transition";
 
 /**
  * Fades + slightly rises a section into view once, the first time it
@@ -16,16 +16,16 @@ import { useIsHydrating } from "../../lib/hydration";
  */
 export function Reveal({ children, as = "div", delay = 0, className = "" }) {
   const MotionTag = motion[as] ?? motion.div;
-  // Prerendered content stays visible: the reveal only plays for pages
-  // rendered in the browser (client navigation).
-  const hydrating = useIsHydrating();
+  // Prerendered content stays visible, and so does a page arriving by a
+  // view transition: the reveal only plays for ordinary client navigation.
+  const startVisible = useSkipEntrance();
 
   return (
     <MotionTag
       className={className}
       variants={fadeUpVariants}
       custom={delay}
-      initial={hydrating ? false : "hidden"}
+      initial={startVisible ? false : "hidden"}
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
     >

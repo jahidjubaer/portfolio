@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { fadeUpVariants, staggerContainerVariants } from "./motion-variants";
-import { useIsHydrating } from "../../lib/hydration";
+import { useSkipEntrance } from "./route-transition";
 
 /**
  * Wraps a list of children (e.g. project dossiers, capability groups) so
@@ -22,14 +22,15 @@ export function StaggerGroup({
   className = "",
 }) {
   const MotionTag = motion[as] ?? motion.div;
-  // See Reveal: prerendered lists start visible.
-  const hydrating = useIsHydrating();
+  // See Reveal: prerendered lists, and lists arriving by a view
+  // transition, start visible.
+  const startVisible = useSkipEntrance();
 
   return (
     <MotionTag
       className={className}
       variants={staggerContainerVariants(staggerDelay)}
-      initial={hydrating ? false : "hidden"}
+      initial={startVisible ? false : "hidden"}
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
     >

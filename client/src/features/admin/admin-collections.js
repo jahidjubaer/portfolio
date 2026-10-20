@@ -486,6 +486,9 @@ export function normalizeProject(project) {
   }));
   const isEmpty =
     sections.length === 0 && !caseStudy.role && !caseStudy.timeline;
+  const architecture = caseStudy.architecture;
+  const hasArchitecture =
+    architecture?.nodes?.length > 0 || architecture?.steps?.length > 0;
   return {
     ...project,
     caseStudy: isEmpty
@@ -494,6 +497,7 @@ export function normalizeProject(project) {
           ...caseStudy,
           sections,
           gallery: caseStudy.gallery?.length ? caseStudy.gallery : undefined,
+          architecture: hasArchitecture ? architecture : undefined,
         },
   };
 }
@@ -743,6 +747,7 @@ export const LISTS = {
             options: [
               { value: "text", label: "Text (Markdown)" },
               { value: "gallery", label: "Screenshot gallery" },
+              { value: "diagram", label: "Architecture diagram" },
             ],
           },
           {
@@ -751,7 +756,8 @@ export const LISTS = {
             type: "markdown",
             rows: 10,
             optional: true,
-            showWhen: (section) => section.type === "text",
+            showWhen: (section) => section.type !== "gallery",
+            hint: "A diagram section shows this text above the diagram.",
           },
           {
             name: "id",
@@ -773,6 +779,37 @@ export const LISTS = {
             hint: 'File name in the project screenshot folder, e.g. "screenshot-01.webp"',
           },
           { name: "caption", label: "Caption" },
+        ],
+      },
+      {
+        name: "caseStudy.architecture.nodes",
+        label: "Architecture diagram: parts",
+        type: "objectList",
+        itemLabel: "part",
+        itemTitle: (part) => part.label || undefined,
+        hint: "Shown by a section of type Architecture diagram. Each part is a box on a 3 × 3 grid (column 1 is the left, row 1 the top).",
+        fields: [
+          {
+            name: "id",
+            label: "ID",
+            half: true,
+            hint: 'Short name the steps use, e.g. "api"',
+          },
+          { name: "label", label: "Label", half: true },
+          { name: "column", label: "Column (1–3)", type: "number", half: true },
+          { name: "row", label: "Row (1–3)", type: "number", half: true },
+        ],
+      },
+      {
+        name: "caseStudy.architecture.steps",
+        label: "Architecture diagram: steps",
+        type: "objectList",
+        itemLabel: "step",
+        hint: "The flow between the parts, in order. The case study draws one step at a time as the reader scrolls. Only real, confirmed connections.",
+        fields: [
+          { name: "from", label: "From (part ID)", half: true },
+          { name: "to", label: "To (part ID)", half: true },
+          { name: "label", label: "What happens" },
         ],
       },
       {

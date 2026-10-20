@@ -118,7 +118,8 @@ export const caseStudySectionSchema = z
   .object({
     id: slug,
     heading: text,
-    type: z.enum(["text", "gallery"]),
+    // "diagram" shows caseStudy.architecture, with optional text above it.
+    type: z.enum(["text", "gallery", "diagram"]),
     body: z.string().trim().optional(),
   })
   .refine((section) => section.type !== "text" || Boolean(section.body), {
@@ -126,19 +127,101 @@ export const caseStudySectionSchema = z
     path: ["body"],
   });
 
-export const caseStudySchema = z.object({
-  role: text.optional(),
-  timeline: text.optional(),
-  sections: z
-    .array(caseStudySectionSchema)
-    .min(1, "Add at least one section.")
-    .refine(
-      (sections) =>
-        new Set(sections.map((section) => section.id)).size === sections.length,
-      "Each section needs a different ID.",
-    ),
-  gallery: z.array(z.object({ file: text, caption: text })).optional(),
-});
+const gridPosition = z
+  .number({ error: "Enter 1, 2, or 3." })
+  .int("Enter 1, 2, or 3.")
+  .min(1, "Enter 1, 2, or 3.")
+  .max(3, "Enter 1, 2, or 3.");
+
+/**
+ * The architecture diagram: parts on a 3 × 3 grid, and the steps of the
+ * flow between them in order. The case study draws one step at a time as
+ * the reader scrolls, so every step must be a real, confirmed connection.
+ */
+export const architectureSchema = z
+  .object({
+    nodes: z
+      .array(
+        z.object({
+          id: slug,
+          label: text,
+          column: gridPosition,
+          row: gridPosition,
+        }),
+      )
+      .min(2, "Add at least two parts."),
+    steps: z
+      .array(z.object({ from: slug, to: slug, label: text }))
+      .min(1, "Add at least one step."),
+  })
+  .superRefine((architecture, context) => {
+    const ids = new Set();
+    const cells = new Set();
+    architecture.nodes.forEach((node, index) => {
+      if (ids.has(node.id)) {
+        context.addIssue({
+          code: "custom",
+          message: "Each part needs a different ID.",
+          path: ["nodes", index, "id"],
+        });
+      }
+      ids.add(node.id);
+      const cell = `${node.column}:${node.row}`;
+      if (cells.has(cell)) {
+        context.addIssue({
+          code: "custom",
+          message: "Another part already uses this column and row.",
+          path: ["nodes", index, "row"],
+        });
+      }
+      cells.add(cell);
+    });
+    architecture.steps.forEach((step, index) => {
+      for (const end of ["from", "to"]) {
+        if (!ids.has(step[end])) {
+          context.addIssue({
+            code: "custom",
+            message: "Use the ID of one of the parts above.",
+            path: ["steps", index, end],
+          });
+        }
+      }
+      if (step.from === step.to) {
+        context.addIssue({
+          code: "custom",
+          message: "A step connects two different parts.",
+          path: ["steps", index, "to"],
+        });
+      }
+    });
+  });
+
+export const caseStudySchema = z
+  .object({
+    role: text.optional(),
+    timeline: text.optional(),
+    sections: z
+      .array(caseStudySectionSchema)
+      .min(1, "Add at least one section.")
+      .refine(
+        (sections) =>
+          new Set(sections.map((section) => section.id)).size ===
+          sections.length,
+        "Each section needs a different ID.",
+      ),
+    gallery: z.array(z.object({ file: text, caption: text })).optional(),
+    architecture: architectureSchema.optional(),
+  })
+  .refine(
+    (caseStudy) =>
+      Boolean(caseStudy.architecture) ||
+      !caseStudy.sections.some((section) => section.type === "diagram"),
+    {
+      message:
+        "A diagram section needs the architecture diagram's parts and steps.",
+      path: ["architecture"],
+    },
+  );
 
 export const projectSchema = z
   .object({

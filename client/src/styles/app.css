@@ -3,6 +3,7 @@
 @import "./accents.css";
 @import "./typography.css";
 @import "./utilities.css";
+@import "./view-transitions.css";
 @import "./reduced-motion.css";
 
 @layer base {

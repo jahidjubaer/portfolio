@@ -169,7 +169,7 @@
           {
             "id": "architecture",
             "heading": "Architecture",
-            "type": "text",
+            "type": "diagram",
             "body": "- **React client** — The customer, technician, and administrator interfaces.\n- **Firebase authentication** — Handles sign-in and role-based access across the client.\n- **Express API** — A Node.js and Express API deployed separately from the client, handling repair-request, quotation, and role logic.\n- **MongoDB** — Persists repair requests, quotations, roles, and reviews.\n- **Stripe** — Processes customer payments for completed quotations."
           },
           {
@@ -218,7 +218,78 @@
             "file": "screenshot-08.webp",
             "caption": "Sarabo customer dashboard"
           }
-        ]
+        ],
+        "architecture": {
+          "nodes": [
+            {
+              "id": "client",
+              "label": "React client",
+              "column": 1,
+              "row": 2
+            },
+            {
+              "id": "firebase",
+              "label": "Firebase Auth",
+              "column": 2,
+              "row": 1
+            },
+            {
+              "id": "api",
+              "label": "Express API",
+              "column": 2,
+              "row": 2
+            },
+            {
+              "id": "mongodb",
+              "label": "MongoDB",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "stripe",
+              "label": "Stripe",
+              "column": 2,
+              "row": 3
+            }
+          ],
+          "steps": [
+            {
+              "from": "client",
+              "to": "firebase",
+              "label": "The user signs in with Firebase, which returns an ID token."
+            },
+            {
+              "from": "client",
+              "to": "api",
+              "label": "Each API request carries that token."
+            },
+            {
+              "from": "api",
+              "to": "firebase",
+              "label": "The API verifies the token with Firebase Admin before it acts."
+            },
+            {
+              "from": "api",
+              "to": "mongodb",
+              "label": "Repair requests, quotations, roles, and reviews are stored."
+            },
+            {
+              "from": "api",
+              "to": "stripe",
+              "label": "For an approved quote, the API creates a Stripe Checkout session; the amount comes from the stored quote, never the browser."
+            },
+            {
+              "from": "client",
+              "to": "stripe",
+              "label": "The browser goes to Stripe's hosted checkout to pay."
+            },
+            {
+              "from": "stripe",
+              "to": "api",
+              "label": "Stripe's webhook tells the API the payment went through."
+            }
+          ]
+        }
       },
       "relatedSlugs": [
         "ict-crack",
@@ -340,6 +411,132 @@
         "outcomes",
         "visual assets"
       ]
+    },
+    {
+      "slug": "portfolio",
+      "order": 3,
+      "title": "Portfolio and admin panel",
+      "summary": "This site and the admin panel I edit it with: a React single-page app and an Express API, content in MongoDB, a daily GitHub and coding-stats sync, and a Publish button that rebuilds a prerendered static site.",
+      "projectType": "Full-stack web app",
+      "status": "live",
+      "featured": false,
+      "stack": [
+        "React",
+        "Vite",
+        "React Router",
+        "Tailwind CSS",
+        "Motion",
+        "Node.js",
+        "Express",
+        "MongoDB",
+        "Zod",
+        "Vercel Blob",
+        "AI SDK",
+        "Vitest",
+        "Playwright"
+      ],
+      "capabilities": [
+        "Admin panel behind GitHub sign-in, limited to one account",
+        "Editors validated with the same Zod schemas as the API",
+        "Image and PDF uploads to Vercel Blob",
+        "Daily sync of GitHub repos and Codeforces / VJudge stats",
+        "Publish button that rebuilds a fully prerendered static site",
+        "AI drafts of project fields from GitHub repos, reviewed before saving"
+      ],
+      "links": [
+        {
+          "label": "Live site",
+          "url": "https://jahid-jubaer.vercel.app",
+          "type": "live"
+        },
+        {
+          "label": "Repository",
+          "url": "https://github.com/jahidjubaer/portfolio",
+          "type": "repository"
+        }
+      ],
+      "caseStudyStatus": "none",
+      "caseStudy": null,
+      "relatedSlugs": [],
+      "seo": {
+        "title": "Portfolio and admin panel — Jahid Hasan",
+        "description": "A React and Express portfolio with an admin panel, MongoDB content, GitHub and coding-stats sync, and one-click publishing to a prerendered static site."
+      },
+      "missingContent": [
+        "Read every field and correct it in your own words before unhiding.",
+        "Your role (e.g. solo project) and the timeline.",
+        "Why you built it and what you learned, for a case study.",
+        "Screenshots of the site and the admin."
+      ]
+    },
+    {
+      "slug": "bang-learner",
+      "order": 4,
+      "title": "Bang Learner",
+      "summary": "A React application designed for discovering, learning, and trading local skills with authentication and user profile management.",
+      "projectType": "React web app",
+      "status": "repository-available",
+      "featured": false,
+      "stack": [
+        "React",
+        "Vite",
+        "Firebase Authentication",
+        "Firebase Hosting",
+        "React Router",
+        "Tailwind CSS",
+        "DaisyUI",
+        "Swiper",
+        "AOS",
+        "React Hot Toast",
+        "React Icons"
+      ],
+      "capabilities": [
+        "Authentication with email/password and Google Sign-In",
+        "Form validation requiring uppercase, lowercase, and minimum length for passwords",
+        "Protected routes restricting unauthenticated access to private views",
+        "Skill catalog browsing and detailed skill view pages",
+        "User profile management to update names and profile images",
+        "Interactive carousel with Swiper and scroll animations with AOS"
+      ],
+      "links": [
+        {
+          "label": "Repository",
+          "url": "https://github.com/jahidjubaer/bang-learner",
+          "type": "repository"
+        }
+      ],
+      "caseStudyStatus": "none",
+      "caseStudy": {
+        "sections": [
+          {
+            "id": "overview",
+            "heading": "Overview",
+            "type": "text",
+            "body": "I developed Bang Learner to provide a platform where individuals can explore and exchange skills in their local community. The project provides an interface to view skill listings, read details, and manage individual user profiles."
+          },
+          {
+            "id": "what-i-built",
+            "heading": "What I built",
+            "type": "text",
+            "body": "I created the client-side user interface using React and Vite. I configured React Router to handle site navigation, including public pages and protected route wrappers. Authentication is wired to Firebase Authentication for both email credentials and Google Sign-In, alongside password recovery and custom client validation logic. I also set up dynamic components including a Swiper hero slider, toast notifications via React Hot Toast, and local data files for skills and providers."
+          },
+          {
+            "id": "technical-decisions",
+            "heading": "Technical decisions",
+            "type": "text",
+            "body": "I chose React Context to manage authentication state across the application via an AuthContext and useAuth hook. For styling, I used Tailwind CSS combined with DaisyUI components to assemble responsive UI elements without writing custom CSS rules from scratch. The client is hosted on Firebase Hosting."
+          }
+        ]
+      },
+      "relatedSlugs": [],
+      "seo": {
+        "title": "Bang Learner | Local Skill Exchange Platform",
+        "description": "A React application for browsing and trading local skills, featuring Firebase authentication, protected routes, and profile management."
+      },
+      "missingContent": [
+        "Add screenshots or demo recordings to the README to showcase key screens.",
+        "Clarify whether session booking writes to an external database or backend service, as skills and providers are stored in local JSON files."
+      ]
     }
   ],
   "organizations": [
@@ -358,18 +555,33 @@
       "id": "metropolitan-university-sports-club",
       "order": 1,
       "name": "Metropolitan University Sports Club",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/469504888-979335607553931-871846207987255438-n-wr1KqmDpHd0hsq7y6nLDlQ53n3grUi.webp",
+        "width": 1579,
+        "height": 1579
+      },
       "location": "Sylhet"
     },
     {
       "id": "metropolitan-university-photographic-society",
       "order": 2,
       "name": "Metropolitan University Photographic Society",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/282697490-2786077331698842-9130226013936046431-n-RJMkFTabbpsO6XcBMU893UX0GLyVWv.webp",
+        "width": 947,
+        "height": 960
+      },
       "location": "Sylhet"
     },
     {
       "id": "metropolitan-university",
       "order": 3,
       "name": "Metropolitan University",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/309476460-6280696185279566-6677657411450716335-n-cRYQ3gpa0oFKkbPkwWO6HZVkeJiU7W.webp",
+        "width": 1500,
+        "height": 1500
+      },
       "url": "https://metrouni.edu.bd/",
       "location": "Sylhet"
     },
@@ -377,58 +589,110 @@
       "id": "programming-hero",
       "order": 4,
       "name": "Programming Hero",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/585328509-1267516095422981-4753623271721350219-n-lLF3ltiZxpnOuBDAe4hO8mgtQ6rnj3.webp",
+        "width": 2048,
+        "height": 2048
+      },
       "url": "https://www.programming-hero.com/"
     },
     {
       "id": "learn-with-sumit",
       "order": 5,
       "name": "Learn with Sumit",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/469981743-1128788635569253-2712532815321255787-n-81cOTjJ83Sb4cDIVcjPAL9XkJejf46.webp",
+        "width": 2000,
+        "height": 2000
+      },
       "url": "https://learnwithsumit.com/"
     },
     {
       "id": "edge-iict-sust",
       "order": 6,
-      "name": "EDGE, IICT SUST"
+      "name": "EDGE, IICT SUST",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/306813748-406642801640600-5506933625700828099-n-ZKyUsdsYojklcvPcQiO1fv3B4qBaEM.webp",
+        "width": 336,
+        "height": 336
+      }
     },
     {
       "id": "wadhwani-foundation",
       "order": 7,
       "name": "Wadhwani Foundation",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/425363463-771419018355819-5733682490047703316-n-tyggdNyAcqDDvzYX0VI0TUbXNGUKXb.webp",
+        "width": 200,
+        "height": 200
+      },
       "url": "https://www.wadhwanifoundation.org/"
     },
     {
       "id": "kaggle",
       "order": 8,
       "name": "Kaggle",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/327264075-735926991128073-8880415697540930799-n-xrHrPaDJF7hYUxa48qyPuovpeCLWks.webp",
+        "width": 180,
+        "height": 171
+      },
       "url": "https://www.kaggle.com/learn"
     },
     {
       "id": "youkn0wwho-academy",
       "order": 9,
       "name": "YouKn0wWho Academy",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/380237596-3581269555480692-8389099561245141817-n-5ZFGCheOb1dqo24Pkn782JcDXILMkZ.webp",
+        "width": 317,
+        "height": 317
+      },
       "url": "https://youkn0wwho.academy/"
     },
     {
       "id": "sust-research-society",
       "order": 10,
       "name": "SUST Research Society",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/306734617-436920538533668-5911157764939090213-n-k630aB4AcsYGfjdsV9jr60flv00uLe.webp",
+        "width": 200,
+        "height": 200
+      },
+      "url": "https://www.facebook.com/SUSTRS",
       "location": "Sylhet"
     },
     {
       "id": "ononno",
       "order": 11,
-      "name": "Ononno"
+      "name": "Ononno",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/images-1-1BBPwG5rbKd0X9BxloFLQtfqO15V39.webp",
+        "width": 200,
+        "height": 200
+      },
+      "url": "https://www.ononno.com/"
     },
     {
       "id": "bangladesh-red-crescent-society",
       "order": 12,
       "name": "Bangladesh Red Crescent Society",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/images-1-3mKF7Nq6R9A5NaUrxOgrVQ6IEDUF54.webp",
+        "width": 447,
+        "height": 447
+      },
       "url": "https://bdrcs.org/"
     },
     {
       "id": "bangladesh-scouts",
       "order": 13,
       "name": "Bangladesh Scouts",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/291865389-4993072830741284-8134622481554949419-n-FaBjurWTZI0Qki5GZano3mEwq4ji47.webp",
+        "width": 577,
+        "height": 577
+      },
       "url": "https://scouts.gov.bd/"
     },
     {
@@ -439,32 +703,71 @@
     {
       "id": "muktopaath",
       "order": 15,
-      "name": "MuktoPaath"
+      "name": "MuktoPaath",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/images-2-a7g2bq7Vsk9xPbExByOb4r18joORDL.webp",
+        "width": 447,
+        "height": 447
+      },
+      "url": "https://muktopaath.gov.bd/"
     },
     {
       "id": "metropolitan-university-research-society",
       "order": 16,
-      "name": "Metropolitan University Research Society"
+      "name": "Metropolitan University Research Society",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/518821648-122101519586942098-3585137008645647311-n-M8sxgEIhlNuAYUbuONACWFOLUwoxvz.webp",
+        "width": 1080,
+        "height": 1080
+      },
+      "url": "https://www.facebook.com/mursbd"
     },
     {
       "id": "metropolitan-university-rover-scout-group",
       "order": 17,
-      "name": "Metropolitan University Rover Scout Group"
+      "name": "Metropolitan University Rover Scout Group",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/308777976-473535194813712-8004795120349727749-n-nf3tZix4QWEf5P24epF5diqMtox6nK.webp",
+        "width": 2048,
+        "height": 1590
+      },
+      "url": "https://www.facebook.com/roverscout.metrouni.edu.bd"
     },
     {
       "id": "takerghat-chunapathar-khoni-secondary-school-and-college",
       "order": 19,
-      "name": "Takerghat Chunapathar Khoni Secondary School and College"
+      "name": "Takerghat Chunapathar Khoni Secondary School and College",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/304841001-495821035882278-5035381476245005436-n-DsiF8hr0a1HkyoIjJ9eCGI65Pqdoag.webp",
+        "width": 336,
+        "height": 336
+      },
+      "url": "https://www.facebook.com/tlmssc.1966",
+      "location": "Tahirpur, Sunamganj"
     },
     {
       "id": "regional-cooperation-association-rca",
       "order": 20,
-      "name": "Regional Cooperation Association - RCA"
+      "name": "Regional Cooperation Association - RCA",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/295851661-814395346633632-414693509619427415-n-WjqNE5NrZNH4RS98UHTdZFW7GFtixH.webp",
+        "width": 500,
+        "height": 500
+      },
+      "url": "https://www.facebook.com/rca.official.page",
+      "location": "Tahipur, Sunamganj"
     },
     {
       "id": "tahirpur-development-society",
       "order": 21,
-      "name": "Tahirpur Development Society"
+      "name": "তাহিরপুর উন্নয়ন ফোরাম",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/778958249-122205236402592983-4822339275530328216-n-ty8vCTpwPgbeJczn47BcKPNMBGjO5B.webp",
+        "width": 1254,
+        "height": 1254
+      },
+      "url": "https://www.facebook.com/profile.php?id=61567789514904",
+      "location": "Tahirpur, Sunamganj"
     }
   ],
   "experience": [
@@ -1635,6 +1938,15 @@
       }
     ],
     "repos": {
+      "portfolio": {
+        "name": "portfolio",
+        "url": "https://github.com/jahidjubaer/portfolio",
+        "description": null,
+        "language": "JavaScript",
+        "stars": 0,
+        "homepage": "https://portfolio-rouge-ten-75d2q3rm0r.vercel.app",
+        "pushedAt": "2026-10-20T11:15:41Z"
+      },
       "sarabo-client": {
         "name": "sarabo-client",
         "url": "https://github.com/jahidjubaer/sarabo-client",
@@ -1670,6 +1982,15 @@
         "stars": 0,
         "homepage": "https://hsc-ict-creck-server.vercel.app",
         "pushedAt": "2026-10-03T16:53:26Z"
+      },
+      "bang-learner": {
+        "name": "bang-learner",
+        "url": "https://github.com/jahidjubaer/bang-learner",
+        "description": "A modern React-based interactive platform for individuals to offer, learn, and trade skills within their local area.",
+        "language": "JavaScript",
+        "stars": 0,
+        "homepage": "https://bang-learner.web.app/",
+        "pushedAt": "2025-10-25T18:11:05Z"
       },
       "programming": {
         "name": "Programming",

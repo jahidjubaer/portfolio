@@ -16,6 +16,7 @@ import { RelatedProjects } from "../features/projects/RelatedProjects";
 import { CaseStudyPager } from "../features/projects/CaseStudyPager";
 import { CaseStudyUnavailable } from "../features/projects/CaseStudyUnavailable";
 import { ReadingProgressBar } from "../features/projects/ReadingProgressBar";
+import { ArchitectureFlow } from "../features/projects/ArchitectureFlow";
 import {
   getProjectBySlug,
   getRelatedProjects,
@@ -168,6 +169,34 @@ function ProjectInPreparation({ project, relatedProjects }) {
   );
 }
 
+function CaseStudySectionBody({
+  section,
+  project,
+  galleryImages,
+  captionsByFile,
+}) {
+  if (section.type === "gallery") {
+    return (
+      <ProjectMediaGallery
+        title={project.title}
+        images={galleryImages}
+        captionsByFile={captionsByFile}
+      />
+    );
+  }
+  if (section.type === "diagram") {
+    return (
+      <>
+        {section.body ? <Markdown>{section.body}</Markdown> : null}
+        <div className={section.body ? "mt-8" : undefined}>
+          <ArchitectureFlow architecture={project.caseStudy.architecture} />
+        </div>
+      </>
+    );
+  }
+  return <Markdown>{section.body}</Markdown>;
+}
+
 function CompleteCaseStudy({ project, relatedProjects }) {
   const caseStudy = project.caseStudy;
   const { gallery: galleryImages } = getProjectMedia(project.slug);
@@ -194,15 +223,12 @@ function CompleteCaseStudy({ project, relatedProjects }) {
             id={section.id}
             heading={section.heading}
           >
-            {section.type === "gallery" ? (
-              <ProjectMediaGallery
-                title={project.title}
-                images={galleryImages}
-                captionsByFile={captionsByFile}
-              />
-            ) : (
-              <Markdown>{section.body}</Markdown>
-            )}
+            <CaseStudySectionBody
+              section={section}
+              project={project}
+              galleryImages={galleryImages}
+              captionsByFile={captionsByFile}
+            />
           </ProjectSection>
         ))}
       </div>

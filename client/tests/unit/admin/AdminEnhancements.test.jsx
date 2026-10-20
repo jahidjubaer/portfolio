@@ -35,9 +35,12 @@ describe("getAttentionItems", () => {
     const items = getAttentionItems(content);
     const ids = items.map((item) => item.id);
     expect(ids).toContain("logos");
+    const missing = snapshot.organizations.filter((item) => !item.logo).length;
     expect(items.find((item) => item.id === "logos").message).toMatch(
       new RegExp(
-        `${snapshot.organizations.filter((item) => !item.logo).length} organizations have no logo`,
+        missing === 1
+          ? "1 organization has no logo"
+          : `${missing} organizations have no logo`,
       ),
     );
     const duplicate = items.find((item) => item.id.startsWith("duplicate-"));

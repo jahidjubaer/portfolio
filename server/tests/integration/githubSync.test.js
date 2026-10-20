@@ -153,13 +153,18 @@ describe("POST /api/admin/github/sync", () => {
       projects: ["sarabo"],
     });
     expect(client).not.toHaveProperty("_id");
-    // hsc-ict-creck-server isn't on GitHub (in this fake answer).
-    expect(repositories.warnings).toEqual([
+    // Only links to repos missing from this fake answer are flagged,
+    // e.g. hsc-ict-creck-server; sarabo's repos are in it.
+    expect(repositories.warnings).toContainEqual(
       expect.objectContaining({
         project: "ict-crack",
         url: "https://github.com/jahidjubaer/hsc-ict-creck-server",
       }),
-    ]);
+    );
+    const synced = new Set(REPOS.map((repo) => repo.name));
+    for (const warning of repositories.warnings) {
+      expect(synced.has(repoNameFromUrl(warning.url))).toBe(false);
+    }
   });
 
   it("drops repos that were deleted or made private", async () => {

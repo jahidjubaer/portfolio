@@ -57,6 +57,7 @@ describe("WorkPage", () => {
     expect(
       screen.queryByRole("img", { name: "Bangladesh Landscape project cover" }),
     ).not.toBeInTheDocument();
-    expect(screen.getByText("BL")).toBeInTheDocument();
+    // Bangladesh Landscape and Bang Learner both have no cover yet.
+    expect(screen.getAllByText("BL").length).toBeGreaterThan(0);
   });
 });

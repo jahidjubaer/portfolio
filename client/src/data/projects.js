@@ -11,14 +11,20 @@ import { assertValidProjects } from "./project-schema";
  * @typedef {{
  *   id: string,
  *   heading: string,
- *   type: "text" | "gallery",
+ *   type: "text" | "gallery" | "diagram",
  *   body?: string,
- * }} CaseStudySection  `body` is Markdown; a gallery section has none.
+ * }} CaseStudySection  `body` is Markdown; a gallery section has none, and
+ *   a diagram section shows `caseStudy.architecture` below its optional body.
+ * @typedef {{
+ *   nodes: { id: string, label: string, column: number, row: number }[],
+ *   steps: { from: string, to: string, label: string }[],
+ * }} Architecture  Parts on a 3 × 3 grid and the flow between them, in order.
  * @typedef {{
  *   role?: string,
  *   timeline?: string,
  *   sections: CaseStudySection[],
  *   gallery?: { file: string, caption: string }[],
+ *   architecture?: Architecture,
  * }} CaseStudy
  * @typedef {{
  *   slug: string,

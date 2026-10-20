@@ -13,7 +13,8 @@
     "import:blogger": "node scripts/import-blogger.js",
     "import:linkedin": "node scripts/import-linkedin.js",
     "migrate:certifications": "node scripts/certification-categories.js",
-    "add:portfolio-project": "node scripts/add-portfolio-project.js"
+    "add:portfolio-project": "node scripts/add-portfolio-project.js",
+    "add:sarabo-architecture": "node scripts/sarabo-architecture.js"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.101",

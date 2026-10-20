@@ -48,8 +48,11 @@ describe("admin media editors", { timeout: 20_000 }, () => {
       name: "Case study sections",
     });
     const overview = within(sections).getAllByLabelText(/^Text/)[0];
+    // Pasted rather than typed: Sarabo's form is long (its diagram adds
+    // dozens of inputs), and jsdom re-renders it for every keystroke.
     await user.clear(overview);
-    await user.type(overview, "A **repair** platform.");
+    await user.click(overview);
+    await user.paste("A **repair** platform.");
 
     const preview = within(sections).getAllByRole("region", {
       name: "Preview",
@@ -81,12 +84,19 @@ describe("admin media editors", { timeout: 20_000 }, () => {
     const user = userEvent.setup();
     renderAdmin("/admin/projects/sarabo");
 
+    // Queries stay inside the sections group: label lookups across the
+    // whole (long) project form are slow in jsdom.
+    const sections = await screen.findByRole("group", {
+      name: "Case study sections",
+    });
     await user.click(
-      await screen.findByRole("button", { name: "Add section" }),
+      within(sections).getByRole("button", { name: "Add section" }),
     );
-    const headings = screen.getAllByLabelText("Heading");
-    await user.type(headings.at(-1), "What I'd do next");
-    await user.type(screen.getAllByLabelText(/^Text/).at(-1), "Add tests.");
+    const headings = within(sections).getAllByLabelText("Heading");
+    await user.click(headings.at(-1));
+    await user.paste("What I'd do next");
+    await user.click(within(sections).getAllByLabelText(/^Text/).at(-1));
+    await user.paste("Add tests.");
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
     await screen.findByText("Saved.");

@@ -13,6 +13,7 @@ export const PROJECT_STATUS_VALUES = [
 ];
 export const CASE_STUDY_STATUS_VALUES = ["complete", "in-preparation", "none"];
 export const LINK_TYPE_VALUES = ["live", "repository", "documentation"];
+export const SECTION_TYPE_VALUES = ["text", "gallery", "diagram"];
 
 function isNonEmptyString(value) {
   return typeof value === "string" && value.trim().length > 0;
@@ -66,6 +67,47 @@ function validateLinks(links, slug) {
   return errors;
 }
 
+function isGridPosition(value) {
+  return Number.isInteger(value) && value >= 1 && value <= 3;
+}
+
+/**
+ * @param {import("./projects").Architecture} architecture
+ * @param {string} slug
+ * @returns {string[]}
+ */
+function validateArchitecture(architecture, slug) {
+  const where = `Project "${slug}" caseStudy.architecture`;
+  const { nodes, steps } = architecture;
+  if (!Array.isArray(nodes) || !Array.isArray(steps) || nodes.length < 2) {
+    return [`${where}: needs at least two nodes and a steps array.`];
+  }
+  const errors = [];
+  const ids = new Set();
+  nodes.forEach((node, index) => {
+    if (!isNonEmptyString(node?.id) || !isNonEmptyString(node?.label)) {
+      errors.push(`${where}.nodes[${index}]: id and label are required.`);
+    } else if (ids.has(node.id)) {
+      errors.push(`${where}.nodes[${index}]: duplicate id "${node.id}".`);
+    }
+    ids.add(node?.id);
+    if (!isGridPosition(node?.column) || !isGridPosition(node?.row)) {
+      errors.push(`${where}.nodes[${index}]: column and row must be 1–3.`);
+    }
+  });
+  steps.forEach((step, index) => {
+    if (!ids.has(step?.from) || !ids.has(step?.to) || step.from === step.to) {
+      errors.push(
+        `${where}.steps[${index}]: from and to must be two different node ids.`,
+      );
+    }
+    if (!isNonEmptyString(step?.label)) {
+      errors.push(`${where}.steps[${index}]: label is required.`);
+    }
+  });
+  return errors;
+}
+
 /**
  * @param {import("./projects").CaseStudy | null} caseStudy
  * @param {string} slug
@@ -106,12 +148,20 @@ function validateCaseStudy(caseStudy, slug, caseStudyStatus) {
     if (!isNonEmptyString(section.heading)) {
       errors.push(`${where}: heading must be a non-empty string.`);
     }
-    if (section.type !== "text" && section.type !== "gallery") {
-      errors.push(`${where}: type must be "text" or "gallery".`);
+    if (!SECTION_TYPE_VALUES.includes(section.type)) {
+      errors.push(
+        `${where}: type must be one of ${SECTION_TYPE_VALUES.join(", ")}.`,
+      );
     } else if (section.type === "text" && !isNonEmptyString(section.body)) {
       errors.push(`${where}: a text section needs a Markdown body.`);
+    } else if (section.type === "diagram" && !caseStudy.architecture) {
+      errors.push(`${where}: a diagram section needs caseStudy.architecture.`);
     }
   });
+
+  if (caseStudy.architecture) {
+    errors.push(...validateArchitecture(caseStudy.architecture, slug));
+  }
 
   if (!caseStudy.sections?.length) {
     errors.push(

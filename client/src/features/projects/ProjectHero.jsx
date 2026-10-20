@@ -5,6 +5,10 @@ import { ProjectStack } from "./ProjectStack";
 import { ProjectLinks } from "./ProjectLinks";
 import { ProjectMetaGrid } from "./ProjectMetaGrid";
 import { estimateReadTime } from "../../lib/readTime";
+import {
+  projectCoverTransition,
+  useIsViewTransitioningPath,
+} from "../motion/route-transition";
 
 /**
  * Case-study page hero: title, summary, meta, stack, links, and cover.
@@ -13,6 +17,7 @@ import { estimateReadTime } from "../../lib/readTime";
  */
 export function ProjectHero({ project }) {
   const { cover } = getProjectMedia(project.slug);
+  const morphing = useIsViewTransitioningPath(`/work/${project.slug}`);
   const readTime = project.caseStudy
     ? estimateReadTime(project.caseStudy)
     : null;
@@ -34,7 +39,10 @@ export function ProjectHero({ project }) {
             </p>
           ) : null}
         </div>
-        <div className="mt-6 lg:mt-0 aspect-video overflow-hidden rounded-(--radius-lg) border border-(--color-border)">
+        <div
+          className="mt-6 lg:mt-0 aspect-video overflow-hidden rounded-(--radius-lg) border border-(--color-border)"
+          style={projectCoverTransition(project.slug, morphing)}
+        >
           <ImageWithFallback
             src={cover.src}
             fallbackSrc={cover.fallback}

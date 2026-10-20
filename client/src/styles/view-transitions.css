@@ -1,0 +1,36 @@
+/*
+ * Route view transitions (see features/motion/route-transition.js).
+ * The page itself cross-fades; a project cover named on both pages
+ * (card → case-study hero) morphs between its two positions.
+ */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-standard);
+  animation-timing-function: var(--ease-standard);
+}
+
+::view-transition-group(.project-cover) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-standard);
+  overflow: clip;
+  border-radius: var(--radius-lg);
+}
+
+/* The card cover is wide and short, the hero cover 16:9: crop both
+   snapshots to the moving box instead of stretching them. */
+::view-transition-old(.project-cover),
+::view-transition-new(.project-cover) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

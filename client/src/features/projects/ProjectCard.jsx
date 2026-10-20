@@ -8,6 +8,10 @@ import { cn } from "../../lib/cn";
 import { formatRelativeDate } from "../../lib/relativeTime";
 import { useNow } from "../../lib/hydration";
 import {
+  projectCoverTransition,
+  useIsViewTransitioningPath,
+} from "../motion/route-transition";
+import {
   getProjectLinks,
   getProjectLiveUrl,
   getProjectMonogram,
@@ -63,13 +67,18 @@ export function ProjectCard({
   const repo = getProjectRepo(project);
   const liveUrl = getProjectLiveUrl(project);
   const now = useNow();
+  const href = `/work/${project.slug}`;
+  const morphing = useIsViewTransitioningPath(href);
 
   return (
     <SpotlightCard
       as="article"
       className={cn("group flex h-full flex-col p-1.5", className)}
     >
-      <div className="project-media-gradient relative h-48 overflow-hidden rounded-[1.0625rem] sm:h-52">
+      <div
+        className="project-media-gradient relative h-48 overflow-hidden rounded-[1.0625rem] sm:h-52"
+        style={projectCoverTransition(project.slug, morphing)}
+      >
         <ProjectFlag project={project} />
         {cover.available ? (
           <ImageWithFallback
@@ -95,7 +104,8 @@ export function ProjectCard({
       <div className="flex flex-1 flex-col gap-2 px-3.5 pb-3 pt-4">
         <HeadingTag className="text-lg font-semibold tracking-[-0.01em] text-(--color-text-primary)">
           <Link
-            to={`/work/${project.slug}`}
+            to={href}
+            viewTransition
             className="outline-none after:absolute after:inset-0 after:rounded-[inherit] after:content-[''] focus-visible:underline"
           >
             {project.title}
