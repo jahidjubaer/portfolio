@@ -1,8 +1,10 @@
 import { useId } from "react";
+import { Link } from "react-router-dom";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { cn } from "../../../lib/cn";
 import { errorFor, getAt, toDraft } from "./draft";
 import { QuickAddOrganization } from "./QuickAddOrganization";
+import { RepoLinksField } from "./RepoLinksField";
 import {
   INPUT,
   ImageControl,
@@ -51,6 +53,12 @@ function Field({ field, path, draft, errors, onChange, isNew }) {
         ) : null}
       </h2>
     );
+  }
+  if (field.type === "related") {
+    return <RelatedField field={field} />;
+  }
+  if (field.type === "repoLinks") {
+    return <RepoLinksField field={field} draft={draft} onChange={onChange} />;
   }
   const type = field.type ?? "text";
   const value = getAt(draft, path);
@@ -234,6 +242,37 @@ function Field({ field, path, draft, errors, onChange, isNew }) {
         </p>
       ) : null}
     </div>
+  );
+}
+
+/** Read-only links to the items that point here (e.g. an organization's certifications). */
+function RelatedField({ field }) {
+  return (
+    <section className="grid gap-1.5">
+      <h2 className={LABEL}>{field.label}</h2>
+      {field.items.length === 0 ? (
+        <p className="text-sm text-(--color-text-muted)">{field.empty}</p>
+      ) : (
+        <ul className="grid gap-1">
+          {field.items.map((item) => (
+            <li key={item.to} className="text-sm">
+              <Link
+                to={item.to}
+                className="font-medium text-(--color-text-primary) underline underline-offset-4"
+              >
+                {item.label}
+              </Link>
+              {item.detail ? (
+                <span className="text-(--color-text-muted)">
+                  {" "}
+                  · {item.detail}
+                </span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 

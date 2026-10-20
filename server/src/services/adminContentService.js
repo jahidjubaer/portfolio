@@ -137,6 +137,14 @@ async function checkNotReferenced(db, name, key) {
   }
 }
 
+/** A change-log entry for one list item, named the way the admin lists it. */
+function changeOf(name, item, action) {
+  const key = item[KEY_FIELDS[name]];
+  const label =
+    item.title ?? item.name ?? item.degree ?? item.caption ?? item.alt ?? key;
+  return { collection: name, key, label: String(label).slice(0, 120), action };
+}
+
 /** @param {keyof typeof SINGLETON_SCHEMAS} name */
 export async function replaceSingleton(name, input) {
   const document = validate(SINGLETON_SCHEMAS[name], input);
@@ -144,7 +152,7 @@ export async function replaceSingleton(name, input) {
   await db
     .collection(COLLECTIONS[name])
     .replaceOne({ _id: SINGLETON_ID }, document, { upsert: true });
-  await markEdited();
+  await markEdited({ collection: name, action: "updated" });
   return document;
 }
 
@@ -174,7 +182,7 @@ export async function createItem(name, input) {
     }
     throw error;
   }
-  await markEdited();
+  await markEdited(changeOf(name, document, "created"));
   return document;
 }
 
@@ -200,7 +208,7 @@ export async function updateItem(name, key, input) {
   });
   await checkReferences(db, name, document);
   await collection.replaceOne({ [keyField]: key }, document);
-  await markEdited();
+  await markEdited(changeOf(name, document, "updated"));
   return document;
 }
 
@@ -217,7 +225,7 @@ export async function deleteItem(name, key) {
     .collection(COLLECTIONS[name])
     .findOneAndDelete({ [KEY_FIELDS[name]]: key });
   if (!deleted) throw httpError(404, "Item not found.");
-  await markEdited();
+  await markEdited(changeOf(name, deleted, "deleted"));
   if (name === "photos") await deleteUpload(deleted.image?.url);
   // A logo or certificate image belongs to its one item.
   if (name === "organizations") await deleteUpload(deleted.logo?.url);
@@ -251,5 +259,5 @@ export async function reorderItems(name, keys) {
       updateOne: { filter: { [keyField]: key }, update: { $set: { order } } },
     })),
   );
-  await markEdited();
+  await markEdited({ collection: name, action: "reordered" });
 }

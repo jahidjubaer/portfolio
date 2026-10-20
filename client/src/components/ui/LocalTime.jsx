@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useIsHydrating } from "../../lib/hydration";
 
 const TIME_ZONE = "Asia/Dhaka";
 
@@ -20,7 +21,13 @@ function formatNow() {
  * @param {{ className?: string }} props
  */
 export function LocalTime({ className }) {
-  const [now, setNow] = useState(formatNow);
+  // The prerendered page can't know the visitor's time; it fills in on load.
+  const hydrating = useIsHydrating();
+  const [now, setNow] = useState(() => (hydrating ? "" : formatNow()));
+
+  useEffect(() => {
+    setNow(formatNow());
+  }, []);
 
   useEffect(() => {
     const id = setInterval(() => {

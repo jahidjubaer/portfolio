@@ -19,6 +19,7 @@ import { EducationList } from "../credentials/EducationList";
 import { ShowAllLink } from "./ShowAllLink";
 import { capabilityGroups } from "../../data/capabilities";
 import { githubSnapshot } from "../../data/github";
+import { codingStats, dimikSolved, distinctSolved } from "../../data/coding";
 import { siteSettings } from "../../data/settings";
 
 // The first two target roles are the primary positioning (CLAUDE.md);
@@ -28,10 +29,24 @@ const PRIMARY_ROLE_COUNT = 2;
 // The profile previews education like LinkedIn; the rest is on /credentials.
 const EDUCATION_PREVIEW = 2;
 
+// Synced judges (plus Dimik OJ when its count is entered); before the
+// first sync, the platforms typed on the profile.
+const judgeCount = codingStats.judges.length
+  ? codingStats.judges.length + (dimikSolved === null ? 0 : 1)
+  : profile.problemSolving.platforms.split(/, | and /).length;
+const solvedTotal = distinctSolved();
+
 const STATS = [
-  { value: "250+", label: "problems solved in C++", accent: true },
+  // Computed by the sync, overlaps counted once (docs/11 D2).
+  solvedTotal !== null
+    ? {
+        value: String(solvedTotal),
+        label: `distinct problems solved in ${profile.problemSolving.primaryLanguage}`,
+        accent: true,
+      }
+    : null,
   {
-    value: `${profile.problemSolving.platforms.split(/, | and /).length} judges`,
+    value: `${judgeCount} judges`,
     label: profile.problemSolving.platforms,
   },
   // Shown once a GitHub sync has counted the repositories.

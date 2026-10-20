@@ -10,10 +10,14 @@
     "seed": "vite-node scripts/seed.js --",
     "migrate": "vite-node scripts/migrate.js --",
     "content:export": "node scripts/export-content.js",
-    "import:blogger": "node scripts/import-blogger.js"
+    "import:blogger": "node scripts/import-blogger.js",
+    "import:linkedin": "node scripts/import-linkedin.js",
+    "migrate:certifications": "node scripts/certification-categories.js",
+    "add:portfolio-project": "node scripts/add-portfolio-project.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.2",
+    "ai": "^7.0.146",
     "cookie-parser": "^1.4.7",
     "cors": "^2",
     "dotenv": "^17",

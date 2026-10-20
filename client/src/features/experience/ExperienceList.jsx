@@ -4,6 +4,7 @@ import {
   WORKPLACE_LABELS,
 } from "../../data/experience";
 import { formatDuration, formatRange } from "../../lib/dates";
+import { useNow } from "../../lib/hydration";
 import { cn } from "../../lib/cn";
 import {
   OrganizationLogo,
@@ -13,8 +14,8 @@ import {
 const META = "text-sm text-(--color-text-muted)";
 
 /** "2024 – 2025 · 1 yr" */
-function datesLine(role) {
-  return [formatRange(role), formatDuration(role.start, role.end)]
+function datesLine(role, now) {
+  return [formatRange(role), formatDuration(role.start, role.end, now)]
     .filter(Boolean)
     .join(" · ");
 }
@@ -32,6 +33,7 @@ function placeLine(role) {
  */
 function RoleDetails({ role, showType }) {
   const place = placeLine(role);
+  const now = useNow();
   return (
     <>
       {showType && role.employmentType ? (
@@ -39,7 +41,7 @@ function RoleDetails({ role, showType }) {
           {EMPLOYMENT_TYPE_LABELS[role.employmentType]}
         </p>
       ) : null}
-      <p className={cn(META, "tabular-nums")}>{datesLine(role)}</p>
+      <p className={cn(META, "tabular-nums")}>{datesLine(role, now)}</p>
       {place ? <p className={META}>{place}</p> : null}
       {role.description ? (
         <ClampedText text={role.description} className="mt-2" />
@@ -91,7 +93,9 @@ function SingleRole({ group, headingLevel: Heading }) {
  */
 function RoleGroup({ group, headingLevel: Heading }) {
   const RoleHeading = Heading === "h3" ? "h4" : "h5";
-  const summary = [group.totalDuration, group.organization.location]
+  const now = useNow();
+  const total = formatDuration(group.span.start, group.span.end, now);
+  const summary = [total, group.organization.location]
     .filter(Boolean)
     .join(" · ");
   return (

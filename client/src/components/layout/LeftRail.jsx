@@ -8,14 +8,21 @@ import { BrandMark } from "./BrandMark";
 import { AppearanceMenu } from "./AppearanceMenu";
 import { cn } from "../../lib/cn";
 import { profile } from "../../data/profile";
+import { useIsHydrating, useNow } from "../../lib/hydration";
 
 const ACTIVE_LAYOUT_ID = "left-rail-active";
 
 // Show the shortcut the visitor's platform actually uses (the palette
-// accepts both Meta+K and Ctrl+K — see CommandPalette.jsx).
-const IS_APPLE_PLATFORM =
-  typeof navigator !== "undefined" &&
-  /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+// accepts both Meta+K and Ctrl+K — see CommandPalette.jsx). Read after
+// hydration: the prerendered page doesn't know the platform.
+function useIsApplePlatform() {
+  const hydrating = useIsHydrating();
+  return (
+    !hydrating &&
+    typeof navigator !== "undefined" &&
+    /Mac|iPhone|iPad|iPod/.test(navigator.platform)
+  );
+}
 
 /** @param {{ item: { to: string, label: string, icon: import("react").ElementType, end?: boolean } }} props */
 function RailLink({ item }) {
@@ -62,6 +69,8 @@ function RailLink({ item }) {
  * where BottomNav takes over.
  */
 export function LeftRail() {
+  const isApple = useIsApplePlatform();
+  const now = useNow();
   function openPalette() {
     window.dispatchEvent(new CustomEvent("open-command-palette"));
   }
@@ -106,7 +115,7 @@ export function LeftRail() {
         <Search size={18} aria-hidden="true" />
         <span className="hidden flex-1 text-left xl:inline">Search</span>
         <kbd className="mono-meta hidden rounded-md border border-(--color-border) px-1.5 py-0.5 xl:inline">
-          {IS_APPLE_PLATFORM ? "⌘K" : "Ctrl K"}
+          {isApple ? "⌘K" : "Ctrl K"}
         </kbd>
       </button>
 
@@ -117,7 +126,7 @@ export function LeftRail() {
           <AppearanceMenu />
         </div>
         <p className="hidden text-sm text-(--color-text-muted) xl:block">
-          © {new Date().getFullYear()} {profile.name}
+          © {now.getFullYear()} {profile.name}
         </p>
       </div>
     </aside>

@@ -5,3 +5,5 @@ export { AdminSingletonPage } from "./AdminSingletonPage";
 export { AdminListPage } from "./AdminListPage";
 export { AdminItemPage } from "./AdminItemPage";
 export { AdminRepositoriesPage } from "./AdminRepositoriesPage";
+export { AdminMessagesPage } from "./AdminMessagesPage";
+export { AdminLinkedInImportPage } from "./AdminLinkedInImportPage";

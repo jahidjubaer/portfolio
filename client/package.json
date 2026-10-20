@@ -9,7 +9,7 @@
     "prebuild": "npm run assets:sync && npm run seo:generate",
     "pretest": "npm run assets:sync",
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-server",
     "postbuild": "node scripts/prerender.js",
     "preview": "vite preview",
     "lint": "eslint .",

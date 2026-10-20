@@ -58,3 +58,23 @@
     top: 0;
   }
 }
+
+/* First visit to a prerendered page: a plain cover until the opening
+   animation mounts (the head script in index.html sets data-intro, and
+   OpeningCurtain removes it). It lifts by itself after a few seconds in
+   case JavaScript never runs, so the page is never stuck behind it. */
+html[data-intro] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-curtain);
+  background: var(--color-canvas);
+  animation: intro-cover-timeout 0.3s ease 4s forwards;
+}
+
+@keyframes intro-cover-timeout {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PenLine } from "lucide-react";
+import { NotebookPen, PenLine } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { PAGE_META } from "../routes/route-meta";
 import { Container } from "../components/ui/Container";
@@ -10,6 +10,10 @@ import { detectTextLanguage } from "../lib/language";
 import { posts } from "../data/posts";
 import { PostGrid } from "../features/writing/PostGrid";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
+import { siteSettings } from "../data/settings";
+import { ExternalSiteCard } from "../features/showcase/ExternalSiteCard";
+
+const showcase = siteSettings.showcase.posts;
 
 export function WritingPage() {
   const [selectedTag, setSelectedTag] = useState("All");
@@ -20,10 +24,12 @@ export function WritingPage() {
   // Only worth showing once there is real variety to filter — a single
   // tag (or none) would just be a control that does nothing useful.
   const showFilters = tags.length >= 2;
-  const visiblePosts =
+  const filteredPosts =
     showFilters && selectedTag !== "All"
       ? posts.filter((post) => post.tags.includes(selectedTag))
       : posts;
+  // A sample of the newest notes; the full archive is on the original blog.
+  const visiblePosts = filteredPosts.slice(0, showcase.limit);
 
   return (
     <>
@@ -79,6 +85,21 @@ export function WritingPage() {
             </Surface>
           )}
         </div>
+
+        {showcase.siteUrl ? (
+          <ExternalSiteCard
+            className="mt-8"
+            href={showcase.siteUrl}
+            label={showcase.siteLabel ?? "the original blog"}
+            description={showcase.siteDescription}
+            icon={NotebookPen}
+            count={{
+              shown: visiblePosts.length,
+              total: filteredPosts.length,
+              noun: "posts",
+            }}
+          />
+        ) : null}
       </Container>
     </>
   );

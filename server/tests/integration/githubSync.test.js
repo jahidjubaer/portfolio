@@ -268,6 +268,7 @@ describe("public snapshot", () => {
     expect(github.repos["sarabo-client"]).toEqual({
       name: "sarabo-client",
       url: "https://github.com/jahidjubaer/sarabo-client",
+      description: "sarabo-client description",
       language: "JavaScript",
       stars: 2,
       homepage: "https://sarabo-jahid.web.app",
@@ -297,6 +298,8 @@ describe("GET /api/cron/github-sync", () => {
       .get("/api/cron/github-sync")
       .set("Authorization", `Bearer ${"c".repeat(32)}`);
     expect(response.status).toBe(200);
-    expect(response.body.data).toEqual({ repoCount: REPOS.length });
+    expect(response.body.data).toMatchObject({
+      github: { repoCount: REPOS.length },
+    });
   });
 });

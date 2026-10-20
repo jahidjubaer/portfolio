@@ -7,11 +7,13 @@ import { getOrganization } from "./organizations";
  *   title: string,
  *   organization: import("./organizations").Organization,
  *   kind: "certification" | "course",
+ *   category: "professional" | "leadership-community",
  *   status: "completed" | "in-progress",
  *   issued?: string,
  *   expires?: string,
  *   credentialId?: string,
  *   credentialUrl?: string,
+ *   courseUrl?: string,
  *   description?: string,
  *   skills?: string[],
  *   image?: { url: string, width: number, height: number },
@@ -29,7 +31,12 @@ import { getOrganization } from "./organizations";
 export function resolveCertification(stored, findOrganization) {
   const { organizationId, ...item } = stored;
   delete item.order;
-  return { ...item, organization: findOrganization(organizationId) };
+  return {
+    ...item,
+    // Until the docs/11 category migration is applied (the admin flags it).
+    category: item.category ?? "professional",
+    organization: findOrganization(organizationId),
+  };
 }
 
 const recency = (item) =>
@@ -48,6 +55,28 @@ export const CERTIFICATION_KINDS = [
   { id: "certification", label: "Certifications" },
   { id: "course", label: "Courses" },
 ];
+
+export const CERTIFICATION_CATEGORIES = [
+  { id: "professional", label: "Professional" },
+  { id: "leadership-community", label: "Leadership & community" },
+];
+
+/**
+ * Certifications and courses apart, each grouped by category, keeping
+ * the list's order inside a group. Empty kinds and groups are left out.
+ * @param {Certification[]} items
+ */
+export function groupCertifications(items) {
+  return CERTIFICATION_KINDS.map((kind) => ({
+    ...kind,
+    groups: CERTIFICATION_CATEGORIES.map((category) => ({
+      ...category,
+      items: items.filter(
+        (item) => item.kind === kind.id && item.category === category.id,
+      ),
+    })).filter((group) => group.items.length > 0),
+  })).filter((kind) => kind.groups.length > 0);
+}
 
 /** @param {string} id */
 export function getCertification(id) {

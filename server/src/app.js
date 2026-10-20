@@ -8,6 +8,7 @@ import { publicContentRouter } from "./routes/publicContentRoutes.js";
 import { authRouter } from "./routes/authRoutes.js";
 import { adminRouter } from "./routes/adminRoutes.js";
 import { cronRouter } from "./routes/cronRoutes.js";
+import { contactRouter } from "./routes/contactRoutes.js";
 import { apiNotFoundHandler } from "./middleware/notFound.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -35,6 +36,7 @@ app.get("/", (_req, res) => {
 app.use("/api", healthRouter);
 app.use("/api", publicContentRouter);
 app.use("/api", authRouter);
+app.use("/api", contactRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/cron", cronRouter);
 app.use("/api", apiNotFoundHandler);

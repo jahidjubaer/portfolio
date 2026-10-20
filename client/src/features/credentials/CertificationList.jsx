@@ -61,22 +61,41 @@ function CertificationItem({ item, headingLevel: Heading }) {
             {item.skills.join(" · ")}
           </p>
         ) : null}
-        {item.credentialUrl ? (
-          <ButtonLink
-            href={item.credentialUrl}
-            target="_blank"
-            rel="noreferrer"
-            variant="secondary"
-            size="sm"
-            trailingIcon={<ArrowUpRight size={15} />}
-            className="mt-3"
-          >
-            Show credential
-            <span className="sr-only">
-              {" "}
-              for {item.title} (opens in a new tab)
-            </span>
-          </ButtonLink>
+        {item.credentialUrl || item.courseUrl ? (
+          <p className="mt-3 flex flex-wrap gap-2">
+            {item.credentialUrl ? (
+              <ButtonLink
+                href={item.credentialUrl}
+                target="_blank"
+                rel="noreferrer"
+                variant="secondary"
+                size="sm"
+                trailingIcon={<ArrowUpRight size={15} />}
+              >
+                Show credential
+                <span className="sr-only">
+                  {" "}
+                  for {item.title} (opens in a new tab)
+                </span>
+              </ButtonLink>
+            ) : null}
+            {item.courseUrl ? (
+              <ButtonLink
+                href={item.courseUrl}
+                target="_blank"
+                rel="noreferrer"
+                variant="secondary"
+                size="sm"
+                trailingIcon={<ArrowUpRight size={15} />}
+              >
+                Course page
+                <span className="sr-only">
+                  {" "}
+                  for {item.title} (opens in a new tab)
+                </span>
+              </ButtonLink>
+            ) : null}
+          </p>
         ) : null}
         {item.image ? (
           <a

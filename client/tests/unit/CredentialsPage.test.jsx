@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { CredentialsPage } from "../../src/pages/CredentialsPage";
-import { certifications } from "../../src/data/certifications";
+import {
+  certifications,
+  groupCertifications,
+  resolveCertification,
+} from "../../src/data/certifications";
 
 function renderPage() {
   render(
@@ -13,20 +16,19 @@ function renderPage() {
   );
 }
 
-function certificationsSection() {
-  return screen
-    .getByRole("heading", { level: 2, name: "Licenses & certifications" })
-    .closest("section");
+function section(name) {
+  return screen.getByRole("heading", { level: 2, name }).closest("section");
 }
 
 describe("CredentialsPage", () => {
-  it("has one H1 and both sections", () => {
+  it("has one H1, education, and separate certification and course sections", () => {
     renderPage();
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
     expect(
       screen.getByRole("heading", { level: 2, name: "Education" }),
     ).toBeInTheDocument();
-    expect(certificationsSection()).toBeInTheDocument();
+    expect(section("Certifications")).toBeInTheDocument();
+    expect(section("Courses")).toBeInTheDocument();
   });
 
   it("shows the degree in LinkedIn's form", () => {
@@ -34,25 +36,74 @@ describe("CredentialsPage", () => {
     expect(
       screen.getByText("BSc, Computer Science and Engineering"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Jul 2022 – Aug 2026")).toBeInTheDocument();
+    expect(screen.getByText("Jul 2022 – Jul 2026")).toBeInTheDocument();
   });
 
-  it("filters certifications and courses", async () => {
-    const user = userEvent.setup();
+  it("puts every item under its kind, grouped by category", () => {
     renderPage();
-    const section = certificationsSection();
-    const count = () => within(section).getAllByRole("heading", { level: 3 });
-    expect(count()).toHaveLength(certifications.length);
+    for (const [kind, name] of [
+      ["certification", "Certifications"],
+      ["course", "Courses"],
+    ]) {
+      const items = within(section(name)).getAllByRole("heading", {
+        level: 4,
+      });
+      expect(items).toHaveLength(
+        certifications.filter((item) => item.kind === kind).length,
+      );
+      const groups = within(section(name))
+        .getAllByRole("heading", { level: 3 })
+        .map((heading) => heading.textContent);
+      expect(groups.length).toBeGreaterThan(0);
+      for (const group of groups) {
+        expect(["Professional", "Leadership & community"]).toContain(group);
+      }
+    }
+  });
+});
 
-    await user.click(within(section).getByRole("button", { name: "Courses" }));
+describe("groupCertifications", () => {
+  const organization = { id: "org", name: "Org" };
+  const item = (id, kind, category) => ({
+    id,
+    title: id,
+    kind,
+    category,
+    status: "completed",
+    organization,
+  });
+
+  it("splits by kind, then category, leaving out empty groups", () => {
+    const grouped = groupCertifications([
+      item("a", "course", "leadership-community"),
+      item("b", "certification", "professional"),
+      item("c", "course", "professional"),
+    ]);
     expect(
-      within(section).getByRole("button", { name: "Courses" }),
-    ).toHaveAttribute("aria-pressed", "true");
-    expect(count()).toHaveLength(
-      certifications.filter((item) => item.kind === "course").length,
-    );
+      grouped.map((kind) => [
+        kind.id,
+        kind.groups.map((group) => [
+          group.id,
+          group.items.map((entry) => entry.id),
+        ]),
+      ]),
+    ).toEqual([
+      ["certification", [["professional", ["b"]]]],
+      [
+        "course",
+        [
+          ["professional", ["c"]],
+          ["leadership-community", ["a"]],
+        ],
+      ],
+    ]);
+  });
 
-    await user.click(within(section).getByRole("button", { name: "All" }));
-    expect(count()).toHaveLength(certifications.length);
+  it("treats a missing category as professional", () => {
+    const resolved = resolveCertification(
+      { id: "x", organizationId: "org", kind: "course", order: 1 },
+      () => organization,
+    );
+    expect(resolved.category).toBe("professional");
   });
 });

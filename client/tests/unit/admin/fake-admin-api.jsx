@@ -27,7 +27,7 @@ function json(status, body) {
 /**
  * Stubs fetch with an in-memory admin API (session, content, and the
  * write endpoints) so admin pages run end to end in jsdom.
- * @param {{ signedIn?: boolean, withProjects?: boolean, repositories?: object, syncResult?: { status: number, body: object }, publishing?: object, publishResult?: { status: number, body: object }, overrides?: object }} [options]
+ * @param {{ signedIn?: boolean, withProjects?: boolean, repositories?: object, syncResult?: { status: number, body: object }, publishing?: object, publishResult?: { status: number, body: object }, aiDraftResult?: { status: number, body: object }, codingSyncResult?: { status: number, body: object }, overrides?: object }} [options]
  */
 export function installFakeAdminApi({
   signedIn = true,
@@ -38,6 +38,11 @@ export function installFakeAdminApi({
   publishResult = {
     status: 200,
     body: { success: true, data: { at: "2026-10-19T08:00:00Z", ok: true } },
+  },
+  aiDraftResult = { status: 503, body: { success: false, error: "AI off" } },
+  codingSyncResult = {
+    status: 200,
+    body: { success: true, data: { errors: {} } },
   },
   overrides = {},
 } = {}) {
@@ -83,8 +88,12 @@ export function installFakeAdminApi({
         lastPublishAt: null,
         hasUnpublishedChanges: false,
         history: [],
+        changes: [],
         ...publishing,
       },
+      messages: [],
+      codingStatus: null,
+      aiConfigured: false,
       ...overrides,
     },
     requests: [],
@@ -124,6 +133,32 @@ export function installFakeAdminApi({
     }
     if (path === "/admin/github/sync" && method === "POST") {
       return json(syncResult.status, syncResult.body);
+    }
+    if (path === "/admin/coding/sync" && method === "POST") {
+      if (codingSyncResult.status === 200) {
+        state.content.codingStatus = {
+          lastAttemptAt: "2026-10-21T08:00:00Z",
+          ...codingSyncResult.body.data,
+        };
+      }
+      return json(codingSyncResult.status, codingSyncResult.body);
+    }
+    if (/^\/admin\/ai\/(project|learning)-draft$/.test(path)) {
+      return json(aiDraftResult.status, aiDraftResult.body);
+    }
+    const message = path.match(/^\/admin\/messages\/([^/]+)$/);
+    if (message) {
+      const id = decodeURIComponent(message[1]);
+      const index = state.content.messages.findIndex((m) => m.id === id);
+      if (method === "PATCH") {
+        Object.assign(state.content.messages[index], body);
+        return json(200, {
+          success: true,
+          data: state.content.messages[index],
+        });
+      }
+      state.content.messages.splice(index, 1);
+      return json(200, { success: true });
     }
 
     const single = path.match(/^\/admin\/singletons\/(\w+)$/);

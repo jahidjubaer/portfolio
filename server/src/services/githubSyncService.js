@@ -136,16 +136,31 @@ export async function getGitHubOverview(projects) {
 /**
  * GitHub facts for the public site snapshot: the "Recently on GitHub"
  * list, the public repo count, and live stats for the repos projects link
- * to. Null until the first sync.
+ * and learning tracks link to. Null until the first sync.
  * @param {Array<{ links: Array<{ url: string | null, type: string }> }>} projects
+ * @param {Array<{ repos?: string[] }>} [learningTracks]
  */
-export async function getGitHubSnapshot(projects) {
+export async function getGitHubSnapshot(projects, learningTracks = []) {
   const { state, repos } = await readCache();
   if (!state?.syncedAt) return null;
-  const wanted = new Set(linkedRepos(projects).map((entry) => entry.name));
-  const card = ({ name, url, language, stars, homepage, pushedAt }) => ({
+  const wanted = new Set([
+    ...linkedRepos(projects).map((entry) => entry.name),
+    ...learningTracks.flatMap((track) =>
+      (track.repos ?? []).map((name) => name.toLowerCase()),
+    ),
+  ]);
+  const card = ({
     name,
     url,
+    description,
+    language,
+    stars,
+    homepage,
+    pushedAt,
+  }) => ({
+    name,
+    url,
+    description,
     language,
     stars,
     homepage,

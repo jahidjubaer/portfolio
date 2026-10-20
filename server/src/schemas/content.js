@@ -28,11 +28,24 @@ const slug = z
     "Use lowercase letters, numbers, and dashes (e.g. my-project).",
   );
 
+export const SOCIAL_NETWORKS = [
+  "github",
+  "linkedin",
+  "codeforces",
+  "vjudge",
+  "leetcode",
+  "facebook",
+  "instagram",
+];
+
 export const socialProfileSchema = z.object({
-  id: z.enum(["github", "linkedin", "codeforces", "leetcode"]),
+  id: z.enum(SOCIAL_NETWORKS),
   label: text,
   handle: text,
   url,
+  // Kept in the admin but left off the public site (e.g. an unused
+  // LeetCode account).
+  hidden: z.boolean().optional(),
 });
 
 export const profileSchema = z.object({
@@ -53,9 +66,24 @@ export const profileSchema = z.object({
   codeforces: url,
   leetcode: url,
   problemSolving: z.object({
+    // Only shown before the first sync; afterwards the headline is the
+    // synced distinct total (docs/11 D2).
     total: text,
     primaryLanguage: text,
     platforms: text,
+    // Live stats (synced daily, see services/codingStatsService.js).
+    codeforcesHandle: text.optional(),
+    vjudgeHandle: text.optional(),
+    // A repo of the synced GitHub account that holds the solutions.
+    practiceRepo: text.optional(),
+    // "paused" shows the stats as a past-practice archive.
+    status: z.enum(["active", "paused"]).optional(),
+    // Dimik OJ has no public API, so its count is typed in the admin.
+    dimikSolved: z
+      .number({ error: "Enter a number." })
+      .int()
+      .min(0, "Can't be negative.")
+      .optional(),
   }),
   resume: z.object({
     filename: text,
@@ -121,6 +149,9 @@ export const projectSchema = z
     projectType: text,
     status: z.enum(PROJECT_STATUS_VALUES),
     featured: z.boolean(),
+    // "Hidden until ready": kept in the admin, left out of the public
+    // snapshot (so out of the routes and the sitemap too).
+    hidden: z.boolean().optional(),
     stack: z.array(text),
     capabilities: z.array(text),
     links: z.array(projectLinkSchema),
@@ -264,10 +295,17 @@ export const skillGroupSchema = z.object({
   items: z.array(text).min(1),
 });
 
+export const CERTIFICATION_KIND_VALUES = ["certification", "course"];
+export const CERTIFICATION_CATEGORY_VALUES = [
+  "professional",
+  "leadership-community",
+];
+
 /**
  * Licenses, certificates, and courses (LinkedIn's "Licenses &
  * certifications"). Completed entries need an issue date; in-progress ones
- * don't have one yet. Add `credentialUrl` only with a real verification link.
+ * don't have one yet. Add `credentialUrl` only with a real verification
+ * link; `courseUrl` is the course's own page (e.g. on Coursera).
  */
 export const certificationSchema = z
   .object({
@@ -275,12 +313,17 @@ export const certificationSchema = z
     order,
     title: text,
     organizationId: slug,
-    kind: z.enum(["certification", "course"]),
+    kind: z.enum(CERTIFICATION_KIND_VALUES),
+    // Optional until Jahid approves the docs/11 category migration
+    // (server/scripts/certification-categories.js); the site treats a
+    // missing one as professional and the admin flags it.
+    category: z.enum(CERTIFICATION_CATEGORY_VALUES).optional(),
     status: z.enum(["completed", "in-progress"]),
     issued: yearMonth.optional(),
     expires: yearMonth.optional(),
     credentialId: text.optional(),
     credentialUrl: url.optional(),
+    courseUrl: url.optional(),
     description: text.optional(),
     skills: z.array(text).optional(),
     image: blobImageSchema.optional(),
@@ -330,6 +373,8 @@ export const learningTrackSchema = z.object({
   practice: text.optional(),
   projectSlugs: z.array(slug),
   notes: z.array(z.object({ label: text, url })),
+  // Names of repos of the synced GitHub account, shown with their stats.
+  repos: z.array(text).optional(),
 });
 
 export const beyondSchema = z.object({
@@ -385,6 +430,17 @@ export const postSchema = z
     path: ["coverAlt"],
   });
 
+const showcaseSchema = z.object({
+  limit: z
+    .number({ error: "Enter a number." })
+    .int()
+    .min(1, "Show at least one.")
+    .max(24, "Show at most 24."),
+  siteUrl: url.optional(),
+  siteLabel: text.max(60).optional(),
+  siteDescription: text.max(200).optional(),
+});
+
 /**
  * Site-wide settings (docs/09, P4): visitor defaults for appearance, the
  * opening animation, which profile sections and pages show, the
@@ -429,6 +485,14 @@ export const settingsSchema = z.object({
     ),
   ),
   openToWorkBadge: z.boolean(),
+  // Writing and Beyond show a few samples and link to the full site.
+  showcase: z.object({
+    photos: showcaseSchema,
+    posts: showcaseSchema,
+  }),
+  // After the daily GitHub/coding sync, rebuild the site when the
+  // synced numbers changed.
+  autoPublishAfterSync: z.boolean(),
   seo: z.object({
     homeDescription: text
       .max(300, "Search engines show about 160 characters; keep it under 300.")

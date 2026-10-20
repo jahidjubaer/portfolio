@@ -8,8 +8,10 @@
  * checkbox, checkboxes (several values from `options`), lines,
  * paragraphs, json, image (an uploaded `{ url, width, height }`), pdf (URL
  * text with an upload button), objectList (with nested `fields`; `fixed`
- * lists can be reordered but not added to or removed from), and heading
- * (a section title in the form, not a value).
+ * lists can be reordered but not added to or removed from), heading
+ * (a section title in the form, not a value), repoLinks (a picker for
+ * the repository links of the field named in `for`; no value of its own),
+ * and related (read-only `items` linking to other editors).
  * Flags: `optional` (blank or unticked → field removed), `nullable`
  * (blank → null). A select's `placeholder` is its blank first option;
  * `quickAdd: "organizations"` adds a "New organization" button under it.
@@ -79,6 +81,9 @@ function toDraftValue(field, value) {
   }
 }
 
+// Fields that only present or edit other fields' values.
+const VIEW_ONLY = new Set(["heading", "repoLinks", "related"]);
+
 /**
  * @param {Record<string, unknown>} value
  * @param {Field[]} fields
@@ -86,7 +91,7 @@ function toDraftValue(field, value) {
 export function toDraft(value, fields) {
   let draft = { ...value };
   for (const field of fields) {
-    if (field.type === "heading") continue;
+    if (VIEW_ONLY.has(field.type)) continue;
     draft = setAt(
       draft,
       field.name,
@@ -143,7 +148,7 @@ function fromDraftValue(field, raw) {
 export function fromDraft(draft, fields) {
   let value = { ...draft };
   for (const field of fields) {
-    if (field.type === "heading") continue;
+    if (VIEW_ONLY.has(field.type)) continue;
     value = setAt(
       value,
       field.name,

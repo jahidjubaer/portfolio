@@ -6,6 +6,18 @@ import {
   syncGitHubRepos,
 } from "../services/githubSyncService.js";
 import { getPublishStatus, publishSite } from "../services/publishService.js";
+import {
+  getCodingStatus,
+  syncCodingStats,
+} from "../services/codingStatsService.js";
+import {
+  draftLearningTrackFromRepo,
+  draftProjectFromRepos,
+  isAiConfigured,
+  MAX_DRAFT_REPOS,
+} from "../services/aiDraftService.js";
+import * as messages from "../services/messageService.js";
+import { getProfile } from "../services/contentService.js";
 
 function notFound() {
   const error = new Error("Not found");
@@ -36,6 +48,9 @@ export async function getContent(_req, res) {
       ...content,
       repositories: await getGitHubOverview(content.projects),
       publishing: await getPublishStatus(),
+      codingStatus: await getCodingStatus(),
+      messages: await messages.listMessages(),
+      aiConfigured: isAiConfigured(),
     },
   });
 }
@@ -78,4 +93,59 @@ export async function postGitHubSync(_req, res) {
 export async function postPublish(req, res) {
   const data = await publishSite(req.admin);
   res.json({ success: true, data });
+}
+
+export async function postCodingSync(_req, res) {
+  const profile = await getProfile();
+  await syncCodingStats(profile?.problemSolving);
+  // With the per-judge merge, as the admin's Coding stats panel shows it.
+  res.json({ success: true, data: await getCodingStatus() });
+}
+
+function badRequest(message) {
+  const error = new Error(message);
+  error.status = 400;
+  return error;
+}
+
+const isRepoName = (name) =>
+  typeof name === "string" && /^[\w.-]{1,100}$/.test(name);
+
+function repoName(req) {
+  const name = req.body?.repo;
+  if (!isRepoName(name)) throw badRequest("Pick a repository.");
+  return name;
+}
+
+/** `{ repos: [...] }`, or a single `{ repo }`. */
+function repoNames(req) {
+  const names = req.body?.repos ?? [req.body?.repo];
+  if (!Array.isArray(names) || names.length === 0 || !names.every(isRepoName)) {
+    throw badRequest("Pick at least one repository.");
+  }
+  const unique = [...new Set(names)];
+  if (unique.length > MAX_DRAFT_REPOS) {
+    throw badRequest(`Pick at most ${MAX_DRAFT_REPOS} repositories.`);
+  }
+  return unique;
+}
+
+export async function postProjectDraft(req, res) {
+  const data = await draftProjectFromRepos(repoNames(req));
+  res.json({ success: true, data });
+}
+
+export async function postLearningDraft(req, res) {
+  const data = await draftLearningTrackFromRepo(repoName(req));
+  res.json({ success: true, data });
+}
+
+export async function patchMessage(req, res) {
+  const data = await messages.updateMessage(req.params.id, req.body);
+  res.json({ success: true, data });
+}
+
+export async function deleteMessage(req, res) {
+  await messages.deleteMessage(req.params.id);
+  res.json({ success: true });
 }

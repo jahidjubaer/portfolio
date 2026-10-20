@@ -137,3 +137,35 @@ export async function syncGitHub() {
 export async function publishSite() {
   return (await adminRequest("POST", "/admin/publish")).data;
 }
+
+/**
+ * Asks AI Gateway to draft fields from public repos. Nothing is saved.
+ * A project can be drafted from several repos at once (client + server);
+ * a learning track from one.
+ * @param {"project" | "learning"} kind
+ * @param {string[]} repos repo names of the synced account
+ */
+export async function draftFromRepo(kind, repos) {
+  const body = kind === "project" ? { repos } : { repo: repos[0] };
+  return (await adminRequest("POST", `/admin/ai/${kind}-draft`, body)).data;
+}
+
+/** Refreshes the Codeforces / VJudge / practice-repo stats now. */
+export async function syncCodingStats() {
+  return (await adminRequest("POST", "/admin/coding/sync")).data;
+}
+
+/** @param {string} id @param {{ read?: boolean, archived?: boolean }} changes */
+export async function updateMessage(id, changes) {
+  return (
+    await adminRequest(
+      "PATCH",
+      `/admin/messages/${encodeURIComponent(id)}`,
+      changes,
+    )
+  ).data;
+}
+
+export function deleteMessage(id) {
+  return adminRequest("DELETE", `/admin/messages/${encodeURIComponent(id)}`);
+}

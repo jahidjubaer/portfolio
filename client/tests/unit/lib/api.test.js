@@ -9,6 +9,27 @@ const VALID_PAYLOAD = {
   companyWebsite: "",
 };
 
+const WEB3FORMS = "https://api.web3forms.com/submit";
+
+/**
+ * Stubs fetch with separate answers for the inbox (/api/contact) and
+ * Web3Forms. An Error answer rejects (network failure).
+ */
+function stubFetch({ inbox, web3forms }) {
+  const answer = (value) =>
+    value instanceof Error ? Promise.reject(value) : Promise.resolve(value());
+  return vi
+    .spyOn(globalThis, "fetch")
+    .mockImplementation((url) =>
+      url === WEB3FORMS ? answer(web3forms) : answer(inbox),
+    );
+}
+
+const ok =
+  (body = { success: true }, status = 200) =>
+  () =>
+    new Response(JSON.stringify(body), { status });
+
 describe("submitContactMessage", () => {
   beforeEach(() => {
     vi.stubEnv("VITE_WEB3FORMS_ACCESS_KEY", "test-access-key");
@@ -19,21 +40,22 @@ describe("submitContactMessage", () => {
     vi.restoreAllMocks();
   });
 
-  it("submits directly to the Web3Forms API with the access key and message fields", async () => {
-    const fetchSpy = vi
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValue(
-        new Response(JSON.stringify({ success: true }), { status: 200 }),
-      );
+  it("stores the message in the inbox and emails it through Web3Forms", async () => {
+    const fetchSpy = stubFetch({ inbox: ok({}, 201), web3forms: ok() });
 
     const result = await submitContactMessage(VALID_PAYLOAD);
 
-    expect(fetchSpy).toHaveBeenCalledWith(
-      "https://api.web3forms.com/submit",
-      expect.objectContaining({ method: "POST" }),
+    const inboxCall = fetchSpy.mock.calls.find(([url]) =>
+      url.endsWith("/api/contact"),
     );
-    const [, requestInit] = fetchSpy.mock.calls[0];
-    const body = JSON.parse(requestInit.body);
+    expect(JSON.parse(inboxCall[1].body)).toEqual({
+      name: VALID_PAYLOAD.name,
+      email: VALID_PAYLOAD.email,
+      subject: VALID_PAYLOAD.subject,
+      message: VALID_PAYLOAD.message,
+    });
+    const web3Call = fetchSpy.mock.calls.find(([url]) => url === WEB3FORMS);
+    const body = JSON.parse(web3Call[1].body);
     expect(body).toMatchObject({
       access_key: "test-access-key",
       name: VALID_PAYLOAD.name,
@@ -50,10 +72,20 @@ describe("submitContactMessage", () => {
     });
   });
 
-  it("renders a controlled failure when Web3Forms rejects the submission", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(JSON.stringify({ success: false }), { status: 200 }),
-    );
+  it("counts as received when only the inbox got it", async () => {
+    stubFetch({ inbox: ok({}, 201), web3forms: ok({ success: false }) });
+    const result = await submitContactMessage(VALID_PAYLOAD);
+    expect(result.success).toBe(true);
+  });
+
+  it("counts as received when only the email went out", async () => {
+    stubFetch({ inbox: ok({}, 503), web3forms: ok() });
+    const result = await submitContactMessage(VALID_PAYLOAD);
+    expect(result.success).toBe(true);
+  });
+
+  it("renders a controlled failure when both reject the submission", async () => {
+    stubFetch({ inbox: ok({}, 500), web3forms: ok({ success: false }) });
 
     const result = await submitContactMessage(VALID_PAYLOAD);
 
@@ -62,9 +94,10 @@ describe("submitContactMessage", () => {
   });
 
   it("renders a controlled failure on a 429 rate-limit response", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(JSON.stringify({ success: false }), { status: 429 }),
-    );
+    stubFetch({
+      inbox: ok({}, 429),
+      web3forms: ok({ success: false }, 429),
+    });
 
     const result = await submitContactMessage(VALID_PAYLOAD);
 
@@ -81,18 +114,27 @@ describe("submitContactMessage", () => {
     expect(result.message).toMatch(/could not reach the server/i);
   });
 
-  it("fails safely without contacting Web3Forms when the access key is missing", async () => {
+  it("skips Web3Forms when the access key is missing, but still stores the message", async () => {
     vi.stubEnv("VITE_WEB3FORMS_ACCESS_KEY", "");
-    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    const fetchSpy = stubFetch({ inbox: ok({}, 201), web3forms: ok() });
 
     const result = await submitContactMessage(VALID_PAYLOAD);
 
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(fetchSpy.mock.calls.some(([url]) => url === WEB3FORMS)).toBe(false);
+    expect(result.success).toBe(true);
+  });
+
+  it("explains the form is unavailable when the key is missing and the inbox is down", async () => {
+    vi.stubEnv("VITE_WEB3FORMS_ACCESS_KEY", "");
+    stubFetch({ inbox: new TypeError("offline"), web3forms: ok() });
+
+    const result = await submitContactMessage(VALID_PAYLOAD);
+
     expect(result.success).toBe(false);
     expect(result.message).toMatch(/temporarily unavailable/i);
   });
 
-  it("reports success without contacting Web3Forms when the honeypot field is filled", async () => {
+  it("reports success without sending anything when the honeypot field is filled", async () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch");
 
     const result = await submitContactMessage({

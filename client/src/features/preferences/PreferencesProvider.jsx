@@ -10,11 +10,13 @@ import {
   getInitialSoundEnabled,
   followsSystemTheme,
   getInitialTheme,
+  getPrerenderedPreferences,
   readPreference,
   writePreference,
 } from "./preference-storage";
 import { playSound } from "./sound-engine";
 import { loadFont } from "./font-loader";
+import { useIsHydrating } from "../../lib/hydration";
 
 const THEME_COLORS = { dark: "#09090b", light: "#ffffff" };
 
@@ -26,10 +28,30 @@ const THEME_COLORS = { dark: "#09090b", light: "#ffffff" };
  * @param {{ children: import("react").ReactNode }} props
  */
 export function PreferencesProvider({ children }) {
-  const [theme, setTheme] = useState(getInitialTheme);
-  const [soundEnabled, setSoundEnabled] = useState(getInitialSoundEnabled);
-  const [accent, setAccentState] = useState(getInitialAccent);
-  const [font, setFontState] = useState(getInitialFont);
+  // While hydrating a prerendered page, start from what the server used;
+  // the layout effect below then applies the stored choices before paint.
+  const hydrating = useIsHydrating();
+  const [initial] = useState(() =>
+    hydrating
+      ? getPrerenderedPreferences()
+      : {
+          theme: getInitialTheme(),
+          soundEnabled: getInitialSoundEnabled(),
+          accent: getInitialAccent(),
+          font: getInitialFont(),
+        },
+  );
+  const [theme, setTheme] = useState(initial.theme);
+  const [soundEnabled, setSoundEnabled] = useState(initial.soundEnabled);
+  const [accent, setAccentState] = useState(initial.accent);
+  const [font, setFontState] = useState(initial.font);
+
+  useLayoutEffect(() => {
+    setTheme(getInitialTheme());
+    setSoundEnabled(getInitialSoundEnabled());
+    setAccentState(getInitialAccent());
+    setFontState(getInitialFont());
+  }, []);
 
   useLayoutEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);

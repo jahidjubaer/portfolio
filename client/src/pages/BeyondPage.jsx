@@ -24,9 +24,15 @@ import {
   volunteeringHighlights,
 } from "../data/beyond";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
+import { siteSettings } from "../data/settings";
+import { ExternalSiteCard } from "../features/showcase/ExternalSiteCard";
+
+const showcase = siteSettings.showcase.photos;
 
 export function BeyondPage() {
   usePageMeta(PAGE_META["/beyond"]);
+  // A few samples; the full photo journal lives on the original site.
+  const samplePhotos = photographs.slice(0, showcase.limit);
 
   return (
     <>
@@ -61,9 +67,9 @@ export function BeyondPage() {
             </div>
           </div>
 
-          {photographs.length > 0 ? (
+          {samplePhotos.length > 0 ? (
             <div className="mt-6">
-              <PhotographyGallery photographs={photographs} />
+              <PhotographyGallery photographs={samplePhotos} />
             </div>
           ) : (
             <Surface variant="raised" className="mt-6 p-10 text-center">
@@ -73,6 +79,21 @@ export function BeyondPage() {
               </p>
             </Surface>
           )}
+
+          {showcase.siteUrl ? (
+            <ExternalSiteCard
+              className="mt-6"
+              href={showcase.siteUrl}
+              label={showcase.siteLabel ?? "the photo journal"}
+              description={showcase.siteDescription}
+              icon={Camera}
+              count={{
+                shown: samplePhotos.length,
+                total: photographs.length,
+                noun: "photos",
+              }}
+            />
+          ) : null}
         </section>
 
         <Divider className="my-14" />

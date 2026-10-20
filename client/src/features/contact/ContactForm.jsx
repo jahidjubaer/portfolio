@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../../components/ui/Button";
 import { TextLink } from "../../components/ui/TextLink";
 import { ContactField } from "./ContactField";
@@ -6,6 +6,7 @@ import { ContactStatus } from "./ContactStatus";
 import { validateContactForm, CONTACT_LIMITS } from "./contact-validation";
 import { submitContactMessage } from "../../lib/api";
 import { profile } from "../../data/profile";
+import { useIsHydrating } from "../../lib/hydration";
 
 const INITIAL_VALUES = {
   name: "",
@@ -27,11 +28,9 @@ const SUBJECT_SUGGESTIONS = [
  * `?subject=` (set by the greeting popup's quick replies) pre-fills the
  * subject, but only with one of the known suggestions.
  */
-function getInitialValues() {
+function requestedSubject() {
   const requested = new URLSearchParams(window.location.search).get("subject");
-  return SUBJECT_SUGGESTIONS.includes(requested)
-    ? { ...INITIAL_VALUES, subject: requested }
-    : INITIAL_VALUES;
+  return SUBJECT_SUGGESTIONS.includes(requested) ? requested : null;
 }
 
 /**
@@ -40,11 +39,20 @@ function getInitialValues() {
  * failure so the user never has to retype their message.
  */
 export function ContactForm() {
-  const [values, setValues] = useState(getInitialValues);
+  const [values, setValues] = useState(INITIAL_VALUES);
+  // On the prerendered page the button waits for JavaScript, so a click
+  // can't fall through to a native submit (the message in the URL).
+  const hydrating = useIsHydrating();
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState(null); // null | "loading" | "success" | "error"
   const [statusMessage, setStatusMessage] = useState("");
   const statusRef = useRef(null);
+
+  // After mount: the prerendered form has no query string to read.
+  useEffect(() => {
+    const subject = requestedSubject();
+    if (subject) setValues((previous) => ({ ...previous, subject }));
+  }, []);
 
   function updateField(field, value) {
     setValues((previous) => ({ ...previous, [field]: value }));
@@ -190,7 +198,12 @@ export function ContactForm() {
       </div>
 
       <div className="mt-8">
-        <Button type="submit" variant="primary" loading={isSubmitting}>
+        <Button
+          type="submit"
+          variant="primary"
+          loading={isSubmitting}
+          disabled={hydrating}
+        >
           {isSubmitting ? "Sending…" : "Send message"}
         </Button>
       </div>

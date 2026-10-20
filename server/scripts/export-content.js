@@ -48,7 +48,8 @@ async function main() {
     await closeDb();
   }
 
-  const { github, ...content } = snapshot;
+  // Synced caches aren't edited content, so the schema doesn't cover them.
+  const { github, coding, ...content } = snapshot;
   const result = contentSchema.safeParse(content);
   if (!result.success) {
     const issues = result.error.issues
@@ -59,7 +60,7 @@ async function main() {
     return;
   }
 
-  const json = `${JSON.stringify({ ...result.data, github }, null, 2)}\n`;
+  const json = `${JSON.stringify({ ...result.data, github, coding }, null, 2)}\n`;
   const previous = existsSync(SNAPSHOT_FILE)
     ? readFileSync(SNAPSHOT_FILE, "utf8")
     : "";

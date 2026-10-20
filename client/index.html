@@ -38,6 +38,19 @@
         root.setAttribute("data-theme", theme);
         root.setAttribute("data-accent", accent);
         root.setAttribute("data-font", font);
+        // First visit this session: cover the prerendered page until the
+        // opening animation takes over (OpeningCurtain.jsx), so it doesn't
+        // flash first. Mirrors shouldPlayOnLoad() there.
+        try {
+          if (
+            "__SITE_INTRO__" === "on" &&
+            !navigator.webdriver &&
+            !/^\/admin(\/|$)/.test(location.pathname) &&
+            !matchMedia("(prefers-reduced-motion: reduce)").matches &&
+            sessionStorage.getItem("opening-seen") !== "1"
+          )
+            root.setAttribute("data-intro", "");
+        } catch (e) {}
       })();
     </script>
     <!-- route-meta -->

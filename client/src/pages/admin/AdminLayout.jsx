@@ -60,10 +60,10 @@ function navClass({ isActive }) {
 function SectionLink({ section, content }) {
   const Icon = section.icon;
   const count = sectionCount(section.path, content);
-  const warnings =
-    section.path === "repositories"
-      ? (content.repositories?.warnings.length ?? 0)
-      : 0;
+  let warnings = 0;
+  if (section.path === "repositories") {
+    warnings = content.repositories?.warnings.length ?? 0;
+  }
   return (
     <NavLink to={`/admin/${section.path}`} className={navClass}>
       <Icon size={17} aria-hidden="true" className="shrink-0" />

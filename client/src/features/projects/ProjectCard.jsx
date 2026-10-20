@@ -6,6 +6,7 @@ import { GitHubIcon } from "../../components/icons/BrandIcons";
 import { getProjectMedia } from "../../lib/project-assets";
 import { cn } from "../../lib/cn";
 import { formatRelativeDate } from "../../lib/relativeTime";
+import { useNow } from "../../lib/hydration";
 import {
   getProjectLinks,
   getProjectLiveUrl,
@@ -61,6 +62,7 @@ export function ProjectCard({
   const repositories = getProjectLinks(project, "repository");
   const repo = getProjectRepo(project);
   const liveUrl = getProjectLiveUrl(project);
+  const now = useNow();
 
   return (
     <SpotlightCard
@@ -104,7 +106,10 @@ export function ProjectCard({
         </p>
         {repo ? (
           <p className="text-[0.8125rem] text-(--color-text-muted)">
-            {[repo.language, `Updated ${formatRelativeDate(repo.pushedAt)}`]
+            {[
+              repo.language,
+              `Updated ${formatRelativeDate(repo.pushedAt, now)}`,
+            ]
               .filter(Boolean)
               .join(" · ")}
           </p>

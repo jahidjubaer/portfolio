@@ -8,6 +8,7 @@
 
 import { SITE, homeMeta, shareImage } from "../routes/route-meta";
 import { siteSettings } from "../data/settings";
+import { socialProfiles } from "../data/profile";
 
 const home = homeMeta(siteSettings.seo);
 
@@ -25,13 +26,8 @@ export const siteConfig = {
   // Site settings can replace the built-in link-preview image.
   defaultOgImage: shareImage(siteSettings.seo).url,
   jobTitle: "Frontend Developer & Junior Software Engineer",
-  // Verified public profiles only (mirrors client/src/data/profile.js).
-  sameAs: [
-    "https://github.com/jahidjubaer",
-    "https://www.linkedin.com/in/jahidjubaer/",
-    "https://codeforces.com/profile/jahidjubaer17",
-    "https://leetcode.com/u/jahidjubaer/",
-  ],
+  // The public profiles shown on the site (hidden ones stay out).
+  sameAs: socialProfiles.map((social) => social.url),
 };
 
 /**

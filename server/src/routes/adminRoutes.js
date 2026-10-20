@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { requireAdmin } from "../middleware/requireAdmin.js";
 import { requireSameOrigin } from "../middleware/requireSameOrigin.js";
-import { adminRateLimit } from "../middleware/rateLimits.js";
+import { adminRateLimit, aiRateLimit } from "../middleware/rateLimits.js";
 import * as controller from "../controllers/adminContentController.js";
 
 /**
@@ -21,6 +21,12 @@ import * as controller from "../controllers/adminContentController.js";
  *                                    one-time Vercel Blob client token
  *   POST   /github/sync              refresh the GitHub repo cache now
  *   POST   /publish                  rebuild the public site (deploy hook)
+ *   POST   /coding/sync              refresh Codeforces / VJudge / repo stats
+ *   POST   /ai/project-draft         { repos: [...] } (or { repo }) →
+ *                                    project fields to review
+ *   POST   /ai/learning-draft        { repo } → learning-track fields
+ *   PATCH  /messages/:id             { read?, archived? }
+ *   DELETE /messages/:id
  */
 export const adminRouter = Router();
 
@@ -35,3 +41,12 @@ adminRouter.delete("/lists/:name/:key", controller.deleteItem);
 adminRouter.post("/uploads", controller.postUploadToken);
 adminRouter.post("/github/sync", controller.postGitHubSync);
 adminRouter.post("/publish", controller.postPublish);
+adminRouter.post("/coding/sync", controller.postCodingSync);
+adminRouter.post("/ai/project-draft", aiRateLimit, controller.postProjectDraft);
+adminRouter.post(
+  "/ai/learning-draft",
+  aiRateLimit,
+  controller.postLearningDraft,
+);
+adminRouter.patch("/messages/:id", controller.patchMessage);
+adminRouter.delete("/messages/:id", controller.deleteMessage);

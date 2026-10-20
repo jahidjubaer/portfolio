@@ -11,23 +11,60 @@ export async function getApiHealth() {
 
 const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 
+const RECEIVED = { success: true, message: "Your message has been received." };
+
 /**
- * Submits the contact form directly to Web3Forms from the browser — this is
- * Web3Forms's supported flow; their access keys are meant to be used
- * client-side (server-side calls require a paid plan and IP safelisting and
- * are otherwise rejected).
+ * Stores the message in the admin inbox (POST /api/contact).
+ * @returns {Promise<boolean>} whether it was stored
+ */
+async function saveToInbox(payload) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/contact`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: payload.name,
+        email: payload.email,
+        subject: payload.subject,
+        message: payload.message,
+      }),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Sends the contact form two ways at once: to the admin inbox, and to
+ * Web3Forms for the email notification. Either one arriving counts as
+ * received; the visitor only sees an error when both failed.
  *
  * @param {{ name: string, email: string, subject: string, message: string, companyWebsite?: string }} payload
  * @returns {Promise<{ success: boolean, message: string }>}
  */
 export async function submitContactMessage(payload) {
-  // Honeypot: a bot fills this hidden field. Report success without ever
-  // contacting Web3Forms — telling it "rejected" would just teach it to
+  // Honeypot: a bot fills this hidden field. Report success without
+  // sending anything — telling it "rejected" would just teach it to
   // remove the honeypot field first.
-  if (payload.companyWebsite) {
-    return { success: true, message: "Your message has been received." };
-  }
+  if (payload.companyWebsite) return RECEIVED;
 
+  const [stored, emailed] = await Promise.all([
+    saveToInbox(payload),
+    sendToWeb3Forms(payload),
+  ]);
+  if (stored || emailed.success) return RECEIVED;
+  return emailed;
+}
+
+/**
+ * Submits the contact form directly to Web3Forms from the browser — this is
+ * Web3Forms's supported flow; their access keys are meant to be used
+ * client-side (server-side calls require a paid plan and IP safelisting and
+ * are otherwise rejected).
+ * @returns {Promise<{ success: boolean, message: string }>}
+ */
+async function sendToWeb3Forms(payload) {
   const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
   if (!accessKey) {
     return {
@@ -91,5 +128,5 @@ export async function submitContactMessage(payload) {
     };
   }
 
-  return { success: true, message: "Your message has been received." };
+  return RECEIVED;
 }

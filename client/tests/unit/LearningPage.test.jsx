@@ -77,6 +77,7 @@ describe("LearningTrackCard", () => {
             practice: "Exercises after each module.",
             projects: [{ slug: "sarabo", title: "Sarabo" }],
             notes: [],
+            repos: [],
           }}
         />
       </MemoryRouter>,

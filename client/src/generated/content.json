@@ -27,7 +27,11 @@
     "problemSolving": {
       "total": "250+ programming problems solved",
       "primaryLanguage": "C++",
-      "platforms": "VJudge, Codeforces, Dimik OJ, and LeetCode"
+      "platforms": "VJudge, Codeforces, and Dimik OJ",
+      "codeforcesHandle": "jahidjubaer17",
+      "vjudgeHandle": "jahidjubaer01",
+      "practiceRepo": "Programming",
+      "status": "paused"
     },
     "resume": {
       "filename": "jahid-hasan-resume.pdf",
@@ -54,10 +58,29 @@
         "url": "https://codeforces.com/profile/jahidjubaer17"
       },
       {
+        "id": "vjudge",
+        "label": "VJudge",
+        "handle": "jahidjubaer01",
+        "url": "https://vjudge.net/user/jahidjubaer01"
+      },
+      {
         "id": "leetcode",
         "label": "LeetCode",
         "handle": "jahidjubaer",
-        "url": "https://leetcode.com/u/jahidjubaer/"
+        "url": "https://leetcode.com/u/jahidjubaer/",
+        "hidden": true
+      },
+      {
+        "id": "facebook",
+        "label": "Facebook",
+        "handle": "jahidjubaer17",
+        "url": "https://www.facebook.com/jahidjubaer17"
+      },
+      {
+        "id": "instagram",
+        "label": "Instagram",
+        "handle": "@jahidjubaer17",
+        "url": "https://www.instagram.com/jahidjubaer17/"
       }
     ]
   },
@@ -323,7 +346,13 @@
     {
       "id": "red-crescent-youth-rcy",
       "order": 0,
-      "name": "Red Crescent Youth (RCY)"
+      "name": "Red Crescent Youth (RCY)",
+      "logo": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/images-1-1UdApOY4Rr9PR4HsjV6T5NB7bnWOxk.webp",
+        "width": 447,
+        "height": 447
+      },
+      "url": "https://bdrcs.org/youth-and-volunteers/"
     },
     {
       "id": "metropolitan-university-sports-club",
@@ -401,6 +430,41 @@
       "order": 13,
       "name": "Bangladesh Scouts",
       "url": "https://scouts.gov.bd/"
+    },
+    {
+      "id": "abu-abbas-collage",
+      "order": 14,
+      "name": "Abu Abbas College"
+    },
+    {
+      "id": "muktopaath",
+      "order": 15,
+      "name": "MuktoPaath"
+    },
+    {
+      "id": "metropolitan-university-research-society",
+      "order": 16,
+      "name": "Metropolitan University Research Society"
+    },
+    {
+      "id": "metropolitan-university-rover-scout-group",
+      "order": 17,
+      "name": "Metropolitan University Rover Scout Group"
+    },
+    {
+      "id": "takerghat-chunapathar-khoni-secondary-school-and-college",
+      "order": 19,
+      "name": "Takerghat Chunapathar Khoni Secondary School and College"
+    },
+    {
+      "id": "regional-cooperation-association-rca",
+      "order": 20,
+      "name": "Regional Cooperation Association - RCA"
+    },
+    {
+      "id": "tahirpur-development-society",
+      "order": 21,
+      "name": "Tahirpur Development Society"
     }
   ],
   "experience": [
@@ -427,8 +491,8 @@
       "roles": [
         {
           "title": "Organizing Secretary",
-          "start": "2024",
-          "end": "2025",
+          "start": "2025-01",
+          "end": "2026-01",
           "description": "Coordinated university sports events including the Metropolitan University Premier League (cricket), League M (football), Indoor Games, CLC, Futsal, and Badminton League — covering umpiring, event planning, on-field operations, and sponsorship coordination. Helped organise 10+ events, coordinated participants and university authorities, and captained participating teams.",
           "skills": [
             "Event planning",
@@ -439,8 +503,8 @@
         },
         {
           "title": "Joint Office Secretary",
-          "start": "2023",
-          "end": "2024",
+          "start": "2023-12",
+          "end": "2025-01",
           "description": "Supported event planning and team leadership across university sports programs.",
           "skills": [
             "Administration",
@@ -450,9 +514,10 @@
         },
         {
           "title": "Member",
-          "start": "2022",
-          "end": "2025",
-          "description": "Took part in club activities and represented teams in cricket and football events."
+          "start": "2022-09",
+          "end": "2023-12",
+          "description": "Took part in club activities and represented teams in cricket and football events.",
+          "skills": []
         }
       ]
     },
@@ -472,6 +537,69 @@
             "Visual storytelling",
             "Event coordination"
           ]
+        },
+        {
+          "title": "Member",
+          "start": "2023",
+          "end": "2024",
+          "description": "Photo walks, and university photography coverage.",
+          "skills": [
+            "Event Photography"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "regional-cooperation-association-rca",
+      "order": 3,
+      "organizationId": "regional-cooperation-association-rca",
+      "category": "leadership",
+      "roles": [
+        {
+          "title": "Treasurer",
+          "start": "2022",
+          "end": "2025",
+          "description": "A Social Student Organization Under Sunamganj District, Tahirpur"
+        }
+      ]
+    },
+    {
+      "id": "tahirpur-development-society",
+      "order": 4,
+      "organizationId": "tahirpur-development-society",
+      "category": "leadership",
+      "roles": [
+        {
+          "title": "Science and IT Secretary",
+          "start": "2024-12",
+          "current": true,
+          "description": "A social Organization"
+        }
+      ]
+    },
+    {
+      "id": "bangladesh-scouts",
+      "order": 5,
+      "organizationId": "bangladesh-scouts",
+      "category": "community",
+      "roles": [
+        {
+          "title": "Rover Scout",
+          "start": "2023",
+          "end": "2023",
+          "description": "Metropolitan University Rover Scout."
+        },
+        {
+          "title": "Rover Scout",
+          "start": "2019",
+          "end": "2021",
+          "description": "Abu Abbas College Rover Scout unit."
+        },
+        {
+          "title": "Unit Leader",
+          "start": "2016",
+          "end": "2019",
+          "description": "Takerghat Chunapathar Khoni Secondary School and College Scout Unit."
         }
       ]
     }
@@ -484,7 +612,7 @@
       "degree": "BSc",
       "field": "Computer Science and Engineering",
       "start": "2022-07",
-      "end": "2026-08",
+      "end": "2026-07",
       "activities": "Metropolitan University Sports Club, Metropolitan University Photographic Society",
       "description": "Strongest results in programming, algorithms, operating systems, databases, web programming, and software engineering, with hands-on lab and project work.",
       "skills": [
@@ -496,6 +624,25 @@
         "Web programming",
         "Software engineering"
       ]
+    },
+    {
+      "id": "collage",
+      "order": 1,
+      "organizationId": "abu-abbas-collage",
+      "degree": "Higher Secondary School Certificate (HSC)",
+      "field": "Science Group",
+      "start": "2019",
+      "end": "2021",
+      "activities": "Rover Scout, Red crescent",
+      "skills": []
+    },
+    {
+      "id": "secondary-school-certificate-takerghat-chunapathar-khoni-sec",
+      "order": 3,
+      "organizationId": "takerghat-chunapathar-khoni-secondary-school-and-college",
+      "degree": "Secondary School Certificate",
+      "start": "2009-01",
+      "end": "2019-01"
     }
   ],
   "skills": [
@@ -551,6 +698,7 @@
       "title": "Complete Web Development",
       "organizationId": "programming-hero",
       "kind": "course",
+      "category": "professional",
       "status": "in-progress",
       "description": "Batch 12 (Jul 2025 – Jan 2026). 10 of 12 milestones completed: HTML, CSS, responsive design, JavaScript, the DOM, APIs, React, routing, and Firebase authentication.",
       "skills": [
@@ -570,6 +718,7 @@
       "title": "Reactive Accelerator",
       "organizationId": "learn-with-sumit",
       "kind": "course",
+      "category": "professional",
       "status": "in-progress",
       "description": "Batch 4. First two content modules completed (JSX, components, props, state, events, immutable updates); continuing self-paced.",
       "skills": [
@@ -582,6 +731,7 @@
       "title": "Python Programming & Basic Data Science",
       "organizationId": "edge-iict-sust",
       "kind": "certification",
+      "category": "professional",
       "status": "completed",
       "issued": "2024-12",
       "credentialId": "EDGE-DSTS-126-1520-00010",
@@ -602,6 +752,7 @@
       "title": "Employability Skills – JobReady",
       "organizationId": "wadhwani-foundation",
       "kind": "certification",
+      "category": "professional",
       "status": "completed",
       "issued": "2024-11",
       "description": "113-hour programme delivered by Brilliant Brains Valley, completed with a 95% overall score (93% in the summative assessment).",
@@ -621,6 +772,7 @@
       "title": "Python",
       "organizationId": "kaggle",
       "kind": "certification",
+      "category": "professional",
       "status": "completed",
       "issued": "2025-04",
       "skills": [
@@ -633,6 +785,7 @@
       "title": "Pandas",
       "organizationId": "kaggle",
       "kind": "certification",
+      "category": "professional",
       "status": "completed",
       "issued": "2025-04",
       "skills": [
@@ -646,6 +799,7 @@
       "title": "A Path to Academic Excellence",
       "organizationId": "sust-research-society",
       "kind": "course",
+      "category": "professional",
       "status": "completed",
       "issued": "2026-01",
       "description": "Research workshop on responsible research practice, academic publishing, and collaboration.",
@@ -660,6 +814,7 @@
       "title": "Deep Focus: Study & Work Session Protocol",
       "organizationId": "ononno",
       "kind": "course",
+      "category": "professional",
       "status": "completed",
       "issued": "2026-04",
       "credentialId": "CERT-2B6A934889",
@@ -674,6 +829,7 @@
       "title": "Photography Workshop 2023",
       "organizationId": "metropolitan-university-photographic-society",
       "kind": "course",
+      "category": "leadership-community",
       "status": "completed",
       "issued": "2023",
       "skills": [
@@ -688,6 +844,7 @@
       "title": "Red Cross Red Crescent Basic & First Aid Training",
       "organizationId": "bangladesh-red-crescent-society",
       "kind": "course",
+      "category": "leadership-community",
       "status": "completed",
       "issued": "2020-08",
       "description": "Two-day basic first-aid training with the Netrakona Unit.",
@@ -702,6 +859,7 @@
       "title": "Patrol Leader Course, 5th National Power & Energy Camp",
       "organizationId": "bangladesh-scouts",
       "kind": "course",
+      "category": "leadership-community",
       "status": "completed",
       "issued": "2016-12",
       "credentialId": "1038",
@@ -710,6 +868,57 @@
         "Leadership",
         "Teamwork"
       ]
+    },
+    {
+      "id": "photography-basics",
+      "order": 12,
+      "title": "Photography Basics",
+      "organizationId": "muktopaath",
+      "kind": "course",
+      "category": "professional",
+      "status": "completed",
+      "issued": "2020"
+    },
+    {
+      "id": "innovation-through-research-a-pathway-to-higher-education-an",
+      "order": 13,
+      "title": "Innovation Through Research: A Pathway to Higher Education and Scholarships",
+      "organizationId": "metropolitan-university-research-society",
+      "kind": "course",
+      "category": "professional",
+      "status": "completed",
+      "issued": "2026-01",
+      "credentialId": "158/2026"
+    },
+    {
+      "id": "first-aid-disaster-response-camp",
+      "order": 14,
+      "title": "First Aid & Disaster Response Camp",
+      "organizationId": "metropolitan-university-rover-scout-group",
+      "kind": "course",
+      "category": "leadership-community",
+      "status": "completed",
+      "issued": "2025-02"
+    },
+    {
+      "id": "bangladesh-scouts-2018-01",
+      "order": 15,
+      "title": "৫ম আঞ্চলিক স্কাউট সমাবেশ",
+      "organizationId": "bangladesh-scouts",
+      "kind": "certification",
+      "category": "leadership-community",
+      "status": "completed",
+      "issued": "2018-01"
+    },
+    {
+      "id": "bangladesh-scouts-2017-03",
+      "order": 16,
+      "title": "৪র্থ জেলা স্কাউট সমাবেশ",
+      "organizationId": "bangladesh-scouts",
+      "kind": "certification",
+      "category": "leadership-community",
+      "status": "completed",
+      "issued": "2017-03"
     }
   ],
   "learning": {
@@ -768,7 +977,10 @@
       "certificationIds": [],
       "practice": "250+ problems on VJudge, Codeforces, Dimik OJ, and other judges.",
       "projectSlugs": [],
-      "notes": []
+      "notes": [],
+      "repos": [
+        "Programming"
+      ]
     },
     {
       "id": "python-data",
@@ -861,6 +1073,21 @@
       }
     },
     "openToWorkBadge": true,
+    "showcase": {
+      "photos": {
+        "limit": 6,
+        "siteUrl": "https://jahid-thecapturecrew.blogspot.com",
+        "siteLabel": "The Capture Crew",
+        "siteDescription": "The full photo journal: street, nature, campus, and events."
+      },
+      "posts": {
+        "limit": 4,
+        "siteUrl": "https://jahider-notekhata.blogspot.com",
+        "siteLabel": "Jahider Notekhata",
+        "siteDescription": "Every note from my learning log, on the original blog."
+      }
+    },
+    "autoPublishAfterSync": true,
     "seo": {}
   },
   "beyond": {
@@ -871,7 +1098,7 @@
       },
       {
         "name": "English",
-        "level": "Upper-intermediate (B2)"
+        "level": "Professional working proficiency"
       },
       {
         "name": "Hindi",
@@ -915,34 +1142,492 @@
       }
     ]
   },
-  "photos": [],
-  "posts": [],
+  "photos": [
+    {
+      "id": "2026-06-blue-sky-nature",
+      "order": 0,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-PWSmujKF0YXo2EWpw2jQm7utiItWSy.jpg",
+        "width": 1600,
+        "height": 1102
+      },
+      "alt": "Blue sky Nature",
+      "caption": "Blue sky Nature",
+      "album": "Photography"
+    },
+    {
+      "id": "2026-06-waterlilie",
+      "order": 1,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-tOhkNqmzPKEwEAyDCsAxU1fU6pLSTD.jpg",
+        "width": 1600,
+        "height": 1295
+      },
+      "alt": "Waterlilie",
+      "caption": "Waterlilie",
+      "album": "Photography"
+    },
+    {
+      "id": "2026-06-sunset-tree",
+      "order": 2,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-d57jTLbDPWn5HX8dAQPKKO56g12DwE.jpg",
+        "width": 1274,
+        "height": 1600
+      },
+      "alt": "Sunset Tree",
+      "caption": "Sunset Tree",
+      "album": "Photography"
+    },
+    {
+      "id": "2026-06-tea-and-beautiful-evening",
+      "order": 3,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-hLJAmLGojCv7ILD1MwhdzKRPMoi5KB.jpg",
+        "width": 1446,
+        "height": 1600
+      },
+      "alt": "Tea and beautiful Evening",
+      "caption": "Tea and beautiful Evening",
+      "album": "Photography"
+    },
+    {
+      "id": "2026-06-street-photography",
+      "order": 4,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-Jk0BgrdtW5Jvag25JFek2qttMNuHwB.jpg",
+        "width": 1600,
+        "height": 1182
+      },
+      "alt": "Street Photography",
+      "caption": "Street Photography",
+      "album": "Street photography"
+    },
+    {
+      "id": "2024-11-blog-post",
+      "order": 5,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-ehD4J6bpFQMqjyyE6CAZidZhRwFvMU.jpg",
+        "width": 1600,
+        "height": 1158
+      },
+      "alt": "রোদ্দুর বিকেলের সূর্য স্নান — ছবি: আমু বাগান, চুনারুঘাট, হবিগঞ্জ",
+      "caption": "রোদ্দুর বিকেলের সূর্য স্নান — ছবি: আমু বাগান, চুনারুঘাট, হবিগঞ্জ",
+      "album": "Photography"
+    },
+    {
+      "id": "2024-01-blog-post-30",
+      "order": 6,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-aSYPlXPCsQGShXNuRSrfNlX6iSniI4.jpg",
+        "width": 1600,
+        "height": 1172
+      },
+      "alt": "তোমার চোখে আকাশ দেখি বিষন্নতার গোধূলিতে !",
+      "caption": "তোমার চোখে আকাশ দেখি বিষন্নতার গোধূলিতে !",
+      "album": "Photography"
+    },
+    {
+      "id": "2024-01-blog-post-24",
+      "order": 7,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-epas9UMkIh5yXTAcSnGEBMdgloJxHX.jpg",
+        "width": 1600,
+        "height": 1136
+      },
+      "alt": "হয়তোবা কারো শখের তরী করো হয়তো জীবিকার ! — ছবি : সিলান তাহিরপুর, সুনামগঞ্জ",
+      "caption": "হয়তোবা কারো শখের তরী করো হয়তো জীবিকার ! — ছবি : সিলান তাহিরপুর, সুনামগঞ্জ",
+      "album": "Photography"
+    },
+    {
+      "id": "2024-01-blog-post",
+      "order": 8,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-RSkjpzlxg72wbAejSTksGAcfpQUO9e.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "alt": "শীতের স্নিগ্ধতায় হাওরের গোধূলির মুগ্ধতা!",
+      "caption": "শীতের স্নিগ্ধতায় হাওরের গোধূলির মুগ্ধতা!",
+      "album": "Nature"
+    },
+    {
+      "id": "2023-12-how-little-child-drives-boat",
+      "order": 9,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-2zcHKPotJjLM81IqUKiGmTqb0xVqAx.jpg",
+        "width": 1600,
+        "height": 1116
+      },
+      "alt": "How the Little Child drives a boat ! — Jadukata River ,Sunamganj",
+      "caption": "How the Little Child drives a boat ! — Jadukata River ,Sunamganj",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-fishing-at-lakma-chora",
+      "order": 10,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-kVnyZhqGkdgDjfrBBwe9ROeeYnGeie.jpg",
+        "width": 1600,
+        "height": 1084
+      },
+      "alt": "Fishing at Lakma Chora — Lakma Chora ,sunamganj",
+      "caption": "Fishing at Lakma Chora — Lakma Chora ,sunamganj",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-15",
+      "order": 11,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-tm9yChnz97SzhzlppabrzIo4xtnrce.jpg",
+        "width": 783,
+        "height": 540
+      },
+      "alt": "প্রেমিকা শূন্য পৃথিবীর নিঃসঙ্গ গোধূলি সন্ধ্যা",
+      "caption": "প্রেমিকা শূন্য পৃথিবীর নিঃসঙ্গ গোধূলি সন্ধ্যা",
+      "album": "Nature"
+    },
+    {
+      "id": "2023-12-the-majestic-river-patlai-at-sunset",
+      "order": 12,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-XsrNMR8Ai2RwS4xjckviENlfJwPbSu.jpg",
+        "width": 1600,
+        "height": 1157
+      },
+      "alt": "The Majestic River Patlai at Sunset — Patlai River, Takerghat, Sunamganj",
+      "caption": "The Majestic River Patlai at Sunset — Patlai River, Takerghat, Sunamganj",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-the-serene-beauty-of-jadukata-river",
+      "order": 13,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-79AbUTXHgehtDgvWReR4J7E5nWTIKk.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "alt": "The Serene Beauty of the Jadukata River — Jadukata River, Sunamganj",
+      "caption": "The Serene Beauty of the Jadukata River — Jadukata River, Sunamganj",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-beauty-of-metropolitan-university-campus",
+      "order": 14,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-pJXECpy7E7Z5fnKUVexppOUrPIyJ8q.jpg",
+        "width": 1600,
+        "height": 1090
+      },
+      "alt": "Beauty of Metropolitan University Campus — Metropolitan University",
+      "caption": "Beauty of Metropolitan University Campus — Metropolitan University",
+      "album": "Nature"
+    },
+    {
+      "id": "2023-12-a-serene-view-of-paddy-fields",
+      "order": 15,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-li28wxANzb4FrUfCU5v0B5UWB86Ym6.jpg",
+        "width": 1600,
+        "height": 1067
+      },
+      "alt": "A Serene View of Paddy Fields — Paddy Fields",
+      "caption": "A Serene View of Paddy Fields — Paddy Fields",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-a-classical-night-at-metropolitan",
+      "order": 16,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-PXKo1IS7t5PK6P1wzIwqA0HxFLtsqX.jpg",
+        "width": 1600,
+        "height": 1115
+      },
+      "alt": "Metropolitan University, Sylhet",
+      "caption": "A Classical Night at Metropolitan University — Metropolitan University, Sylhet",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-82",
+      "order": 17,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-h5xoQDKUDCgWuQfdBlwo0VU0zI03VW.jpg",
+        "width": 720,
+        "height": 526
+      },
+      "alt": "গোধূলি ভেজা এই যে শিশির মানুষ কি দিয়েছিলো তার কোন দাম ?",
+      "caption": "গোধূলি ভেজা এই যে শিশির মানুষ কি দিয়েছিলো তার কোন দাম ?",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-37",
+      "order": 18,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-haHj2nDZZR4IVV0wqKl60VRaJwwmc6.jpg",
+        "width": 717,
+        "height": 540
+      },
+      "alt": "গোধূলির রং এ ভেজা সন্ধ্যা রাত !",
+      "caption": "গোধূলির রং এ ভেজা সন্ধ্যা রাত !",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-77",
+      "order": 19,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-uFEhHGDyG4f2Qzu1NjIUkr3XAqQUCf.jpg",
+        "width": 720,
+        "height": 531
+      },
+      "alt": "সন্ধ্যার আকাশে কালোর ঘনঘটা !",
+      "caption": "সন্ধ্যার আকাশে কালোর ঘনঘটা !",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-28",
+      "order": 20,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-7ofm8erWpPWR9mDRn6cbieB7vm3l9E.jpg",
+        "width": 720,
+        "height": 500
+      },
+      "alt": "শখে খোঁজে ফেরা সুখ !",
+      "caption": "শখে খোঁজে ফেরা সুখ !",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-9",
+      "order": 21,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-zrzEyEKunjNxRsqrsGSEIdgsMyg1q4.jpg",
+        "width": 1600,
+        "height": 1041
+      },
+      "alt": "ভর দুপুর ও প্রকৃতির আপন সাজ!",
+      "caption": "ভর দুপুর ও প্রকৃতির আপন সাজ!",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-26",
+      "order": 22,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-RuaO3KTST7wmPwbsAVa41DSGdWcldr.jpg",
+        "width": 1600,
+        "height": 1066
+      },
+      "alt": "শৈশবের ছুটে চলা",
+      "caption": "শৈশবের ছুটে চলা",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-74",
+      "order": 23,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-WmOf0EhjtDnN4xvvb8D2mPoW1oLWIr.jpg",
+        "width": 1600,
+        "height": 1201
+      },
+      "alt": "ক্লান্ত দুপুরে ক্লান্তিহীন এক যোদ্ধা",
+      "caption": "ক্লান্ত দুপুরে ক্লান্তিহীন এক যোদ্ধা",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-30",
+      "order": 24,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-7ySAinxmMJkCC4gee0coPj6A5o1Obh.jpg",
+        "width": 1600,
+        "height": 1201
+      },
+      "alt": "সুবিশাল আকাশের নিচে ক্লান্ত দুপুরে অপেক্ষারত তরী ।",
+      "caption": "সুবিশাল আকাশের নিচে ক্লান্ত দুপুরে অপেক্ষারত তরী ।",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-46",
+      "order": 25,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-sBxdYMgMkJLBtgYkSkCvRzMtH9Z8tF.jpg",
+        "width": 1600,
+        "height": 1199
+      },
+      "alt": "গোধূলির আলোয় আলোকিত সুরমার নদীর সাথে আব্দুজ জহুর সেতু ।",
+      "caption": "গোধূলির আলোয় আলোকিত সুরমার নদীর সাথে আব্দুজ জহুর সেতু ।",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-83",
+      "order": 26,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-o8ZvThWfoDCOfnWUVoBTUAEwwYienn.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "alt": "মেঘের আকাশে রোদ নামুক কেটে যাক সকল বিষন্নতা!",
+      "caption": "মেঘের আকাশে রোদ নামুক কেটে যাক সকল বিষন্নতা!",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-44",
+      "order": 27,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-CxKatmAiEYJ0sLyGm0MPiviPKqtH6h.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "alt": "জীবন যুদ্ধে অপরাজিত বীর !",
+      "caption": "জীবন যুদ্ধে অপরাজিত বীর !",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-6",
+      "order": 28,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-0MkBaWKG89eetaCw5TFgqN2MUXEuV1.jpg",
+        "width": 1600,
+        "height": 1119
+      },
+      "alt": "ক্লান্ত বিকেল পেরিয়ে গোধূলিতে কেউ নীড়ে ফিরে এক রাশ হতাশা কিছু না পাওয়ার আক্ষেপ নিয়ে ! অথবা অলস বিকেল শেষে নীড়ে খোঁজে ঠাঁই।!",
+      "caption": "ক্লান্ত বিকেল পেরিয়ে গোধূলিতে কেউ নীড়ে ফিরে এক রাশ হতাশা কিছু না পাওয়ার আক্ষেপ নিয়ে ! অথবা অলস বিকেল শেষে নীড়ে খোঁজে ঠাঁই।!",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-5",
+      "order": 29,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-kYvIkR8aLdRK7VWohzfgelQ6BkQqsy.jpg",
+        "width": 1600,
+        "height": 1127
+      },
+      "alt": "প্রেমিকা শূন্য প্রজম্মের প্রেয়সী একটি বৃষ্টিস্নাত সকাল !",
+      "caption": "প্রেমিকা শূন্য প্রজম্মের প্রেয়সী একটি বৃষ্টিস্নাত সকাল !",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-85",
+      "order": 30,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-nLvtDDeZLxkJbo9NHeGcoXlSgRh2t9.jpg",
+        "width": 811,
+        "height": 540
+      },
+      "alt": "জীবন ছুটে চলে দিক দিগন্তে হয়তোবা ভিন্ন গন্তব্যে !",
+      "caption": "জীবন ছুটে চলে দিক দিগন্তে হয়তোবা ভিন্ন গন্তব্যে !",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post-43",
+      "order": 31,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-vlvjMDD6mGnVyPVcFHpB3qHgEY15uD.jpg",
+        "width": 1600,
+        "height": 977
+      },
+      "alt": "চলো না পাড়ি জমায় ওই নীল আকাশের নিচে সবুজ পাহাড়ের চূড়ায় বিরান চূড়ায় বসে এক কাপ চা হাতে প্রেমিকা শূন্য পৃথিবীর কবিতা শোনাবো তোমায় !",
+      "caption": "চলো না পাড়ি জমায় ওই নীল আকাশের নিচে সবুজ পাহাড়ের চূড়ায় বিরান চূড়ায় বসে এক কাপ চা হাতে প্রেমিকা শূন্য পৃথিবীর কবিতা শোনাবো তোমায় !",
+      "album": "Photography"
+    },
+    {
+      "id": "2023-12-blog-post",
+      "order": 32,
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-SW1hrfNt5TpBSCgVRNEG3D7b89zodq.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "alt": "হয়তো কথা ছিলো না এই পথ ধরে হাঁটব কিংবা রঙিন স্বপ্ন গুলো আঁকবো ছবি !",
+      "caption": "হয়তো কথা ছিলো না এই পথ ধরে হাঁটব কিংবা রঙিন স্বপ্ন গুলো আঁকবো ছবি !",
+      "album": "Photography"
+    }
+  ],
+  "posts": [
+    {
+      "slug": "javascript-where-to-write-code",
+      "order": 0,
+      "title": "শুরুর আগে - কিভাবে কোথায় জাভা স্ক্রিপ্ট কোড লিখবো - JavaScript | জাভা স্ক্রিপ্ট | পর্ব - ২য়",
+      "excerpt": "জাভা স্ক্রিপ্ট শিখা শুরু করার আগে আমাদের জানা দরকার কোথায় জাভা স্ক্রিপ্ট কোড লিখবো । অনেক জায়গায় লিখা যায় তবে আমার যেইটা ব্যাবহার করবো আপাতত সেটাই দেখি : VS Code এখান থেকে ডাউনলোড করে নিন। অন্য…",
+      "body": "জাভা স্ক্রিপ্ট শিখা শুরু করার আগে আমাদের জানা দরকার কোথায় জাভা স্ক্রিপ্ট কোড লিখবো । অনেক জায়গায় লিখা যায় তবে আমার যেইটা ব্যাবহার করবো আপাতত সেটাই দেখি : [VS Code](https://code.visualstudio.com/download) এখান থেকে ডাউনলোড করে নিন। অন্য অন্য সফটওয়্যার মতো ইনস্ট\n\nল করে নিন ।\n\nতারপর আপনার কম্পিউটারে নতুন একটা ফোল্ডার তৈরি করুন ( Java-Script ) বা আপনার পছন্দের নামে।\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-vakhUkwziWDOatx0aij65efxTdlqsn.png)\n\nঅপেন করুন আপনার VS Code । Welcome পেইজ দেখাবে ।\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-bcFAMi8oTMXAqgTFzTlgCgYkzXnZXL.png)\n\nবাম পাশে উপরে ফাইলে ক্লিক করে open folder এ ক্লিক করা আপনার তৈরি করা Java-Script ফোন্ডারটি অপেন করেন ।\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-Slu4ctSfXhRZBo6yvWCCArWyxoOyHw.jpg)\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-uTYawklFFyjKgCnazqD2aU6r8vrGCx.png)\n\nতারপর নতুন একটি ফাইল তৈরি করে নিন first.js নামে ।\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-ocWEnjVd1YSM5sfcCSPTPrj34lTjV1.jpg)\n\nলিখে ফেলুন আপনার প্রথম জাভা স্ক্রিপ্ট কোড।\n\n```\nconsole.log('hello world');\n```\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-pcmdRJ9xbPdMPizjJ9LGF5DJnRWSjB.png)\n\nকি লিখছি কেন লেখছি এসব নিয়ে কথা হবে পরের পর্বে । তবে আপাতত যা লিখলাম সেটা রান করে দেখা যাক । ctrl + j চাপুন terminal অপেন হয়ে যাবে । অথবা বাম পাশে উপরে লিখা টার্মিনালে ক্লিক করেও অপেন করতে পারেন ।\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-pcmdRJ9xbPdMPizjJ9LGF5DJnRWSjB.png)\n\nতারপর টার্মিনালে লিখুন\n\n```\nnode first.js\n```\n\nদেখবেন আপনি console.log() এর ভিতরে যা লিখেছেন যেটা দেখাচ্ছে অর্থাৎ আউটপুট দেখাচ্ছে দারুন ব্যাপার।\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-hPJHxQKdvyutadwUXx10EgYUs5duj5.png)\n\nআমরা আমাদের প্রথম js code লিখে ফেললাম।\n\nচলবে …\n\nপূর্ববর্তী পর্ব : [শুরুর আগে - কিভাবে কোথায় জাভা স্ক্রিপ্ট কোড লিখবো](/writing/javascript-introduction)\n\nপরবর্তী পর্ব: প্রিন্ট করা, ভ্যারিয়েবল, ভ্যারিয়েবল টাইপ",
+      "tags": [
+        "জাভা স্ক্রিপ্ট",
+        "প্রোগ্রামিং"
+      ],
+      "status": "published",
+      "publishedAt": "2025-09-12",
+      "cover": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-E7Edv0fHiUoQ5CEEhPD9KLGplPV98P.png",
+        "width": 640,
+        "height": 420
+      },
+      "coverAlt": "Cover image for “শুরুর আগে - কিভাবে কোথায় জাভা স্ক্রিপ্ট কোড লিখবো - JavaScript | জাভা স্ক্রিপ্ট | পর্ব - ২য়”"
+    },
+    {
+      "slug": "javascript-introduction",
+      "order": 1,
+      "title": "জাভা স্ক্রিপ্ট পরিচিতি পর্ব - JavaScript | জাভা স্ক্রিপ্ট | পর্ব - ১ম",
+      "excerpt": "আজকে আমারা শুরু করতে যাচ্ছি জাভা স্ক্রিপ্ট সিরিজ। আপাতত বেসিক পর্যন্ত ই আলোচনা করবো , পরে হয়তো কিছু এডভান্স জিনিস এড করা হবে । এখন জাভা স্ক্রিপ্ট তো শিখবো কিন্তু কেন? অনেক অনেক কারণ আছে গুগল করলেও…",
+      "body": "আজকে আমারা শুরু করতে যাচ্ছি জাভা স্ক্রিপ্ট সিরিজ। আপাতত বেসিক পর্যন্ত ই আলোচনা করবো , পরে হয়তো কিছু এডভান্স জিনিস এড করা হবে । এখন জাভা স্ক্রিপ্ট তো শিখবো কিন্তু কেন?\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-thdk0DYeTfnLM2Ddw4IxHVI5sjMKVe.png)\n\nঅনেক অনেক কারণ আছে গুগল করলেও পেয়ে যাবেন বাট আমি যদি বলি ।\n\nযদি একটা মাত্র প্রোগ্ৰামিং ভাষা শিখতে চান জাভা স্ক্রিপ্ট শিখুন । ওয়েব ডেভেলপমেন্ট করতে চান আপনার জাভা স্ক্রিপ্ট জানা লাগবে । তুলনা মুলক সহজ সিনটেক্স । মাল্টি পারপাস ব্যাবহার করতে পারবেন শুধু ওয়েব ডেভেলপমেন্ট না মোবাইল অ্যাপ, ওয়েব গেম এবং সার্ভার-ভিত্তিক অ্যাপ্লিকেশন তৈরি করতেও ব্যবহার করা যায়। জাভাস্ক্রিপ্টের বিশাল একটি কমিউনিটি আছ, যার ফলে শিখতে ও যেকোনো সমস্যা সমাধানে সহজে সহায়তা পাওয়া যায়।\n\nতবে এই সিরিজের উদ্দেশ ডেভলপমেন্ট বা অ্যাপ ডেভলপমেন্ট না । এই সিরিজে আমারা শিখবো জাভা স্ক্রিপ্টের কোর কনসেপ্ট যেগুলো পরবর্তী ওয়েব ডেভেলপমেন্ট, এপ ডেভলপমেন্টে ব্যাবহার করতে পারবেন। এবং তার পাশাপাশি আমার জাভা স্ক্রিপ্ট ব্যাবহার করে কিছু প্রবলেম সলভ করার চেষ্টা করবো। সম্ভব হলে কিছু ছোটখাটো প্রজেক্ট করার ও চেষ্টা করবো।\n\nআপনি যদি এতটুকু পড়ে থাকেন এবং সিন্ধান্ত নিয়ে থাকেন জাভা স্ক্রিপ্ট শিখবেন । তাহলে তার আগে কিছু বিষয় জানিয়ে নেওয়া যাক । আপনাকে শুধু ব্লগ পড়লে হবে না পাশাপাশি নিজে হাতে কলমে কোড করা লাগবে, আমার লিখা পড়ে বুঝতে না পরলে ইউটিউবে সার্চ দেন , গুগল করুন। জাভা স্ক্রিপ্ট বা যেকোনো প্রোগ্রামিং ভাষা শিখতে গেলেই আমাদের কিছু গনিত দরকার হবে , খুবই বেসিক , স্কুল লেভেলের ম্যাথ হলেই আপাতত চলবে । এতে প্যানিক খাওয়ার কিছু নাই । আমারা যখন যেটা লাগবে হালকা করে দেখে নিবো ।\n\nযেই বিষয় গুলো শিখবো যেগুলোর শর্টলিস্ট নিচে দিয়ে দিচ্ছি। আউটলাইন বলতে পারেন ( ধাপে ধাপে যুক্ত হতে থাকবে )\n\n1. শুরুর আগে - কিভাবে কোথায় জাভা স্ক্রিপ্ট কোড লিখবো ।\n\n**জাভা স্ক্রিপ্টের পরিচিতি**\n\n1. প্রিন্ট করা, ভ্যারিয়েবল, ভ্যারিয়েবল টাইপ\n2. নেইমিং কনভেনশন\n3. নাম্বার কনভার্ট করা\n4. জাভা স্ক্রিপ্টে বিভিন্ন অপারেটর এবং অপারেশন\n\n**কন্ডিশনাল**\n\n1. If, else এর ব্যবহার\n2. If , else if এবং else\n3. লজিক্যাল অপারেটর\n4. টারনারি অপারেটর\n\n**লুপ**\n\n1. for এবং for of লুপ\n2. While এবং do while লুপ\n3. আরো While লুপ\n4. Continue এবং break\n5. Detrimental লুপ\n6. লুপের কিছু প্রোগ্ৰামিং সমস্যা এবং সমাধান\n\nআপনার জাভা স্ক্রিপ্টের যাত্রা শুরু করে দিন আজকে থেকেই ।\n\nপরবর্তী পর্ব : শুরুর আগে - কিভাবে কোথায় জাভা স্ক্রিপ্ট কোড লিখবো",
+      "tags": [
+        "জাভা স্ক্রিপ্ট",
+        "প্রোগ্রামিং"
+      ],
+      "status": "published",
+      "publishedAt": "2025-09-12",
+      "cover": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-thdk0DYeTfnLM2Ddw4IxHVI5sjMKVe.png",
+        "width": 640,
+        "height": 420
+      },
+      "coverAlt": "Cover image for “জাভা স্ক্রিপ্ট পরিচিতি পর্ব - JavaScript | জাভা স্ক্রিপ্ট | পর্ব - ১ম”"
+    },
+    {
+      "slug": "napkin-ai-presentations",
+      "order": 2,
+      "title": "প্রেজেন্টেশন তৈরির সমাধান ন্যাপকিন - Napkin | টুলস | এআই | পর্ব - ১ম",
+      "excerpt": "আজকে আমরা জানবো ন্যাপকিন সম্পর্কে । খুবই চমৎকার একটি Al টুল । আচ্ছা টুল টা সম্পর্কে জানার আগে আমাদের জানা দরকার এই Al আমাদের কি কাজে লাগবে । এক কথায় বলতে গেলে আমারা যদি আমাদের কোন লেখার জন্য সুন্দর…",
+      "body": "আজকে আমরা জানবো **ন্যাপকিন** সম্পর্কে । খুবই চমৎকার একটি Al টুল । আচ্ছা টুল টা সম্পর্কে জানার আগে আমাদের জানা দরকার এই Al আমাদের কি কাজে লাগবে ।\n\nএক কথায় বলতে গেলে আমারা যদি আমাদের কোন লেখার জন্য সুন্দর সুন্দর ভিজ্যুয়াল ডায়াগ্রাম, ইনফোগ্রাফিক, ফ্লো-চার্ট ইত্যাদি ইত্যাদি জেনারেট করতে চাই ন্যাপকিন ভালো সলুশন ।\n\nএইসব বাদ দিয়ে আমি বলি প্র্যাকটিক্যালি আমার কি কাজে আসছে , যারা আমরা ইউনিভার্সিটিতে পড়ালেখা করি আমাদের হর হামেশা প্রেজেন্টেশন রেডি করা লাগে । ডকুমেন্টেশন বা টেক্সট দিলে প্রায় পুরো প্রেজেন্টেশন রেডি করা যায় ন্যাপকিন ব্যাবহার করে । কিভাবে চলুন একদম শুরু থেকে শেষ পর্যন্ত দেখি ।\n\nপ্রথমে আমাদের প্রেজেন্টেশনের জন্য সবাই একটা স্ক্রিপ্ট রেডি করি । কোন প্রজেক্টের হলে প্রজেক্টের রিপোর্ট থাকে নিশ্চয়ই । স্ক্রিপ্ট বা রিপোর্ট যাই থাকুক না কেন আপনি প্রথমে পছন্দের Al দিয়ে ( Chatgpt Recommend) পুরো স্ক্রিপ্ট বা রিপোর্ট টা দিয়ে বলে দিতে পারে যেন আপনাকে ( প্রেজেন্টেশনের কনটেক্স বলে) যেন ৭/৮ ( আপনার যতটুকু দরকার) টা স্লাইডে জন্য শুধু টেক্সট কন্টেন্ট দেয় ।\n\nতারপর এই টেক্সট কপি করে চলে আসবেন Napkin Al তে , Sign Up করা না থাকলে ইমেইল ব্যাবহার করে খুব সহজেই লগইন করে নিবেন Just follow the guide।\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-1SNxv5Nfykt0037tEYHym3NOxsx3cP.png)\n\nতারপর Create my first Napkin এ ক্লিক করবেন\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-5Qr7VEPo2FgbAsVUVr1bxdJGnhUAve.png)\n\nBy pesting my text content এ ক্লিক করবেন\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-JvmI1NnYjRBWBb4n5K8fqJFX2iELEL.png)\n\nতারপর আপনার কপি করা ( gpt থেকে জেনারেট ) টেক্সট পেস্ট করে দিবেন । তারপর প্রত্যেকটা স্লাইড ধরে ধরে সিলেক্ট করবেন আর পাশে থাকে পাওয়ার বাটনে ক্লিক করবেন ,\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-XFX9bXtCzEgT67rBYPQa86H0x46mPz.png)\n\nতারপরই দেখবেন ম্যাজিক। আপনার পছন্দ মতো থিম কালার হাজাবিজি অনেক কিছু করতে পারেন (একটু নিজে নিজে এক্সপ্লোর করবেন )। ডানে সাইডে উপরে ডাউনলোড বাটন থেকে ডাউনলোড করতে পারেন।\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-N1JHNFl8noQXig1OFAQTkzKn9gmsGz.png)\n\nতবে তার থেকে ভালো আপনি যদি clipboard এ কপি করে নিয়ে Canva বা Google Slides এ পেস্ট করেন এবং আপনার স্লাইড তৈরি করেন । ডাউনলোড করলে স্লাইডে আপলোড করা লাগবো ঝামেলার কি দরকার কপি করে পেস্ট।\n\n![](https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-280zdOJ3KjEj6c4XnmVrMb2jDjA7Kx.png)\n\nআচ্ছা ছোট্ট একটা টিপস, বাই ডিফল্ট ডাউনলোডের সময় without bg তেই ডাউনলোড হবে কিন্তু সাথে করে Napkin এর ওয়াটার মার্ক নিয়া আসবে , সো Canva বা Google Slides পেস্ট করা পরে জাস্ট নিচের অংশটা crop করে নিবেন । ঝামেলা শেষ। এইতো কত সহজেই প্রেজেন্টেশনের প্যারার সমাধান।\n\nনোট : নিজে নিজে এক্সপ্লোর করে দেখেন আরো হাবিজাবি কি কি করা যায় । আশা করি মজা পাবেন।\n\nসো যদি লেখাটি আমার কাজে এসে থাকে তাইলে শেয়ার করতে পারেন আপনার বন্ধুদের সাথে ।\n\nNapkin Link: [Napkin AI](https://www.napkin.ai/)",
+      "tags": [
+        "এআই",
+        "টুলস"
+      ],
+      "status": "published",
+      "publishedAt": "2025-08-25",
+      "cover": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/photos/blogger-8A1cNQGKske3pbOjY7BcoyiNpJWyy5.png",
+        "width": 640,
+        "height": 420
+      },
+      "coverAlt": "Cover image for “প্রেজেন্টেশন তৈরির সমাধান ন্যাপকিন - Napkin | টুলস | এআই | পর্ব - ১ম”"
+    }
+  ],
   "github": {
     "username": "jahidjubaer",
     "profileUrl": "https://github.com/jahidjubaer",
     "repositoriesUrl": "https://github.com/jahidjubaer?tab=repositories",
     "publicRepos": 37,
-    "syncedAt": "2026-10-19T07:04:02.620Z",
+    "syncedAt": "2026-10-20T18:21:12.550Z",
     "recentRepos": [
-      {
-        "name": "portfolio",
-        "url": "https://github.com/jahidjubaer/portfolio",
-        "language": "JavaScript",
-        "stars": 0,
-        "homepage": "https://portfolio-rouge-ten-75d2q3rm0r.vercel.app",
-        "pushedAt": "2026-10-18T17:21:00Z"
-      },
       {
         "name": "sarabo-doc",
         "url": "https://github.com/jahidjubaer/sarabo-doc",
+        "description": null,
         "language": "TeX",
         "stars": 0,
         "homepage": null,
-        "pushedAt": "2026-10-18T10:29:15Z"
+        "pushedAt": "2026-10-20T14:20:22Z"
+      },
+      {
+        "name": "portfolio",
+        "url": "https://github.com/jahidjubaer/portfolio",
+        "description": null,
+        "language": "JavaScript",
+        "stars": 0,
+        "homepage": "https://portfolio-rouge-ten-75d2q3rm0r.vercel.app",
+        "pushedAt": "2026-10-20T11:15:41Z"
       },
       {
         "name": "sarabo-client",
         "url": "https://github.com/jahidjubaer/sarabo-client",
+        "description": null,
         "language": "JavaScript",
         "stars": 0,
         "homepage": "https://sarabo-client-six.vercel.app",
@@ -953,6 +1638,7 @@
       "sarabo-client": {
         "name": "sarabo-client",
         "url": "https://github.com/jahidjubaer/sarabo-client",
+        "description": null,
         "language": "JavaScript",
         "stars": 0,
         "homepage": "https://sarabo-client-six.vercel.app",
@@ -961,6 +1647,7 @@
       "sarabo-server": {
         "name": "sarabo-server",
         "url": "https://github.com/jahidjubaer/sarabo-server",
+        "description": null,
         "language": "JavaScript",
         "stars": 0,
         "homepage": "https://sarabo-server.vercel.app",
@@ -969,6 +1656,7 @@
       "hsc-ict-creck-client": {
         "name": "hsc-ict-creck-client",
         "url": "https://github.com/jahidjubaer/hsc-ict-creck-client",
+        "description": null,
         "language": "JavaScript",
         "stars": 0,
         "homepage": "https://hsc-ict-creck-client.vercel.app",
@@ -977,11 +1665,222 @@
       "hsc-ict-creck-server": {
         "name": "hsc-ict-creck-server",
         "url": "https://github.com/jahidjubaer/hsc-ict-creck-server",
+        "description": null,
         "language": "JavaScript",
         "stars": 0,
         "homepage": "https://hsc-ict-creck-server.vercel.app",
         "pushedAt": "2026-10-03T16:53:26Z"
+      },
+      "programming": {
+        "name": "Programming",
+        "url": "https://github.com/jahidjubaer/Programming",
+        "description": null,
+        "language": "C++",
+        "stars": 0,
+        "homepage": null,
+        "pushedAt": "2025-07-05T17:13:18Z"
       }
     }
+  },
+  "coding": {
+    "codeforces": {
+      "handle": "jahidjubaer17",
+      "url": "https://codeforces.com/profile/jahidjubaer17",
+      "rating": 782,
+      "maxRating": 782,
+      "rank": "newbie",
+      "maxRank": "newbie",
+      "solved": 21,
+      "contests": 3,
+      "firstActiveAt": "2024-05-26T16:34:08.000Z",
+      "lastActiveAt": "2025-01-10T02:36:31.000Z",
+      "syncedAt": "2026-10-20T20:06:38.319Z"
+    },
+    "vjudge": {
+      "handle": "jahidjubaer01",
+      "url": "https://vjudge.net/user/jahidjubaer01",
+      "solved": 207,
+      "byJudge": [
+        {
+          "judge": "Gym",
+          "solved": 87
+        },
+        {
+          "judge": "CodeForces",
+          "solved": 47
+        },
+        {
+          "judge": "AtCoder",
+          "solved": 23
+        },
+        {
+          "judge": "CodeChef",
+          "solved": 18
+        },
+        {
+          "judge": "HackerRank",
+          "solved": 11
+        },
+        {
+          "judge": "SPOJ",
+          "solved": 5
+        },
+        {
+          "judge": "UVA",
+          "solved": 5
+        },
+        {
+          "judge": "EOlymp",
+          "solved": 4
+        },
+        {
+          "judge": "CSES",
+          "solved": 3
+        },
+        {
+          "judge": "Toph",
+          "solved": 3
+        },
+        {
+          "judge": "HDU",
+          "solved": 1
+        }
+      ],
+      "syncedAt": "2026-10-20T20:06:38.319Z"
+    },
+    "practice": {
+      "name": "Programming",
+      "url": "https://github.com/jahidjubaer/Programming",
+      "createdAt": "2024-10-18T05:33:17Z",
+      "pushedAt": "2025-07-05T17:13:18Z",
+      "files": 260,
+      "folders": [
+        {
+          "folder": "Assiut University Training CF",
+          "files": 96
+        },
+        {
+          "folder": "Re Cap",
+          "files": 79
+        },
+        {
+          "folder": "DimikOJ",
+          "files": 40
+        },
+        {
+          "folder": "Codeforces",
+          "files": 15
+        },
+        {
+          "folder": "AtCoder",
+          "files": 12
+        },
+        {
+          "folder": "HakerRank",
+          "files": 5
+        },
+        {
+          "folder": "CodeChef",
+          "files": 3
+        },
+        {
+          "folder": "Contest",
+          "files": 3
+        },
+        {
+          "folder": "Topics Based",
+          "files": 3
+        },
+        {
+          "folder": "CSES",
+          "files": 2
+        },
+        {
+          "folder": "EOlymp",
+          "files": 2
+        }
+      ],
+      "syncedAt": "2026-10-20T20:06:38.319Z"
+    },
+    "judges": [
+      {
+        "judge": "Gym",
+        "solved": 87,
+        "direct": 0,
+        "vjudge": 87,
+        "overlap": 0
+      },
+      {
+        "judge": "CodeForces",
+        "solved": 54,
+        "direct": 21,
+        "vjudge": 47,
+        "overlap": 14
+      },
+      {
+        "judge": "AtCoder",
+        "solved": 23,
+        "direct": 0,
+        "vjudge": 23,
+        "overlap": 0
+      },
+      {
+        "judge": "CodeChef",
+        "solved": 18,
+        "direct": 0,
+        "vjudge": 18,
+        "overlap": 0
+      },
+      {
+        "judge": "HackerRank",
+        "solved": 11,
+        "direct": 0,
+        "vjudge": 11,
+        "overlap": 0
+      },
+      {
+        "judge": "SPOJ",
+        "solved": 5,
+        "direct": 0,
+        "vjudge": 5,
+        "overlap": 0
+      },
+      {
+        "judge": "UVA",
+        "solved": 5,
+        "direct": 0,
+        "vjudge": 5,
+        "overlap": 0
+      },
+      {
+        "judge": "EOlymp",
+        "solved": 4,
+        "direct": 0,
+        "vjudge": 4,
+        "overlap": 0
+      },
+      {
+        "judge": "CSES",
+        "solved": 3,
+        "direct": 0,
+        "vjudge": 3,
+        "overlap": 0
+      },
+      {
+        "judge": "Toph",
+        "solved": 3,
+        "direct": 0,
+        "vjudge": 3,
+        "overlap": 0
+      },
+      {
+        "judge": "HDU",
+        "solved": 1,
+        "direct": 0,
+        "vjudge": 1,
+        "overlap": 0
+      }
+    ],
+    "total": 214
   }
 }

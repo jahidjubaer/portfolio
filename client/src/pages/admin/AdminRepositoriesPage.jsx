@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
+  Code2,
   ExternalLink,
+  FolderPlus,
   Plus,
   RefreshCw,
+  Sprout,
   Star,
 } from "lucide-react";
 import { useAdmin } from "../../features/admin/admin-context";
-import { syncGitHub } from "../../features/admin/admin-api";
+import { syncCodingStats, syncGitHub } from "../../features/admin/admin-api";
 import { Button } from "../../components/ui/Button";
 import { formatRelativeDate } from "../../lib/relativeTime";
+import { judgeLabel } from "../../features/coding/judges";
 import { AdminPageHeader } from "./AdminPageHeader";
 
 function formatDateTime(iso) {
@@ -110,9 +114,233 @@ function RepoMeta({ repo }) {
   );
 }
 
+const SOURCE_LABELS = {
+  codeforces: "Codeforces",
+  vjudge: "VJudge",
+  practice: "Solutions repo",
+};
+
+/** One line per coding source: its numbers, or why it isn't synced. */
+function codingSummary(key, stats) {
+  if (key === "codeforces") {
+    return `@${stats.handle} · max rating ${stats.maxRating ?? "—"} · ${stats.solved} solved · ${stats.contests} contests`;
+  }
+  if (key === "vjudge") {
+    return `@${stats.handle} · ${stats.solved} solved on ${stats.byJudge.length} judges`;
+  }
+  return `${stats.name} · ${stats.files} solution files in ${stats.folders.length} folders`;
+}
+
+/**
+ * The per-judge merge: what each source counted and how many problems
+ * were solved on both (counted once in the total).
+ */
+function JudgeMerge({ judges, total }) {
+  const overlap = judges.reduce((sum, entry) => sum + (entry.overlap ?? 0), 0);
+  const unknown = judges.some((entry) => entry.overlap === null);
+  return (
+    <div className="mt-3 overflow-x-auto">
+      <table className="w-full min-w-[26rem] text-left text-sm">
+        <caption className="mb-1.5 text-left text-(--color-text-secondary)">
+          <span className="font-medium text-(--color-text-primary)">
+            {total} distinct problems
+          </span>{" "}
+          by origin judge
+          {overlap ? ` · ${overlap} solved on both VJudge and Codeforces` : ""}
+          {unknown ? " · sync again to work out the overlap" : ""}
+        </caption>
+        <thead>
+          <tr className="border-b border-(--color-border) text-(--color-text-muted)">
+            <th scope="col" className="py-1 pr-3 font-medium">
+              Judge
+            </th>
+            <th scope="col" className="py-1 pr-3 text-right font-medium">
+              Account
+            </th>
+            <th scope="col" className="py-1 pr-3 text-right font-medium">
+              VJudge
+            </th>
+            <th scope="col" className="py-1 pr-3 text-right font-medium">
+              On both
+            </th>
+            <th scope="col" className="py-1 text-right font-medium">
+              Counted
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-(--color-border) tabular-nums">
+          {judges.map((entry) => (
+            <tr key={entry.judge}>
+              <th
+                scope="row"
+                className="py-1 pr-3 font-medium text-(--color-text-primary)"
+              >
+                {judgeLabel(entry.judge).name}
+              </th>
+              <td className="py-1 pr-3 text-right">{entry.direct || "—"}</td>
+              <td className="py-1 pr-3 text-right">{entry.vjudge || "—"}</td>
+              <td className="py-1 pr-3 text-right">
+                {entry.overlap === null ? "?" : entry.overlap || "—"}
+              </td>
+              <td className="py-1 text-right font-medium text-(--color-text-primary)">
+                {entry.solved}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/**
+ * Codeforces, VJudge, and the solutions repo: synced daily with the repos
+ * (handles are set on the Profile page).
+ */
+function CodingStatsPanel({ status, onSynced }) {
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+  const errors = status?.errors ?? {};
+
+  async function handleSync() {
+    setBusy(true);
+    setMessage("Syncing coding stats…");
+    try {
+      const result = await syncCodingStats();
+      const failed = Object.keys(result.errors ?? {}).length;
+      setMessage(
+        failed
+          ? `Synced, but ${failed} source(s) failed.`
+          : "Coding stats synced.",
+      );
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      await onSynced();
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section
+      aria-labelledby="coding-stats"
+      className="mb-6 rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-4"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2
+          id="coding-stats"
+          className="flex items-center gap-2 font-semibold text-(--color-text-primary)"
+        >
+          <Code2
+            size={17}
+            aria-hidden="true"
+            className="text-(--color-accent-primary)"
+          />
+          Coding stats
+        </h2>
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={handleSync}
+          disabled={busy}
+          leadingIcon={
+            <RefreshCw
+              size={15}
+              className={busy ? "motion-safe:animate-spin" : undefined}
+            />
+          }
+        >
+          {busy ? "Syncing…" : "Sync coding stats"}
+        </Button>
+      </div>
+      <p className="mt-1 text-sm text-(--color-text-secondary)">
+        Shown on Resume and Learning. Handles and the solutions repo are set on{" "}
+        <Link to="/admin/profile" className="underline underline-offset-4">
+          Profile
+        </Link>
+        .{" "}
+        {status?.lastAttemptAt
+          ? `Last synced ${formatDateTime(status.lastAttemptAt)}.`
+          : "Not synced yet."}
+      </p>
+      <ul className="mt-3 grid gap-1.5 text-sm">
+        {Object.entries(SOURCE_LABELS).map(([key, label]) => (
+          <li key={key} className="text-(--color-text-secondary)">
+            <span className="font-medium text-(--color-text-primary)">
+              {label}:
+            </span>{" "}
+            {status?.[key] ? codingSummary(key, status[key]) : "not set up"}
+            {errors[key] ? (
+              <span className="block text-(--color-danger)">
+                Last sync failed: {errors[key]}
+              </span>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+      {status?.judges?.length ? (
+        <JudgeMerge judges={status.judges} total={status.total} />
+      ) : null}
+      <p
+        role="status"
+        aria-live="polite"
+        className="mt-2 min-h-5 text-sm text-(--color-text-secondary)"
+      >
+        {message}
+      </p>
+    </section>
+  );
+}
+
+const SELECT =
+  "min-h-11 max-w-56 rounded-(--radius-md) border border-(--color-border-strong) bg-(--color-canvas) px-2 text-sm text-(--color-text-primary)";
+
+/**
+ * "Add to existing project": opens that project's editor with the repo
+ * already added under GitHub repositories (unsaved, to check first).
+ */
+function AddToProject({ repo, projects }) {
+  const id = useId();
+  const navigate = useNavigate();
+  const [slug, setSlug] = useState(projects[0]?.slug ?? "");
+  if (projects.length === 0) return null;
+  return (
+    <div className="flex items-center gap-1.5">
+      <label htmlFor={id} className="sr-only">
+        Project to add {repo.name} to
+      </label>
+      <select
+        id={id}
+        value={slug}
+        onChange={(event) => setSlug(event.target.value)}
+        className={SELECT}
+      >
+        {projects.map((project) => (
+          <option key={project.slug} value={project.slug}>
+            {project.title}
+          </option>
+        ))}
+      </select>
+      <Button
+        variant="ghost"
+        size="sm"
+        leadingIcon={<FolderPlus size={15} />}
+        aria-label={`Add ${repo.name} to the chosen project`}
+        onClick={() =>
+          navigate(`/admin/projects/${encodeURIComponent(slug)}`, {
+            state: { addRepo: { name: repo.name, url: repo.url } },
+          })
+        }
+      >
+        Add to project
+      </Button>
+    </div>
+  );
+}
+
 /**
  * The synced GitHub repos: which projects use them, which links broke,
- * and "Add as project" to start a project prefilled from a repo.
+ * and "Add as project" / "Add as learning track" to start one from a repo.
  */
 export function AdminRepositoriesPage() {
   const { content, reload } = useAdmin();
@@ -125,6 +353,11 @@ export function AdminRepositoriesPage() {
   const repos = repositories.repos.filter((repo) => showForks || !repo.fork);
   const titles = Object.fromEntries(
     content.projects.map((project) => [project.slug, project.title]),
+  );
+  const trackRepos = new Set(
+    (content.learningTracks ?? []).flatMap((track) =>
+      (track.repos ?? []).map((name) => name.toLowerCase()),
+    ),
   );
 
   async function handleSync() {
@@ -171,6 +404,7 @@ export function AdminRepositoriesPage() {
       </p>
       <SyncSummary repositories={repositories} />
       <Warnings warnings={repositories.warnings} />
+      <CodingStatsPanel status={content.codingStatus} onSynced={reload} />
 
       {forkCount > 0 ? (
         <label className="mb-3 inline-flex min-h-11 items-center gap-2 text-sm text-(--color-text-secondary)">
@@ -213,36 +447,59 @@ export function AdminRepositoriesPage() {
                 ) : null}
                 <RepoMeta repo={repo} />
               </div>
-              {repo.projects.length > 0 ? (
-                <p className="text-sm text-(--color-text-secondary)">
-                  Used by{" "}
-                  {repo.projects.map((slug, index) => (
-                    <span key={slug}>
-                      {index > 0 ? ", " : null}
-                      <Link
-                        to={`/admin/projects/${encodeURIComponent(slug)}`}
-                        className="font-semibold text-(--color-text-primary) underline underline-offset-4"
-                      >
-                        {titles[slug] ?? slug}
-                      </Link>
-                    </span>
-                  ))}
-                </p>
-              ) : (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  leadingIcon={<Plus size={15} />}
-                  aria-label={`Add ${repo.name} as a project`}
-                  onClick={() =>
-                    navigate("/admin/projects/new", {
-                      state: { fromRepo: repo },
-                    })
-                  }
-                >
-                  Add as project
-                </Button>
-              )}
+              <div className="flex flex-wrap items-center gap-2">
+                {repo.projects.length > 0 ? (
+                  <p className="text-sm text-(--color-text-secondary)">
+                    Used by{" "}
+                    {repo.projects.map((slug, index) => (
+                      <span key={slug}>
+                        {index > 0 ? ", " : null}
+                        <Link
+                          to={`/admin/projects/${encodeURIComponent(slug)}`}
+                          className="font-semibold text-(--color-text-primary) underline underline-offset-4"
+                        >
+                          {titles[slug] ?? slug}
+                        </Link>
+                      </span>
+                    ))}
+                  </p>
+                ) : (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    leadingIcon={<Plus size={15} />}
+                    aria-label={`Add ${repo.name} as a project`}
+                    onClick={() =>
+                      navigate("/admin/projects/new", {
+                        state: { fromRepo: repo },
+                      })
+                    }
+                  >
+                    Add as project
+                  </Button>
+                )}
+                <AddToProject
+                  repo={repo}
+                  projects={content.projects.filter(
+                    (project) => !repo.projects.includes(project.slug),
+                  )}
+                />
+                {trackRepos.has(repo.name.toLowerCase()) ? null : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    leadingIcon={<Sprout size={15} />}
+                    aria-label={`Add ${repo.name} as a learning track`}
+                    onClick={() =>
+                      navigate("/admin/learningTracks/new", {
+                        state: { fromRepo: repo },
+                      })
+                    }
+                  >
+                    Add as learning track
+                  </Button>
+                )}
+              </div>
             </li>
           ))}
         </ul>

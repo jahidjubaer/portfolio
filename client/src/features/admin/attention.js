@@ -17,11 +17,20 @@
  * repo count, or null for single-document sections.
  */
 export function sectionCount(path, content) {
+  if (path === "messages") return unreadCount(content) || null;
+  if (path === "linkedin-import") return null;
   if (path === "repositories") {
     return content.repositories?.repos.filter((repo) => !repo.fork).length ?? 0;
   }
   if (Array.isArray(content[path])) return content[path].length;
   return null;
+}
+
+/** Unread, not archived contact messages. */
+export function unreadCount(content) {
+  return (content.messages ?? []).filter(
+    (message) => !message.read && !message.archived,
+  ).length;
 }
 
 /** True while the database still holds the pre-P2 shapes. */
@@ -37,7 +46,8 @@ function plural(count, one, many) {
 
 /** "Employability Skills – JobReady" and "(JobReady)" compare equal. */
 function looseTitle(title) {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, "");
+  // Any script's letters count, so two Bengali titles aren't both "".
+  return title.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
 }
 
 function usageCounts(content) {
@@ -94,6 +104,32 @@ export function getAttentionItems(content) {
     } else {
       seen.set(key, item);
     }
+  }
+
+  const uncategorised = certifications.filter((item) => !item.category);
+  if (uncategorised.length) {
+    items.push({
+      id: "certification-categories",
+      tone: "fix",
+      message: `${uncategorised.length} ${plural(uncategorised.length, "certification or course has", "certifications and courses have")} no category yet (shown as Professional): ${uncategorised.map((item) => item.title).join(", ")}.`,
+      to:
+        uncategorised.length === 1
+          ? `/admin/certifications/${encodeURIComponent(uncategorised[0].id)}`
+          : "/admin/certifications",
+    });
+  }
+
+  const hidden = (content.projects ?? []).filter((project) => project.hidden);
+  if (hidden.length) {
+    items.push({
+      id: "hidden-projects",
+      tone: "suggestion",
+      message: `${hidden.length} ${plural(hidden.length, "project is", "projects are")} hidden until ready: ${hidden.map((project) => project.title).join(", ")}. Review and untick "Hidden" to publish.`,
+      to:
+        hidden.length === 1
+          ? `/admin/projects/${encodeURIComponent(hidden[0].slug)}`
+          : "/admin/projects",
+    });
   }
 
   const usage = usageCounts(content);

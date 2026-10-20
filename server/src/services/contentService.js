@@ -1,6 +1,7 @@
 import { getDb } from "../db/client.js";
 import { COLLECTIONS, SINGLETON_ID } from "../db/collections.js";
 import { getGitHubSnapshot } from "./githubSyncService.js";
+import { getCodingSnapshot } from "./codingStatsService.js";
 import { withDefaultSettings } from "../schemas/settings-defaults.js";
 
 const HIDE_ID = { projection: { _id: 0 } };
@@ -12,11 +13,11 @@ async function findSingleton(name) {
     .findOne({ _id: SINGLETON_ID }, HIDE_ID);
 }
 
-async function findOrdered(name) {
+async function findOrdered(name, filter = {}) {
   const db = await getDb();
   return db
     .collection(COLLECTIONS[name])
-    .find({}, HIDE_ID)
+    .find(filter, HIDE_ID)
     .sort({ order: 1 })
     .toArray();
 }
@@ -27,7 +28,15 @@ export const getLearning = () => findSingleton("learning");
 // Never empty: a database without settings gets the defaults.
 export const getSettings = async () =>
   withDefaultSettings(await findSingleton("settings"));
-export const listProjects = () => findOrdered("projects");
+// "Hidden until ready" projects stay in the admin only.
+const VISIBLE = { hidden: { $ne: true } };
+
+/**
+ * Projects in display order; hidden ones only for the admin.
+ * @param {{ includeHidden?: boolean }} [options]
+ */
+export const listProjects = ({ includeHidden = false } = {}) =>
+  findOrdered("projects", includeHidden ? {} : VISIBLE);
 export const listOrganizations = () => findOrdered("organizations");
 export const listExperience = () => findOrdered("experience");
 export const listEducation = () => findOrdered("education");
@@ -62,7 +71,28 @@ export async function getPublishedPost(slug) {
 /** @param {string} slug */
 export async function getProject(slug) {
   const db = await getDb();
-  return db.collection(COLLECTIONS.projects).findOne({ slug }, HIDE_ID);
+  return db
+    .collection(COLLECTIONS.projects)
+    .findOne({ slug, ...VISIBLE }, HIDE_ID);
+}
+
+/**
+ * Drops references to projects the public snapshot leaves out (hidden
+ * ones), so related-project and learning-track links still resolve.
+ */
+function withoutMissingProjects(projects, learningTracks) {
+  const slugs = new Set(projects.map((project) => project.slug));
+  const keep = (list = []) => list.filter((slug) => slugs.has(slug));
+  return {
+    projects: projects.map((project) => ({
+      ...project,
+      relatedSlugs: keep(project.relatedSlugs),
+    })),
+    learningTracks: learningTracks.map((track) => ({
+      ...track,
+      projectSlugs: keep(track.projectSlugs),
+    })),
+  };
 }
 
 function withoutHiddenGrade(entry) {
@@ -74,27 +104,27 @@ function withoutHiddenGrade(entry) {
 
 /**
  * Everything the public site renders — used by the R7 build snapshot.
- * The admin asks for drafts too, so it can edit them.
+ * The admin asks for drafts (and hidden projects) too, so it can edit them.
  * @param {{ includeDrafts?: boolean }} [options]
  */
 export async function getContentSnapshot({ includeDrafts = false } = {}) {
   const [
     profile,
-    projects,
+    storedProjects,
     organizations,
     experience,
     education,
     skills,
     certifications,
     learning,
-    learningTracks,
+    storedTracks,
     settings,
     beyond,
     photos,
     posts,
   ] = await Promise.all([
     getProfile(),
-    listProjects(),
+    listProjects({ includeHidden: includeDrafts }),
     listOrganizations(),
     listExperience(),
     listEducation(),
@@ -107,6 +137,9 @@ export async function getContentSnapshot({ includeDrafts = false } = {}) {
     listPhotos(),
     listPosts({ includeDrafts }),
   ]);
+  const { projects, learningTracks } = includeDrafts
+    ? { projects: storedProjects, learningTracks: storedTracks }
+    : withoutMissingProjects(storedProjects, storedTracks);
   return {
     profile,
     projects,
@@ -123,6 +156,7 @@ export async function getContentSnapshot({ includeDrafts = false } = {}) {
     beyond,
     photos,
     posts,
-    github: await getGitHubSnapshot(projects),
+    github: await getGitHubSnapshot(projects, learningTracks),
+    coding: await getCodingSnapshot(),
   };
 }

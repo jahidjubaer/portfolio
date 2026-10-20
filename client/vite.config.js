@@ -38,10 +38,10 @@ function siteDefaultsPlugin() {
           "utf8",
         ),
       );
-      const { theme, accent, font } = withDefaultSettings(
-        content.settings,
-      ).appearance;
+      const settings = withDefaultSettings(content.settings);
+      const { theme, accent, font } = settings.appearance;
       return html
+        .replace("__SITE_INTRO__", settings.intro.enabled ? "on" : "off")
         .replace("__SITE_THEME__", theme)
         .replace("__SITE_ACCENT__", accent)
         .replace("__SITE_FONT__", font);
@@ -102,8 +102,12 @@ function contentSecurityPolicyPlugin() {
       order: "post",
       handler(html) {
         const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(
+          // Browsers hash the parsed text, where CRLF (a Windows checkout)
+          // is already LF.
           ([, code]) =>
-            `'sha256-${createHash("sha256").update(code).digest("base64")}'`,
+            `'sha256-${createHash("sha256")
+              .update(code.replace(/\r\n?/g, "\n"))
+              .digest("base64")}'`,
         );
         const policy = [
           "default-src 'self'",
@@ -132,7 +136,7 @@ function contentSecurityPolicyPlugin() {
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [
     react(),
     tailwindcss(),
@@ -141,23 +145,27 @@ export default defineConfig({
     preloadFontsPlugin(),
     contentSecurityPolicyPlugin(),
   ],
-  build: {
-    rollupOptions: {
-      output: {
-        // Split the two big, rarely-changing vendor groups out of the main
-        // chunk: app-code deploys then invalidate a much smaller file, and
-        // no single chunk exceeds Rollup's 500 kB warning line.
-        manualChunks: {
-          "react-vendor": ["react", "react-dom", "react-router-dom"],
-          motion: ["motion"],
+  build: isSsrBuild
+    ? // The prerender bundle (src/entry-server.jsx) runs once in Node at
+      // build time; dependencies stay external and nothing is split.
+      {}
+    : {
+        rollupOptions: {
+          output: {
+            // Split the two big, rarely-changing vendor groups out of the
+            // main chunk: app-code deploys then invalidate a much smaller
+            // file, and no single chunk exceeds Rollup's 500 kB warning line.
+            manualChunks: {
+              "react-vendor": ["react", "react-dom", "react-router-dom"],
+              motion: ["motion"],
+            },
+          },
         },
       },
-    },
-  },
   server: {
     port: 5173,
   },
   preview: {
     port: 4173,
   },
-});
+}));

@@ -45,6 +45,22 @@ export const DEFAULT_SETTINGS = {
   // Live before settings existed (CLAUDE.md: availability claims are
   // Jahid's call), so it stays on until he turns it off.
   openToWorkBadge: true,
+  showcase: {
+    photos: {
+      limit: 6,
+      siteUrl: "https://jahid-thecapturecrew.blogspot.com",
+      siteLabel: "The Capture Crew",
+      siteDescription:
+        "The full photo journal: street, nature, campus, and events.",
+    },
+    posts: {
+      limit: 4,
+      siteUrl: "https://jahider-notekhata.blogspot.com",
+      siteLabel: "Jahider Notekhata",
+      siteDescription: "Every note from my learning log, on the original blog.",
+    },
+  },
+  autoPublishAfterSync: true,
   seo: {},
 };
 
@@ -77,6 +93,13 @@ export function withDefaultSettings(stored) {
         { ...DEFAULT_SETTINGS.navigation[id], ...stored.navigation?.[id] },
       ]),
     ),
+    showcase: {
+      photos: {
+        ...DEFAULT_SETTINGS.showcase.photos,
+        ...stored.showcase?.photos,
+      },
+      posts: { ...DEFAULT_SETTINGS.showcase.posts, ...stored.showcase?.posts },
+    },
     seo: { ...stored.seo },
   };
 }

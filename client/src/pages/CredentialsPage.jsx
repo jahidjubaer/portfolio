@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { BadgeCheck, GraduationCap } from "lucide-react";
+import { BadgeCheck, BookOpen, GraduationCap } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { PAGE_META } from "../routes/route-meta";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
@@ -7,60 +6,20 @@ import { ProfileSection } from "../features/profile/ProfileSection";
 import { EducationList } from "../features/credentials/EducationList";
 import { CertificationList } from "../features/credentials/CertificationList";
 import { educationEntries } from "../data/education";
-import { CERTIFICATION_KINDS, certifications } from "../data/certifications";
-import { cn } from "../lib/cn";
+import { certifications, groupCertifications } from "../data/certifications";
 
-const presentKinds = CERTIFICATION_KINDS.filter((kind) =>
-  certifications.some((item) => item.kind === kind.id),
-);
-// Filtering only helps once both certifications and courses exist.
-const FILTERS =
-  presentKinds.length > 1 ? [{ id: "all", label: "All" }, ...presentKinds] : [];
+const ICONS = { certification: BadgeCheck, course: BookOpen };
+// Anchors: "certifications" is what the admin's "View on site" opens.
+const ANCHORS = { certification: "certifications", course: "courses" };
+
+const sections = groupCertifications(certifications);
 
 /**
- * Chips that filter certifications by kind. Active state is never
- * colour-only: it also carries aria-pressed, weight, and an underline.
- * @param {{ value: string, onChange: (id: string) => void }} props
+ * Education, then certifications and courses as separate sections, each
+ * grouped into professional and leadership & community.
  */
-function KindFilter({ value, onChange }) {
-  return (
-    <div
-      role="group"
-      aria-label="Filter by type"
-      className="mb-5 flex flex-wrap gap-2"
-    >
-      {FILTERS.map((filter) => {
-        const active = value === filter.id;
-        return (
-          <button
-            key={filter.id}
-            type="button"
-            aria-pressed={active}
-            onClick={() => onChange(filter.id)}
-            className={cn(
-              "min-touch-target rounded-(--radius-pill) border px-4 py-2 text-sm transition-colors",
-              active
-                ? "border-(--color-accent-primary) bg-(--color-accent-primary-soft) font-semibold text-(--color-text-primary) underline underline-offset-4"
-                : "border-(--color-border) text-(--color-text-secondary) hover:text-(--color-text-primary)",
-            )}
-          >
-            {filter.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-/** Education and licenses & certifications on one page, as on LinkedIn. */
 export function CredentialsPage() {
-  const [kind, setKind] = useState("all");
   usePageMeta(PAGE_META["/credentials"]);
-
-  const visible =
-    kind === "all"
-      ? certifications
-      : certifications.filter((item) => item.kind === kind);
 
   return (
     <>
@@ -76,18 +35,25 @@ export function CredentialsPage() {
         </ProfileSection>
       ) : null}
 
-      {certifications.length > 0 ? (
+      {sections.map((section) => (
         <ProfileSection
-          id="certifications"
-          icon={BadgeCheck}
-          title="Licenses & certifications"
+          key={section.id}
+          id={ANCHORS[section.id]}
+          icon={ICONS[section.id]}
+          title={section.label}
         >
-          {FILTERS.length > 0 ? (
-            <KindFilter value={kind} onChange={setKind} />
-          ) : null}
-          <CertificationList items={visible} />
+          <div className="grid gap-8">
+            {section.groups.map((group) => (
+              <div key={group.id}>
+                <h3 className="mono-meta mb-4 text-(--color-text-muted) uppercase">
+                  {group.label}
+                </h3>
+                <CertificationList items={group.items} headingLevel="h4" />
+              </div>
+            ))}
+          </div>
         </ProfileSection>
-      ) : null}
+      ))}
     </>
   );
 }

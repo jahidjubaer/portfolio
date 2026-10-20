@@ -59,6 +59,7 @@ describe("GET /api/public/*", () => {
       [
         "beyond",
         "certifications",
+        "coding",
         "education",
         "experience",
         "github",

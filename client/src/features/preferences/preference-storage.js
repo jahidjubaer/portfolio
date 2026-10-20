@@ -80,3 +80,17 @@ export function getInitialFont() {
   const stored = readPreference(FONT_STORAGE_KEY);
   return isKnownOption(FONT_OPTIONS, stored) ? stored : SITE_DEFAULTS.font;
 }
+
+/**
+ * What the prerendered HTML was rendered with (no storage, no OS theme on
+ * the server). The first client render uses the same values so hydration
+ * matches; the visitor's own choices are applied right after.
+ */
+export function getPrerenderedPreferences() {
+  return {
+    theme: SITE_DEFAULTS.theme === "light" ? "light" : "dark",
+    soundEnabled: true,
+    accent: SITE_DEFAULTS.accent,
+    font: SITE_DEFAULTS.font,
+  };
+}

@@ -33,4 +33,13 @@
   <url>
     <loc>http://localhost:5173/work/bangladesh-landscape</loc>
   </url>
+  <url>
+    <loc>http://localhost:5173/writing/javascript-where-to-write-code</loc>
+  </url>
+  <url>
+    <loc>http://localhost:5173/writing/javascript-introduction</loc>
+  </url>
+  <url>
+    <loc>http://localhost:5173/writing/napkin-ai-presentations</loc>
+  </url>
 </urlset>

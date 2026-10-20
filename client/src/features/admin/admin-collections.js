@@ -6,6 +6,8 @@ import {
   FolderGit2,
   GraduationCap,
   Images,
+  Import,
+  Inbox,
   Layers,
   Mountain,
   Package,
@@ -29,6 +31,7 @@ import {
   projectSchema,
   settingsSchema,
   skillGroupSchema,
+  SOCIAL_NETWORKS,
 } from "../../../../server/src/schemas/content.js";
 import {
   NAV_ITEMS,
@@ -40,9 +43,38 @@ import {
 } from "../preferences/appearance-options";
 import { organizationUsage } from "./attention";
 
-const SOCIAL_OPTIONS = ["github", "linkedin", "codeforces", "leetcode"].map(
-  (value) => ({ value, label: value }),
-);
+const SOCIAL_LABELS = {
+  github: "GitHub",
+  linkedin: "LinkedIn",
+  codeforces: "Codeforces",
+  vjudge: "VJudge",
+  leetcode: "LeetCode",
+  facebook: "Facebook",
+  instagram: "Instagram",
+};
+const SOCIAL_OPTIONS = SOCIAL_NETWORKS.map((value) => ({
+  value,
+  label: SOCIAL_LABELS[value],
+}));
+
+/** The synced GitHub repos (forks left out), as checkbox options. */
+function repoOptions(content, selected = []) {
+  const names = (content.repositories?.repos ?? [])
+    .filter((repo) => !repo.fork)
+    .map((repo) => repo.name);
+  // A connected repo that's gone from the sync still shows, so it can be unticked.
+  return [...new Set([...names, ...selected])].map((name) => ({
+    value: name,
+    label: name,
+  }));
+}
+
+/** The synced repos (forks left out), for the project repo picker. */
+function repoChoices(content) {
+  return (content.repositories?.repos ?? [])
+    .filter((repo) => !repo.fork)
+    .map((repo) => ({ name: repo.name, url: repo.url }));
+}
 
 /** Single-document sections: one form each. */
 export const SINGLETONS = {
@@ -83,9 +115,57 @@ export const SINGLETONS = {
       { name: "linkedin", label: "LinkedIn URL", type: "url" },
       { name: "codeforces", label: "Codeforces URL", type: "url" },
       { name: "leetcode", label: "LeetCode URL", type: "url" },
-      { name: "problemSolving.total", label: "Problem solving (headline)" },
+      {
+        name: "problemSolvingHeading",
+        type: "heading",
+        label: "Problem solving",
+        hint: "Live numbers are synced daily from these accounts (GitHub repos page → Sync coding stats).",
+      },
+      {
+        name: "problemSolving.total",
+        label: "Problem solving (headline)",
+        hint: "Only shown before the first sync. After it, the headline is the synced count of distinct problems (plus Dimik OJ).",
+      },
       { name: "problemSolving.primaryLanguage", label: "Main language" },
       { name: "problemSolving.platforms", label: "Platforms" },
+      {
+        name: "problemSolving.codeforcesHandle",
+        label: "Codeforces handle",
+        optional: true,
+        half: true,
+      },
+      {
+        name: "problemSolving.vjudgeHandle",
+        label: "VJudge username",
+        optional: true,
+        half: true,
+      },
+      {
+        name: "problemSolving.practiceRepo",
+        label: "Solutions repo on GitHub",
+        optional: true,
+        half: true,
+        hint: 'Repo name only, e.g. "Programming".',
+      },
+      {
+        name: "problemSolving.dimikSolved",
+        label: "Dimik OJ problems solved",
+        type: "number",
+        optional: true,
+        half: true,
+        hint: "Dimik OJ isn't synced: type the count from your Dimik profile. Shown as its own card and added to the headline.",
+      },
+      {
+        name: "problemSolving.status",
+        label: "Practice status",
+        type: "select",
+        optional: true,
+        half: true,
+        options: [
+          { value: "active", label: "Active — practising now" },
+          { value: "paused", label: "Paused — show as an archive" },
+        ],
+      },
       { name: "resume.filename", label: "Resume file name" },
       {
         name: "resume.url",
@@ -111,6 +191,12 @@ export const SINGLETONS = {
           { name: "label", label: "Label" },
           { name: "handle", label: "Handle" },
           { name: "url", label: "URL", type: "url" },
+          {
+            name: "hidden",
+            label: "Hide on the site (keep it here)",
+            type: "checkbox",
+            optional: true,
+          },
         ],
       },
     ],
@@ -254,6 +340,49 @@ export const SINGLETONS = {
           half: true,
         },
       ]),
+      {
+        name: "showcaseHeading",
+        type: "heading",
+        label: "Writing & Beyond samples",
+        hint: "Show a few of the newest posts and photos, with a card linking to the original site for the rest.",
+      },
+      ...[
+        ["posts", "Writing", "posts"],
+        ["photos", "Beyond", "photos"],
+      ].flatMap(([id, page, noun]) => [
+        {
+          name: `showcase.${id}.limit`,
+          label: `${page}: ${noun} to show`,
+          type: "number",
+          half: true,
+        },
+        {
+          name: `showcase.${id}.siteUrl`,
+          label: `${page}: original site`,
+          type: "url",
+          optional: true,
+          half: true,
+        },
+        {
+          name: `showcase.${id}.siteLabel`,
+          label: `${page}: site name`,
+          optional: true,
+          half: true,
+        },
+        {
+          name: `showcase.${id}.siteDescription`,
+          label: `${page}: card text`,
+          optional: true,
+          half: true,
+        },
+      ]),
+      { name: "syncHeading", type: "heading", label: "Daily sync" },
+      {
+        name: "autoPublishAfterSync",
+        label:
+          "Publish the site after the daily sync when GitHub or coding numbers changed",
+        type: "checkbox",
+      },
       { name: "seoHeading", type: "heading", label: "Search & link previews" },
       {
         name: "seo.homeDescription",
@@ -415,6 +544,23 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
+/** An organization's certifications and courses, linked to their editors. */
+function issuedBy(content, id) {
+  if (!id) return [];
+  return (content.certifications ?? [])
+    .filter((entry) => entry.organizationId === id)
+    .map((entry) => ({
+      label: entry.title,
+      detail: [
+        entry.kind === "course" ? "Course" : "Certification",
+        entry.status === "in-progress" ? "in progress" : entry.issued,
+      ]
+        .filter(Boolean)
+        .join(" · "),
+      to: `/admin/certifications/${encodeURIComponent(entry.id)}`,
+    }));
+}
+
 /** Organizations as select options, for "Organization" pickers. */
 function organizationOptions(content) {
   return (content.organizations ?? []).map((item) => ({
@@ -426,6 +572,14 @@ function organizationOptions(content) {
 function organizationName(content, id) {
   return content.organizations?.find((item) => item.id === id)?.name ?? id;
 }
+
+const CERTIFICATION_CATEGORY_OPTIONS = [
+  { value: "professional", label: "Professional" },
+  { value: "leadership-community", label: "Leadership & community" },
+];
+const CATEGORY_LABELS = Object.fromEntries(
+  CERTIFICATION_CATEGORY_OPTIONS.map((option) => [option.value, option.label]),
+);
 
 const ORGANIZATION_HINT =
   "Not in the list? Use New organization; add its logo later under Organizations.";
@@ -464,7 +618,8 @@ function spanOf(roles) {
 export const LISTS = {
   projects: {
     label: "Projects",
-    viewOnSite: (item) => `/work/${item.slug}`,
+    // A hidden project has no public page yet.
+    viewOnSite: (item) => (item.hidden ? null : `/work/${item.slug}`),
     itemLabel: "project",
     description: "Order, featured projects, links, and case studies.",
     keyField: "slug",
@@ -472,7 +627,11 @@ export const LISTS = {
     normalize: normalizeProject,
     titleOf: (item) => item.title,
     subtitleOf: (item) =>
-      [item.featured ? "Featured" : null, item.status]
+      [
+        item.hidden ? "Hidden" : null,
+        item.featured ? "Featured" : null,
+        item.status,
+      ]
         .filter(Boolean)
         .join(" · "),
     // Router state from the GitHub repos page's "Add as project".
@@ -482,7 +641,8 @@ export const LISTS = {
       state?.fromRepo
         ? `Prefilled from ${state.fromRepo.name} on GitHub. Check every field and write the summary in your own words before saving.`
         : undefined,
-    fields: [
+    aiDraft: "project",
+    fields: (content) => [
       {
         name: "slug",
         label: "URL slug",
@@ -508,9 +668,24 @@ export const LISTS = {
         ],
       },
       { name: "featured", label: "Featured on the profile", type: "checkbox" },
+      {
+        name: "hidden",
+        label: "Hidden until ready (kept here, left off the site)",
+        type: "checkbox",
+        optional: true,
+      },
       { name: "stack", label: "Tech stack", type: "lines" },
       { name: "capabilities", label: "Key features", type: "lines" },
       { name: "roleContext", label: "Your role", optional: true },
+      {
+        name: "repoPicker",
+        for: "links",
+        label: "GitHub repositories",
+        type: "repoLinks",
+        hint: "Any number of synced repos, e.g. a client and a server. They're saved as repository links (listed under Links too), and Draft with AI reads all of them.",
+        repos: repoChoices(content),
+        username: content.repositories?.username ?? "",
+      },
       {
         name: "links",
         label: "Links",
@@ -641,7 +816,7 @@ export const LISTS = {
     },
     thumbnailOf: (item) => item.logo,
     newItem: {},
-    fields: [
+    fields: (content, item) => [
       { name: "id", label: "ID", hint: KEY_HINT, readOnlyWhenEditing: true },
       { name: "name", label: "Name" },
       {
@@ -660,6 +835,13 @@ export const LISTS = {
         hint: "Its website, LinkedIn, or Facebook page.",
       },
       { name: "location", label: "Location", optional: true },
+      {
+        name: "issued",
+        label: "Certifications & courses it issued",
+        type: "related",
+        empty: "None yet.",
+        items: issuedBy(content, item?.id),
+      },
     ],
   },
   experience: {
@@ -859,6 +1041,8 @@ export const LISTS = {
     titleOf: (item) => item.title,
     subtitleOf: (item, content) =>
       [
+        item.kind === "course" ? "Course" : "Certification",
+        CATEGORY_LABELS[item.category] ?? "No category yet",
         organizationName(content, item.organizationId),
         item.status === "in-progress" ? "In progress" : item.issued,
         item.featured ? "On profile" : null,
@@ -868,7 +1052,11 @@ export const LISTS = {
     thumbnailOf: (item) => item.image,
     sortable: false,
     compare: (a, b) => (b.issued ?? "9999").localeCompare(a.issued ?? "9999"),
-    newItem: { kind: "certification", status: "completed" },
+    newItem: {
+      kind: "certification",
+      category: "professional",
+      status: "completed",
+    },
     fields: (content) => [
       { name: "id", label: "ID", hint: KEY_HINT, readOnlyWhenEditing: true },
       { name: "title", label: "Name" },
@@ -886,10 +1074,20 @@ export const LISTS = {
         label: "Type",
         type: "select",
         half: true,
+        hint: "Certification: an issued certificate or credential. Course: a course or training you took.",
         options: [
           { value: "certification", label: "Certification" },
           { value: "course", label: "Course" },
         ],
+      },
+      {
+        name: "category",
+        label: "Category",
+        type: "select",
+        half: true,
+        placeholder: "Choose a category…",
+        hint: "Leadership & community: scouting, Red Crescent, clubs, volunteering. Everything else is professional.",
+        options: CERTIFICATION_CATEGORY_OPTIONS,
       },
       {
         name: "status",
@@ -922,6 +1120,13 @@ export const LISTS = {
         type: "url",
         optional: true,
         hint: "A real verification link only. It becomes the Show credential button.",
+      },
+      {
+        name: "courseUrl",
+        label: "Course page",
+        type: "url",
+        optional: true,
+        hint: "The course's own page, e.g. on Coursera. It becomes the Course page button.",
       },
       {
         name: "description",
@@ -966,14 +1171,28 @@ export const LISTS = {
         applied: "Applied",
         exploring: "Exploring",
       })[item.status],
-    newItem: {
+    newItem: (state) => ({
       status: "learning",
       resources: [],
       certificationIds: [],
       projectSlugs: [],
       notes: [],
-    },
-    fields: (content) => [
+      repos: state?.fromRepo ? [state.fromRepo.name] : [],
+      ...(state?.fromRepo
+        ? {
+            id: slugify(state.fromRepo.name),
+            title: state.fromRepo.name,
+            summary: state.fromRepo.description ?? undefined,
+            since: state.fromRepo.createdAt?.slice(0, 7),
+          }
+        : {}),
+    }),
+    prefilledNote: (state) =>
+      state?.fromRepo
+        ? `Connected to ${state.fromRepo.name} on GitHub. Use “Draft with AI” or write the topic in your own words.`
+        : undefined,
+    aiDraft: "learning",
+    fields: (content, item) => [
       { name: "id", label: "ID", hint: KEY_HINT, readOnlyWhenEditing: true },
       { name: "title", label: "Topic", hint: 'e.g. "Advanced React"' },
       {
@@ -1047,6 +1266,13 @@ export const LISTS = {
           { name: "label", label: "Title" },
           { name: "url", label: "Link", type: "url" },
         ],
+      },
+      {
+        name: "repos",
+        label: "Code on GitHub",
+        type: "checkboxes",
+        hint: "Repos from the GitHub sync. The Learning page shows each with its language and last update.",
+        options: repoOptions(content, item?.repos),
       },
     ],
   },
@@ -1157,6 +1383,12 @@ export const ADMIN_GROUPS = [
       { path: "settings", icon: Settings2, ...SINGLETONS.settings },
       { path: "profile", icon: CircleUserRound, ...SINGLETONS.profile },
       { path: "beyond", icon: Mountain, ...SINGLETONS.beyond },
+      {
+        path: "messages",
+        icon: Inbox,
+        label: "Messages",
+        description: "What visitors sent through the contact form.",
+      },
     ],
   },
   {
@@ -1167,6 +1399,13 @@ export const ADMIN_GROUPS = [
       { path: "education", icon: GraduationCap, ...LISTS.education },
       { path: "certifications", icon: BadgeCheck, ...LISTS.certifications },
       { path: "skills", icon: Layers, ...LISTS.skills },
+      {
+        path: "linkedin-import",
+        icon: Import,
+        label: "Import from LinkedIn",
+        description:
+          "Add certifications, roles, and education from your LinkedIn data export.",
+      },
     ],
   },
   {

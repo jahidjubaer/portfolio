@@ -1,4 +1,6 @@
-import { BookOpen, Route as RouteIcon, Sprout } from "lucide-react";
+import { BookOpen, Code2, Route as RouteIcon, Sprout } from "lucide-react";
+import { ProblemSolvingStats } from "../features/coding/ProblemSolvingStats";
+import { hasCodingStats } from "../data/coding";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { PAGE_META } from "../routes/route-meta";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
@@ -83,6 +85,16 @@ export function LearningPage() {
           </ul>
         </ProfileSection>
       ))}
+
+      {hasCodingStats ? (
+        <ProfileSection
+          id="problem-solving"
+          icon={Code2}
+          title="Problem solving"
+        >
+          <ProblemSolvingStats />
+        </ProfileSection>
+      ) : null}
 
       {trackGroups.length === 0 && inProgress.length > 0 ? (
         <ProfileSection id="in-progress" icon={Sprout} title="In progress">

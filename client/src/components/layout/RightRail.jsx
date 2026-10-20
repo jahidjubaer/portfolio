@@ -6,6 +6,7 @@ import { SocialIcon } from "../icons/SocialIcon";
 import { profile, socialProfiles } from "../../data/profile";
 import { githubSnapshot } from "../../data/github";
 import { formatRelativeDate } from "../../lib/relativeTime";
+import { useNow } from "../../lib/hydration";
 import { navSetting, siteSettings } from "../../data/settings";
 
 const FOOTER_LINKS = [
@@ -39,6 +40,7 @@ function OpenToCard() {
 }
 
 function RecentGitHubCard() {
+  const now = useNow();
   return (
     <section
       aria-labelledby="rail-github"
@@ -68,7 +70,7 @@ function RecentGitHubCard() {
                 {repo.name}
               </p>
               <p className="truncate text-[0.8125rem] text-(--color-text-muted)">
-                {[repo.language, formatRelativeDate(repo.pushedAt)]
+                {[repo.language, formatRelativeDate(repo.pushedAt, now)]
                   .filter(Boolean)
                   .join(" · ")}
               </p>

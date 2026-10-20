@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom";
 import { SocialIcon } from "../icons/SocialIcon";
 import { profile, socialProfiles } from "../../data/profile";
+import { useNow } from "../../lib/hydration";
 
 /**
  * Footer at the end of the center column for screens without the right
  * rail (below xl), so social links and secondary routes stay reachable.
  */
 export function ShellFooter() {
+  const now = useNow();
   return (
     <footer className="border-t border-(--color-border) px-4 py-8 sm:px-7 xl:hidden">
       <ul className="flex flex-wrap gap-2">
@@ -26,7 +28,7 @@ export function ShellFooter() {
         ))}
       </ul>
       <p className="mt-5 text-sm text-(--color-text-muted)">
-        © {new Date().getFullYear()} {profile.name} ·{" "}
+        © {now.getFullYear()} {profile.name} ·{" "}
         <Link to="/resume" className="underline-offset-4 hover:underline">
           Resume
         </Link>

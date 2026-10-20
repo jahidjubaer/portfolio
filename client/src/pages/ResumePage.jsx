@@ -6,6 +6,7 @@ import { ButtonLink } from "../components/ui/ButtonLink";
 import { StatusIndicator } from "../components/ui/StatusIndicator";
 import { Surface } from "../components/ui/Surface";
 import { Tag } from "../components/ui/Tag";
+import { ProblemSolvingStats } from "../features/coding/ProblemSolvingStats";
 import { Divider } from "../components/ui/Divider";
 import { Reveal } from "../features/motion/Reveal";
 import { profile } from "../data/profile";
@@ -132,18 +133,7 @@ export function ResumePage() {
                   Problem Solving
                 </h2>
               </div>
-              <h3 className="heading-md mt-3 text-(--color-text-primary)">
-                {profile.problemSolving.total}
-              </h3>
-              <p className="body-sm mt-1 text-(--color-text-secondary)">
-                Primary Language:{" "}
-                <span className="font-mono text-(--color-text-primary)">
-                  {profile.problemSolving.primaryLanguage}
-                </span>
-              </p>
-              <p className="mono-meta mt-2 text-(--color-text-muted)">
-                Platforms: {profile.problemSolving.platforms}
-              </p>
+              <ProblemSolvingStats columns={1} className="mt-4" />
             </Surface>
           </div>
 

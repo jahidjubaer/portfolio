@@ -1,11 +1,14 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
-import { routeConfig } from "./routes/route-config";
 import { MotionProvider } from "./features/motion/MotionProvider";
 
-const router = createBrowserRouter(routeConfig);
-
-export function App() {
+/**
+ * The whole app around a router: a browser router in main.jsx, a memory
+ * router when entry-server.jsx prerenders a page. Both render this same
+ * tree, so the prerendered HTML hydrates without mismatches.
+ * @param {{ router: import("react-router-dom").DataRouter }} props
+ */
+export function App({ router }) {
   return (
     <MotionProvider>
       <RouterProvider router={router} />

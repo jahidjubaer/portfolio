@@ -7,7 +7,14 @@ import jsxA11y from "eslint-plugin-jsx-a11y";
 
 export default [
   {
-    ignores: ["dist", "build", "coverage", "playwright-report", "test-results"],
+    ignores: [
+      "dist",
+      "dist-server",
+      "build",
+      "coverage",
+      "playwright-report",
+      "test-results",
+    ],
   },
   {
     files: ["**/*.{js,jsx}"],

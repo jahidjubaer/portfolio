@@ -24,6 +24,12 @@ export const COLLECTIONS = {
   // Publish (R7): when content last changed (singleton) and each publish.
   siteState: "siteState",
   publishLog: "publishLog",
+  // Every admin save since a publish, for the "changes since last publish" list.
+  changeLog: "changeLog",
+  // Codeforces / VJudge / practice-repo stats (singleton), synced daily.
+  codingStats: "codingStats",
+  // Contact-form messages, read in the admin inbox. Never public.
+  messages: "messages",
 };
 
 export const SINGLETON_ID = "main";
@@ -51,5 +57,10 @@ export async function ensureIndexes(db) {
     db
       .collection(COLLECTIONS.githubRepos)
       .createIndex({ id: 1 }, { unique: true }),
+    db
+      .collection(COLLECTIONS.messages)
+      .createIndex({ id: 1 }, { unique: true }),
+    db.collection(COLLECTIONS.messages).createIndex({ receivedAt: -1 }),
+    db.collection(COLLECTIONS.changeLog).createIndex({ at: -1 }),
   ]);
 }

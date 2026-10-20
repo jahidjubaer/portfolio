@@ -75,6 +75,10 @@ export const PREVIEWS = {
         return stored && resolveCertification(stored, findOrganization);
       },
       projectList: content.projects ?? [],
+      findRepo: (name) =>
+        (content.repositories?.repos ?? []).find(
+          (repo) => repo.name.toLowerCase() === name.toLowerCase(),
+        ),
     });
     return <LearningTrackCard track={track} />;
   },

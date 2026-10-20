@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { usePreferences } from "../preferences/usePreferences";
 import { profile } from "../../data/profile";
@@ -6,6 +12,7 @@ import { cn } from "../../lib/cn";
 import { siteSettings } from "../../data/settings";
 import { TEAR_OVERLAP_PX, tornClipPath } from "./torn-edge";
 import { HOLD_MS, OPENING_SEEN_KEY, REPLAY_EVENT } from "./opening-state";
+import { useIsHydrating } from "../../lib/hydration";
 
 // The sheet rests closed for HOLD_MS, then tears open. Total stays near a
 // second, and any key, click, or scroll skips straight to the end.
@@ -143,8 +150,13 @@ function CurtainHalf({ side, open, fast, onOpened }) {
 export function OpeningCurtain() {
   const reduceMotion = useReducedMotion();
   const { play } = usePreferences();
+  const hydrating = useIsHydrating();
   // 0 = not showing; each run gets a new key so a replay starts fresh.
-  const [run, setRun] = useState(() => (shouldPlayOnLoad() ? 1 : 0));
+  // A prerendered page decides after hydration (the server can't know).
+  const [run, setRun] = useState(() => {
+    if (hydrating) return 0;
+    return shouldPlayOnLoad() ? 1 : 0;
+  });
   const [open, setOpen] = useState(false);
   const [fast, setFast] = useState(false);
   const soundPlayedRef = useRef(false);
@@ -194,6 +206,15 @@ export function OpeningCurtain() {
       for (const name of events) window.removeEventListener(name, skip);
     };
   }, [showing, run, playTearSound]);
+
+  // The head script in index.html covers a prerendered page until this
+  // point, so its content never flashes before the curtain.
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    if (!root.hasAttribute("data-intro")) return;
+    if (shouldPlayOnLoad()) setRun((current) => current || 1);
+    root.removeAttribute("data-intro");
+  }, []);
 
   const handleOpened = useCallback(() => setRun(0), []);
 

@@ -1,14 +1,15 @@
 import { timingSafeEqual } from "node:crypto";
 import { Router } from "express";
 import { env } from "../config/env.js";
-import { syncGitHubRepos } from "../services/githubSyncService.js";
+import { runDailySync } from "../services/dailySyncService.js";
 
 /**
  * Scheduled jobs, called by Vercel Cron (see vercel.json) with
  * `Authorization: Bearer <CRON_SECRET>`. Without a secret the jobs can't
  * be triggered at all, so nobody else can burn the GitHub rate limit.
  *
- *   GET /github-sync    daily refresh of the GitHub repo cache
+ *   GET /github-sync    daily refresh of the GitHub repo cache and the
+ *                       coding stats; republishes when they changed
  */
 export const cronRouter = Router();
 
@@ -33,6 +34,6 @@ cronRouter.use((req, res, next) => {
 });
 
 cronRouter.get("/github-sync", async (_req, res) => {
-  const data = await syncGitHubRepos();
+  const data = await runDailySync();
   res.json({ success: true, data });
 });

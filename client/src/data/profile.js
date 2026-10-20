@@ -30,7 +30,9 @@ export const profile = {
 
 /**
  * Public profiles in display order (right rail "Find me on", footer,
- * contact page).
- * @type {Array<{ id: "github" | "linkedin" | "codeforces" | "leetcode", label: string, handle: string, url: string }>}
+ * contact page). Profiles marked hidden in the admin stay out.
+ * @type {Array<{ id: "github" | "linkedin" | "codeforces" | "vjudge" | "leetcode" | "facebook" | "instagram", label: string, handle: string, url: string }>}
  */
-export const socialProfiles = storedSocialProfiles;
+export const socialProfiles = storedSocialProfiles.filter(
+  (social) => !social.hidden,
+);

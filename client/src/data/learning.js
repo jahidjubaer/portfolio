@@ -5,6 +5,7 @@ import {
 import { getOrganization } from "./organizations";
 import { getCertification } from "./certifications";
 import { projects } from "./projects";
+import { githubSnapshot } from "./github";
 
 /**
  * @typedef {{
@@ -18,6 +19,7 @@ import { projects } from "./projects";
  *   practice?: string,
  *   projects: Array<{ slug: string, title: string }>,
  *   notes: Array<{ label: string, url: string }>,
+ *   repos: Array<{ name: string, url: string, language?: string | null, pushedAt?: string }>,
  * }} LearningTrack
  */
 
@@ -38,12 +40,18 @@ export const LEARNING_STATUSES = [
  *   findOrganization: (id: string) => import("./organizations").Organization,
  *   findCertification: (id: string) => import("./certifications").Certification | undefined,
  *   projectList: Array<{ slug: string, title: string }>,
+ *   findRepo?: (name: string) => { name: string, url: string, language?: string | null, pushedAt?: string } | undefined,
  * }} lookups
  * @returns {LearningTrack}
  */
 export function resolveTrack(
   stored,
-  { findOrganization, findCertification, projectList },
+  {
+    findOrganization,
+    findCertification,
+    projectList,
+    findRepo = findSyncedRepo,
+  },
 ) {
   const { certificationIds, projectSlugs, resources, ...track } = stored;
   delete track.order;
@@ -62,7 +70,19 @@ export function resolveTrack(
       .filter(Boolean)
       .map((project) => ({ slug: project.slug, title: project.title })),
     notes: track.notes ?? [],
+    repos: (track.repos ?? []).map(
+      (name) =>
+        findRepo(name) ?? {
+          name,
+          url: `https://github.com/${githubSnapshot.username}/${name}`,
+        },
+    ),
   };
+}
+
+/** A connected repo's synced card (language, last push), when synced. */
+function findSyncedRepo(name) {
+  return githubSnapshot.repos[name.toLowerCase()];
 }
 
 /**

@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { readFileSync } from "node:fs";
+import { withDefaultSettings } from "../../../server/src/schemas/settings-defaults.js";
 
 // Posts and photos are in the published snapshot the build reads (R8:
 // imported from Blogger, edited in the admin). Nothing is fetched at
@@ -8,6 +9,7 @@ import { readFileSync } from "node:fs";
 const content = JSON.parse(
   readFileSync(new URL("../../src/generated/content.json", import.meta.url)),
 );
+const { showcase } = withDefaultSettings(content.settings);
 const newestPost = [...content.posts].sort((a, b) =>
   b.publishedAt.localeCompare(a.publishedAt),
 )[0];
@@ -84,11 +86,16 @@ test("the Beyond gallery opens photos in an accessible viewer", async ({
     ).toBeVisible();
     return;
   }
+  // A sample of the photos, then a card to the full photo journal.
+  const shown = Math.min(content.photos.length, showcase.photos.limit);
   await expect(
-    page.getByText(
-      `${content.photos.length} photograph${content.photos.length === 1 ? "" : "s"}`,
-    ),
+    page.getByText(`${shown} photograph${shown === 1 ? "" : "s"}`),
   ).toBeVisible();
+  if (showcase.photos.siteUrl) {
+    await expect(
+      page.getByRole("link", { name: /See everything on/ }),
+    ).toHaveAttribute("href", showcase.photos.siteUrl);
+  }
   await page.getByRole("listitem").getByRole("button").first().click();
   const viewer = page.getByRole("dialog");
   await expect(viewer).toBeVisible();

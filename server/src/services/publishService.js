@@ -10,6 +10,7 @@ const TIMEOUT_MS = 10_000;
 // would only queue a duplicate build.
 const COOLDOWN_MS = 60_000;
 const HISTORY_SIZE = 5;
+const CHANGES_SHOWN = 50;
 
 function httpError(status, message, details) {
   const error = new Error(message);
@@ -18,16 +19,52 @@ function httpError(status, message, details) {
   return error;
 }
 
-/** Records that content changed, so the admin can show "not published". */
-export async function markEdited() {
+/**
+ * Records that content changed, so the admin can show "not published"
+ * and list what changed since the last publish.
+ * @param {{ collection: string, key?: string, label?: string, action: "created" | "updated" | "deleted" | "reordered" }} [change]
+ */
+export async function markEdited(change) {
   const db = await getDb();
+  const at = new Date().toISOString();
   await db
     .collection(COLLECTIONS.siteState)
     .updateOne(
       { _id: SINGLETON_ID },
-      { $set: { lastEditAt: new Date().toISOString() } },
+      { $set: { lastEditAt: at } },
       { upsert: true },
     );
+  if (change) {
+    await db.collection(COLLECTIONS.changeLog).insertOne({ ...change, at });
+  }
+}
+
+/**
+ * Edits since `since` (all when null), newest first, one entry per item:
+ * saving the same item three times is one change.
+ */
+async function changesSince(db, since) {
+  const entries = await db
+    .collection(COLLECTIONS.changeLog)
+    .find(since ? { at: { $gt: since } } : {}, HIDE_ID)
+    .sort({ at: -1 })
+    .limit(500)
+    .toArray();
+  const seen = new Map();
+  for (const entry of entries) {
+    const id = `${entry.collection}/${entry.key ?? ""}`;
+    const existing = seen.get(id);
+    if (!existing) {
+      seen.set(id, { ...entry, count: 1 });
+    } else {
+      existing.count += 1;
+      // Created then edited is still "created" from the site's view.
+      if (entry.action === "created" && existing.action !== "deleted") {
+        existing.action = "created";
+      }
+    }
+  }
+  return [...seen.values()].slice(0, CHANGES_SHOWN);
 }
 
 /**
@@ -47,13 +84,15 @@ export async function getPublishStatus() {
   ]);
   const lastPublishAt = history.find((entry) => entry.ok)?.at ?? null;
   const lastEditAt = state?.lastEditAt ?? null;
+  const hasUnpublishedChanges = Boolean(
+    lastEditAt && (!lastPublishAt || lastEditAt > lastPublishAt),
+  );
   return {
     configured: Boolean(env.deployHookUrl),
     lastEditAt,
     lastPublishAt,
-    hasUnpublishedChanges: Boolean(
-      lastEditAt && (!lastPublishAt || lastEditAt > lastPublishAt),
-    ),
+    hasUnpublishedChanges,
+    changes: hasUnpublishedChanges ? await changesSince(db, lastPublishAt) : [],
     history,
   };
 }
@@ -63,7 +102,8 @@ export async function getPublishStatus() {
  * exports the database (server/scripts/export-content.js), so the content
  * is checked here first: invalid content would otherwise be skipped there
  * and the old site rebuilt without anyone noticing.
- * @param {{ login: string }} admin
+ * @param {{ login: string }} admin who asked (the daily sync passes
+ *   `{ login: "daily sync" }`)
  */
 export async function publishSite(admin) {
   if (!env.deployHookUrl) {

@@ -3,14 +3,20 @@ import {
   AlertTriangle,
   ArrowRight,
   CheckCircle2,
+  Inbox,
   Info,
   Lightbulb,
 } from "lucide-react";
 import { useAdmin } from "../../features/admin/admin-context";
-import { ADMIN_GROUPS } from "../../features/admin/admin-collections";
+import {
+  ADMIN_GROUPS,
+  LISTS,
+  SINGLETONS,
+} from "../../features/admin/admin-collections";
 import {
   getAttentionItems,
   sectionCount,
+  unreadCount,
 } from "../../features/admin/attention";
 import { AdminPageHeader } from "./AdminPageHeader";
 
@@ -19,6 +25,67 @@ function formatDateTime(iso) {
     dateStyle: "medium",
     timeStyle: "short",
   });
+}
+
+const ACTION_LABELS = {
+  created: "Added",
+  updated: "Edited",
+  deleted: "Deleted",
+  reordered: "Reordered",
+};
+
+/** Where a change can be looked at (deleted items have no page). */
+function changeLink(change) {
+  if (SINGLETONS[change.collection]) return `/admin/${change.collection}`;
+  if (change.action === "deleted" || !change.key) {
+    return `/admin/${change.collection}`;
+  }
+  return `/admin/${change.collection}/${encodeURIComponent(change.key)}`;
+}
+
+function sectionLabel(collection) {
+  return (
+    LISTS[collection]?.label ?? SINGLETONS[collection]?.label ?? collection
+  );
+}
+
+/** What Publish would put on the site: each changed item once. */
+function ChangeList({ changes }) {
+  if (!changes?.length) return null;
+  return (
+    <div className="mt-3">
+      <h3 className="font-semibold text-(--color-text-primary)">
+        Not published yet ({changes.length})
+      </h3>
+      <ul className="mt-1.5 grid gap-1">
+        {changes.map((change) => (
+          <li key={`${change.collection}/${change.key ?? ""}`}>
+            <span className="font-medium text-(--color-text-primary)">
+              {ACTION_LABELS[change.action]}
+            </span>{" "}
+            <Link
+              to={changeLink(change)}
+              className="underline underline-offset-4"
+            >
+              {change.label ?? sectionLabel(change.collection)}
+            </Link>
+            {change.label ? (
+              <span className="text-(--color-text-muted)">
+                {" "}
+                · {sectionLabel(change.collection)}
+              </span>
+            ) : null}
+            {change.count > 1 ? (
+              <span className="text-(--color-text-muted)">
+                {" "}
+                · saved {change.count} times
+              </span>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 /** Whether the public site is up to date, and the latest publishes. */
@@ -50,6 +117,7 @@ function PublishStatus({ publishing }) {
         rebuilds the public site from it, which takes about 2 minutes.
       </p>
       <p className="mt-1">{summary}</p>
+      <ChangeList changes={publishing.changes} />
       {publishing.configured ? null : (
         <p className="mt-1 text-(--color-danger)">
           Publishing isn&apos;t set up yet: add a Vercel Deploy Hook as{" "}
@@ -142,12 +210,25 @@ export function AdminOverview() {
   const attention = getAttentionItems(content);
   const order = { fix: 0, suggestion: 1 };
   attention.sort((a, b) => order[a.tone] - order[b.tone]);
+  const unread = unreadCount(content);
   return (
     <>
       <AdminPageHeader
         title={`Welcome, @${admin.login}`}
         description="Edit your portfolio content."
       />
+      {unread > 0 ? (
+        <Link
+          to="/admin/messages"
+          className="mb-4 flex items-center gap-3 rounded-(--radius-md) border border-(--color-accent-primary)/50 bg-(--color-accent-primary-soft) p-3 text-sm font-medium text-(--color-text-primary)"
+        >
+          <Inbox size={17} aria-hidden="true" />
+          {unread === 1
+            ? "1 new message from the contact form"
+            : `${unread} new messages from the contact form`}
+          <ArrowRight size={16} aria-hidden="true" className="ml-auto" />
+        </Link>
+      ) : null}
       <PublishStatus publishing={content.publishing} />
       <AttentionList items={attention} />
       {ADMIN_GROUPS.map((group) => (

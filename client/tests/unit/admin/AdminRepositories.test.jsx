@@ -133,7 +133,7 @@ describe("admin GitHub repos", { timeout: 20_000 }, () => {
     await user.click(screen.getByRole("button", { name: "Sync now" }));
     const main = screen.getByRole("main");
     await waitFor(() =>
-      expect(within(main).getByRole("status")).toHaveTextContent(
+      expect(within(main).getAllByRole("status")[0]).toHaveTextContent(
         "GitHub's rate limit is used up.",
       ),
     );

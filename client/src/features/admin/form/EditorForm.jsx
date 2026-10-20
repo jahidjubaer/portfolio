@@ -16,6 +16,7 @@ import { fromDraft, issuesToErrors, setAt, toDraft } from "./draft";
  *   fields: import("./draft").Field[],
  *   schema: import("zod").ZodType,
  *   value: Record<string, unknown>,
+ *   startValue?: Record<string, unknown>,
  *   onSave: (value: Record<string, unknown>) => Promise<unknown>,
  *   onSaved?: (value: Record<string, unknown>) => void,
  *   normalize?: (value: Record<string, unknown>) => Record<string, unknown>,
@@ -23,15 +24,21 @@ import { fromDraft, issuesToErrors, setAt, toDraft } from "./draft";
  *   isNew?: boolean,
  *   submitLabel?: string,
  *   preview?: (value: Record<string, unknown>) => import("react").ReactNode,
+ *   assist?: (api: { values: Record<string, unknown>, apply: (values: Record<string, unknown>) => void }) => import("react").ReactNode,
  * }} props
  *
  * With `preview`, the unsaved values are also rendered beside the form the
- * way the public site will show them. Ctrl/⌘+S saves.
+ * way the public site will show them. Ctrl/⌘+S saves. `assist` renders
+ * above the fields with the current values and `apply`, which merges
+ * values into the draft (unsaved, so they can be reviewed first).
+ * `startValue` opens the form with unsaved changes already made to
+ * `value` (e.g. a repo added from the GitHub repos page).
  */
 export function EditorForm({
   fields,
   schema,
   value,
+  startValue,
   onSave,
   onSaved,
   normalize = (input) => input,
@@ -39,9 +46,12 @@ export function EditorForm({
   isNew = false,
   submitLabel = "Save changes",
   preview,
+  assist,
 }) {
   const [initialDraft] = useState(() => toDraft(value, fields));
-  const [draft, setDraft] = useState(initialDraft);
+  const [draft, setDraft] = useState(() =>
+    startValue ? toDraft(startValue, fields) : initialDraft,
+  );
   const [savedDraft, setSavedDraft] = useState(initialDraft);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState(null); // { tone, message }
@@ -82,6 +92,16 @@ export function EditorForm({
 
   function handleChange(path, next) {
     setDraft((current) => setAt(current, path, next));
+  }
+
+  function applyValues(values) {
+    setDraft((current) =>
+      toDraft({ ...fromDraft(current, fields), ...values }, fields),
+    );
+    setStatus({
+      tone: "info",
+      message: "Draft applied. Check every field, then save.",
+    });
   }
 
   function focusFirstError() {
@@ -157,6 +177,11 @@ export function EditorForm({
         preview && "xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start",
       )}
     >
+      {assist ? (
+        <div className="xl:col-span-full">
+          {assist({ values: fromDraft(draft, fields), apply: applyValues })}
+        </div>
+      ) : null}
       <FormFields
         fields={fields}
         draft={draft}

@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { formatYearMonth } from "../../lib/dates";
+import { formatRelativeDate } from "../../lib/relativeTime";
+import { useNow } from "../../lib/hydration";
 import { cn } from "../../lib/cn";
 
 const STATUS_STYLES = {
@@ -65,6 +67,7 @@ function DotList({ items }) {
  * @param {{ track: import("../../data/learning").LearningTrack }} props
  */
 export function LearningTrackCard({ track }) {
+  const now = useNow();
   const learnedFrom = [
     ...track.resources.map((resource) => {
       const source = resource.organization
@@ -96,7 +99,8 @@ export function LearningTrackCard({ track }) {
     learnedFrom.length > 0 ||
     Boolean(track.practice) ||
     track.projects.length > 0 ||
-    track.notes.length > 0;
+    track.notes.length > 0 ||
+    track.repos.length > 0;
 
   return (
     <article className="rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-5">
@@ -143,6 +147,34 @@ export function LearningTrackCard({ track }) {
                     <Link to={`/work/${project.slug}`} className={LINK}>
                       {project.title}
                     </Link>
+                  ),
+                }))}
+              />
+            </PathRow>
+          ) : null}
+          {track.repos.length ? (
+            <PathRow label="Code">
+              <DotList
+                items={track.repos.map((repo) => ({
+                  key: repo.name,
+                  node: (
+                    <>
+                      <ExternalLink href={repo.url}>{repo.name}</ExternalLink>
+                      {repo.language || repo.pushedAt ? (
+                        <span className="text-(--color-text-muted)">
+                          {" "}
+                          (
+                          {[
+                            repo.language,
+                            repo.pushedAt &&
+                              `updated ${formatRelativeDate(repo.pushedAt, now)}`,
+                          ]
+                            .filter(Boolean)
+                            .join(", ")}
+                          )
+                        </span>
+                      ) : null}
+                    </>
                   ),
                 }))}
               />

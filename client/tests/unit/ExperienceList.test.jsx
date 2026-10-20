@@ -92,7 +92,8 @@ describe("experienceGroups (published data)", () => {
       "Joint Office Secretary",
       "Member",
     ]);
-    expect(club.totalDuration).toBe("3 yrs");
+    // Sep 2022 – Jan 2026 in the published data.
+    expect(club.totalDuration).toBe("3 yrs 5 mos");
     expect(experienceGroups.at(-1).organization.name).toMatch(/Red Crescent/);
   });
 });

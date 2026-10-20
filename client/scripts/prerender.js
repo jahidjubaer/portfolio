@@ -1,9 +1,10 @@
 /**
  * Post-build step (R7): writes a static HTML file for every public route,
  * each with its own <title>, description, canonical URL, Open Graph and
- * Twitter tags. Crawlers and link previews (LinkedIn, X, WhatsApp) read
- * the right metadata for /work/sarabo without running JavaScript; the
- * page body still renders in the browser as before.
+ * Twitter tags, and the page itself rendered into <div id="root"> (by
+ * the SSR bundle from src/entry-server.jsx). Crawlers and link previews
+ * read the right metadata and content without running JavaScript, the
+ * first paint shows the real page, and the browser hydrates it.
  *
  *   dist/index.html       → "/"
  *   dist/work.html        → "/work"
@@ -14,9 +15,9 @@
  * dist/200.html (vercel.json), the same app with no canonical URL and
  * `noindex`, so an unknown URL never poses as the home page.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { resolveSiteUrl } from "./site-url.js";
 import {
   SITE,
@@ -29,6 +30,8 @@ const CLIENT_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(CLIENT_ROOT, "dist");
 const CONTENT_FILE = join(CLIENT_ROOT, "src", "generated", "content.json");
 const BLOCK = /<!-- route-meta -->[\s\S]*?<!-- \/route-meta -->/;
+const SERVER_ENTRY = join(CLIENT_ROOT, "dist-server", "entry-server.js");
+const ROOT = '<div id="root"></div>';
 
 function escapeHtml(value) {
   return String(value)
@@ -83,13 +86,44 @@ export function renderHeadTags(route, siteUrl, image = shareImage()) {
     .join("\n    ");
 }
 
-/** @param {string} template built index.html */
-export function renderRoute(template, route, siteUrl, image) {
+/**
+ * @param {string} template built index.html
+ * @param {{ html: string, renderedAt: string }} [body] the prerendered page;
+ *   without it the root stays empty and the page renders in the browser
+ */
+export function renderRoute(template, route, siteUrl, image, body) {
   if (!BLOCK.test(template)) {
     throw new Error("index.html has no <!-- route-meta --> block.");
   }
-  // A function replacement, so "$" in a title is never read as a pattern.
-  return template.replace(BLOCK, () => renderHeadTags(route, siteUrl, image));
+  // Function replacements, so "$" in a title or page is never a pattern.
+  const withHead = template.replace(BLOCK, () =>
+    renderHeadTags(route, siteUrl, image),
+  );
+  if (!body) return withHead;
+  if (!withHead.includes(ROOT)) {
+    throw new Error(`index.html has no ${ROOT}.`);
+  }
+  return withHead.replace(
+    ROOT,
+    () =>
+      `<div id="root" data-rendered-at="${escapeHtml(body.renderedAt)}">${body.html}</div>`,
+  );
+}
+
+/**
+ * The page bodies, rendered by the SSR bundle. A route that fails to
+ * render ships with an empty root (it still works, rendered in the
+ * browser), and the build log says which one.
+ */
+async function loadRenderer() {
+  if (!existsSync(SERVER_ENTRY)) {
+    console.warn(
+      "[prerender] no dist-server/entry-server.js; pages render in the browser only.",
+    );
+    return null;
+  }
+  const { renderPage } = await import(pathToFileURL(SERVER_ENTRY).href);
+  return renderPage;
 }
 
 function outputFile(path) {
@@ -97,19 +131,34 @@ function outputFile(path) {
   return `${join(DIST, ...path.slice(1).split("/"))}.html`;
 }
 
-function main() {
+async function main() {
   const siteUrl = resolveSiteUrl();
   const template = readFileSync(join(DIST, "index.html"), "utf8");
   const content = JSON.parse(readFileSync(CONTENT_FILE, "utf8"));
   const routes = getPublicRoutes(content);
   const seo = content.settings?.seo;
   const image = shareImage(seo);
+  const renderPage = await loadRenderer();
+  const now = new Date();
+  let rendered = 0;
   for (const route of routes) {
+    let body;
+    if (renderPage) {
+      try {
+        body = {
+          html: await renderPage(route.path, now),
+          renderedAt: now.toISOString(),
+        };
+        rendered += 1;
+      } catch (error) {
+        console.warn(`[prerender] ${route.path}: ${error.message}`);
+      }
+    }
     const file = outputFile(route.path);
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(
       file,
-      renderRoute(template, route, siteUrl, route.image ?? image),
+      renderRoute(template, route, siteUrl, route.image ?? image, body),
     );
   }
   writeFileSync(
@@ -122,10 +171,10 @@ function main() {
     ),
   );
   console.log(
-    `[prerender] wrote ${routes.length} routes + 200.html fallback (base ${siteUrl})`,
+    `[prerender] wrote ${routes.length} routes (${rendered} with the page rendered) + 200.html fallback (base ${siteUrl})`,
   );
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  main();
+  await main();
 }

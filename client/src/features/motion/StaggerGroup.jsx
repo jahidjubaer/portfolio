@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { fadeUpVariants, staggerContainerVariants } from "./motion-variants";
+import { useIsHydrating } from "../../lib/hydration";
 
 /**
  * Wraps a list of children (e.g. project dossiers, capability groups) so
@@ -21,12 +22,14 @@ export function StaggerGroup({
   className = "",
 }) {
   const MotionTag = motion[as] ?? motion.div;
+  // See Reveal: prerendered lists start visible.
+  const hydrating = useIsHydrating();
 
   return (
     <MotionTag
       className={className}
       variants={staggerContainerVariants(staggerDelay)}
-      initial="hidden"
+      initial={hydrating ? false : "hidden"}
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
     >

@@ -76,7 +76,9 @@ beforeEach(async () => {
   env.blobToken = BLOB_TOKEN;
   const db = await getDb();
   await db.dropDatabase();
-  await seedDatabase(db, buildSeedContent());
+  // These tests add their own photos and posts; start from none (the
+  // seed copies the published ones from the snapshot).
+  await seedDatabase(db, { ...buildSeedContent(), photos: [], posts: [] });
 });
 
 afterAll(async () => {

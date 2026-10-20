@@ -22,7 +22,7 @@ function sendContent(read, missingMessage = "Content not found.") {
 
 export const getProfile = sendContent(content.getProfile, "Profile not found.");
 export const getBeyond = sendContent(content.getBeyond);
-export const listProjects = sendContent(content.listProjects);
+export const listProjects = sendContent(() => content.listProjects());
 export const getProject = sendContent(
   (req) => content.getProject(req.params.slug),
   "Project not found.",
