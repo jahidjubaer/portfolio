@@ -262,6 +262,28 @@
     color: rgb(255 255 255 / 0.5);
   }
 
+  /* Frame numbers on section headings, like the edge print on film: a
+     counter per page (reset on <main>), so the numbers follow whatever
+     sections are shown. The alt text after "/" keeps screen readers
+     from announcing them. */
+  #main-content {
+    counter-reset: frame;
+  }
+
+  .frame-heading {
+    counter-increment: frame;
+  }
+
+  .frame-heading::after {
+    content: counter(frame, decimal-leading-zero) / "";
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color-accent-primary);
+  }
+
   /* Soft accent wash used by the "open to" and contact hero cards. */
   .glow-surface {
     background:

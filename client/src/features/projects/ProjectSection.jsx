@@ -1,3 +1,4 @@
+import { FrameRule } from "../../components/ui/FrameRule";
 import { Reveal } from "../motion/Reveal";
 
 function isEmptyContent(children) {
@@ -25,7 +26,10 @@ export function ProjectSection({ id, heading, children, className = "" }) {
   return (
     <Reveal as="section" className={className}>
       <div id={id} className="scroll-mt-36">
-        <h2 className="heading-md text-(--color-text-primary)">{heading}</h2>
+        <h2 className="frame-heading heading-md flex items-baseline gap-3 text-(--color-text-primary)">
+          {heading}
+        </h2>
+        <FrameRule className="mt-3" />
         <div className="mt-4">{children}</div>
       </div>
     </Reveal>
