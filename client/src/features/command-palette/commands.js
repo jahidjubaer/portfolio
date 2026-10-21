@@ -10,7 +10,8 @@ import { navSetting } from "../../data/settings";
  *   action:
  *     | { type: "navigate", to: string }
  *     | { type: "external", href: string }
- *     | { type: "download", href: string, filename: string },
+ *     | { type: "download", href: string, filename: string }
+ *     | { type: "ask" },
  * }} Command
  */
 
@@ -71,6 +72,13 @@ export function getCommands() {
       action: { type: "external", href: profile.linkedin },
     });
   }
+
+  commands.push({
+    id: "action-ask",
+    label: "Ask about Jahid",
+    category: "Action",
+    action: { type: "ask" },
+  });
 
   if (profile.resume.available) {
     commands.push({

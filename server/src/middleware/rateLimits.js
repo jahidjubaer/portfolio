@@ -26,3 +26,6 @@ export const contactRateLimit = limiter(5);
 
 /** AI drafts cost money per call; a session needs a handful. */
 export const aiRateLimit = limiter(30);
+
+/** "Ask about Jahid": a short conversation's worth per visitor. */
+export const askRateLimit = limiter(10);

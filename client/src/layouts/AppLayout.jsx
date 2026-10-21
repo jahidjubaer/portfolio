@@ -9,6 +9,7 @@ import { ShellFooter } from "../components/layout/ShellFooter";
 import { PreferencesProvider } from "../features/preferences/PreferencesProvider";
 import { PageTransition } from "../features/motion/PageTransition";
 import { CommandPalette } from "../features/command-palette/CommandPalette";
+import { AskJahid } from "../features/ask/AskJahid";
 import { GreetingPopup } from "../features/greeting/GreetingPopup";
 import { OpeningCurtain } from "../features/intro/OpeningCurtain";
 
@@ -37,6 +38,7 @@ export function AppLayout() {
       </div>
       <BottomNav />
       <CommandPalette />
+      <AskJahid />
       <GreetingPopup />
       <OpeningCurtain />
     </PreferencesProvider>

@@ -130,3 +130,28 @@ async function sendToWeb3Forms(payload) {
 
   return RECEIVED;
 }
+
+/**
+ * Asks a question about Jahid (POST /api/ask). The server answers from
+ * the site's published content and stores nothing.
+ * @param {string} question
+ * @returns {Promise<{ answer: string, sources: string[] }>}
+ * @throws {Error} with a message to show the visitor
+ */
+export async function askQuestion(question) {
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/ask`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question }),
+    });
+  } catch {
+    throw new Error("Couldn't reach the server. Check your connection.");
+  }
+  const body = await response.json().catch(() => null);
+  if (!response.ok || !body?.success) {
+    throw new Error(body?.error ?? "Couldn't answer just now. Try again.");
+  }
+  return body.data;
+}

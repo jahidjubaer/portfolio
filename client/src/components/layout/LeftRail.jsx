@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { motion } from "motion/react";
-import { Search } from "lucide-react";
+import { Search, Sparkles } from "lucide-react";
+import { openAsk } from "../../features/ask/ask-events";
 import { PRIMARY_NAV, SECONDARY_NAV } from "../../config/navigation";
 import { usePreferences } from "../../features/preferences/usePreferences";
 import { ThemeToggleButton, SoundToggleButton } from "./PreferenceButtons";
@@ -118,6 +119,21 @@ export function LeftRail() {
         <kbd className="mono-meta hidden rounded-md border border-(--color-border) px-1.5 py-0.5 xl:inline">
           {isApple ? "⌘K" : "Ctrl K"}
         </kbd>
+      </button>
+
+      <button
+        type="button"
+        onClick={openAsk}
+        aria-label="Ask about Jahid"
+        title="Ask about Jahid"
+        className="flex min-h-11 items-center justify-center gap-3 rounded-(--radius-md) px-3.5 text-sm font-medium text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-raised) hover:text-(--color-text-primary) xl:justify-start"
+      >
+        <Sparkles
+          size={18}
+          aria-hidden="true"
+          className="text-(--color-accent-primary)"
+        />
+        <span className="hidden xl:inline">Ask about me</span>
       </button>
 
       <div className="mt-auto grid gap-4 xl:px-3">

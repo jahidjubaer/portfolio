@@ -1,11 +1,14 @@
 import { cn } from "../../lib/cn";
+import { Sparkles } from "lucide-react";
 import { AppearanceMenu } from "./AppearanceMenu";
+import { IconButton } from "../ui/IconButton";
+import { openAsk } from "../../features/ask/ask-events";
 
 /**
  * Sticky, blurred header at the top of the center column. `children` is
  * the left side (a page title or the profile identity); `actions` sits on
- * the right. On phones the left rail is gone, so the appearance menu
- * (theme, sound, accent, font) moves in here.
+ * the right. On phones the left rail is gone, so "Ask about Jahid" and the
+ * appearance menu (theme, sound, accent, font) move in here.
  * @param {{
  *   children: import("react").ReactNode,
  *   actions?: import("react").ReactNode,
@@ -23,6 +26,17 @@ export function PageHeader({ children, actions, className }) {
       <div className="flex min-w-0 items-center gap-3">{children}</div>
       <div className="flex shrink-0 items-center gap-2">
         {actions}
+        <IconButton
+          label="Ask about Jahid"
+          onClick={openAsk}
+          className="md:hidden"
+        >
+          <Sparkles
+            size={18}
+            aria-hidden="true"
+            className="text-(--color-accent-primary)"
+          />
+        </IconButton>
         <AppearanceMenu placement="header" className="md:hidden" />
       </div>
     </header>

@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { Search, ArrowUpRight, Download } from "lucide-react";
+import { Search, ArrowUpRight, Download, Sparkles } from "lucide-react";
 import { fadeVariants } from "../motion/motion-variants";
+import { DURATIONS } from "../motion/motion-config";
+import { openAsk } from "../ask/ask-events";
 import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 import { cn } from "../../lib/cn";
 import {
@@ -15,6 +17,7 @@ const ACTION_ICON = {
   navigate: null,
   external: ArrowUpRight,
   download: Download,
+  ask: Sparkles,
 };
 
 function executeCommand(command, { navigate, onClose }) {
@@ -25,6 +28,12 @@ function executeCommand(command, { navigate, onClose }) {
   }
   if (command.action.type === "external") {
     window.open(command.action.href, "_blank", "noopener,noreferrer");
+    return;
+  }
+  if (command.action.type === "ask") {
+    // After the palette's exit fade, which hands focus back to its own
+    // trigger; opening sooner would lose the question field's focus.
+    setTimeout(openAsk, DURATIONS.quick * 1000 + 40);
     return;
   }
   if (command.action.type === "download") {

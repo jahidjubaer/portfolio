@@ -195,3 +195,19 @@
     transform: scale(1);
   }
 }
+
+/* "Ask about Jahid": the three dots while an answer is on its way. */
+.ask-dot {
+  animation: ask-dot 900ms ease-in-out infinite;
+}
+
+@keyframes ask-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
