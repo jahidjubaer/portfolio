@@ -3,6 +3,7 @@ import { profile } from "../../data/profile";
 import {
   codingStats,
   dimikSolved,
+  dimikTotal,
   distinctSolved,
   hasCodingStats,
   isPracticePaused,
@@ -133,16 +134,38 @@ function JudgeTable({ judges }) {
 }
 
 /** Dimik OJ: typed in the admin (no public API), so shown on its own. */
-function DimikCard({ solved }) {
+/**
+ * Dimik OJ's typed count. With the judge's total it reads "40 / 52" over a
+ * thin bar: a real fraction of the judge's problems, not a skill level.
+ * @param {{ solved: number, total: number | null }} props
+ */
+function DimikCard({ solved, total }) {
   return (
-    <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-(--radius-md) border border-(--color-accent-primary)/40 bg-(--color-accent-primary-soft) px-3.5 py-3">
-      <p className="font-semibold text-(--color-text-primary)">Dimik OJ</p>
-      <p className="text-sm text-(--color-text-secondary)">
-        <span className="font-mono font-semibold text-(--color-accent-primary) tabular-nums">
-          {solved}
-        </span>{" "}
-        solved · a Bangla online judge
-      </p>
+    <div className="mt-3 rounded-(--radius-md) border border-(--color-accent-primary)/40 bg-(--color-accent-primary-soft) px-3.5 py-3">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <p className="font-semibold text-(--color-text-primary)">Dimik OJ</p>
+        <p className="text-sm text-(--color-text-secondary)">
+          <span className="font-mono font-semibold text-(--color-accent-primary) tabular-nums">
+            {solved}
+          </span>
+          {total !== null ? (
+            <span className="font-mono tabular-nums"> / {total}</span>
+          ) : null}{" "}
+          solved · a Bangla online judge
+        </p>
+      </div>
+      {total !== null ? (
+        <div
+          role="img"
+          aria-label={`${solved} of ${total} Dimik OJ problems solved`}
+          className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-(--color-border)"
+        >
+          <div
+            className="h-full rounded-full bg-(--color-accent-fill)"
+            style={{ width: `${(solved / total) * 100}%` }}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -154,8 +177,8 @@ function DimikCard({ solved }) {
  * paused (set in the admin) the block says so and shows the period, so
  * old numbers never read as current activity. Without synced stats it
  * falls back to the profile's own summary.
- * The dot map shows only in the wide layout (the Learning page), not
- * the Resume's single column.
+ * The dot map shows only with three columns (the Learning and Resume
+ * pages), not in a single narrow column.
  * @param {{ columns?: 1 | 3, className?: string }} props
  */
 export function ProblemSolvingStats({ columns = 3, className }) {
@@ -232,7 +255,9 @@ export function ProblemSolvingStats({ columns = 3, className }) {
       {columns === 3 && judges.length && total !== null ? (
         <ProblemMap judges={judges} dimikSolved={dimikSolved} total={total} />
       ) : null}
-      {dimikSolved !== null ? <DimikCard solved={dimikSolved} /> : null}
+      {dimikSolved !== null ? (
+        <DimikCard solved={dimikSolved} total={dimikTotal} />
+      ) : null}
       {judges.length ? <JudgeTable judges={judges} /> : null}
 
       {isPracticePaused ? (

@@ -170,6 +170,48 @@ test("mobile bottom navigation works", async ({ page }) => {
   ).toHaveAttribute("aria-current", "page");
 });
 
+test("mobile More sheet reaches every other page and closes cleanly", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+  const bottomNav = page.getByRole("navigation", { name: "Main" });
+  const more = bottomNav.getByRole("button", { name: "More" });
+
+  await more.click();
+  const sheet = page.getByRole("dialog", { name: "More" });
+  await expect(sheet).toBeVisible();
+  for (const name of ["Beyond", "Learning", "Credentials", "Resume"]) {
+    await expect(sheet.getByRole("link", { name })).toBeVisible();
+  }
+
+  // Escape closes it and focus returns to the More tab.
+  await page.keyboard.press("Escape");
+  await expect(sheet).toBeHidden();
+  await expect(more).toBeFocused();
+
+  await more.click();
+  await sheet.getByRole("link", { name: "Learning" }).click();
+  await expect(sheet).toBeHidden();
+  await expect(page).toHaveURL(/\/learning$/);
+});
+
+test("back to top appears after scrolling and returns to the H1", async ({
+  page,
+}) => {
+  await page.goto("/work/sarabo");
+  const button = page.getByRole("button", { name: "Back to top" });
+  await expect(button).toBeHidden();
+  // Retried: the opening animation can hold the page still for a moment.
+  await expect(async () => {
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await expect(button).toBeVisible({ timeout: 500 });
+  }).toPass();
+  await button.click();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await expect(page.locator("#main-content h1")).toBeFocused();
+});
+
 test("appearance menu works on mobile (theme, accent, font)", async ({
   page,
 }) => {

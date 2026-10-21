@@ -156,6 +156,14 @@ export const SINGLETONS = {
         hint: "Dimik OJ isn't synced: type the count from your Dimik profile. Shown as its own card and added to the headline.",
       },
       {
+        name: "problemSolving.dimikTotal",
+        label: "Dimik OJ problems available",
+        type: "number",
+        optional: true,
+        half: true,
+        hint: "The judge's total problem count, shown as solved / total (e.g. 40 / 52). Leave blank to show only the solved count.",
+      },
+      {
         name: "problemSolving.status",
         label: "Practice status",
         type: "select",

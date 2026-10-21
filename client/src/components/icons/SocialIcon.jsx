@@ -1,9 +1,12 @@
 import { Code } from "lucide-react";
 import {
+  CodeforcesIcon,
   FacebookIcon,
   GitHubIcon,
   InstagramIcon,
+  LeetCodeIcon,
   LinkedInIcon,
+  VJudgeIcon,
 } from "./BrandIcons";
 
 const BRAND_ICONS = {
@@ -11,11 +14,14 @@ const BRAND_ICONS = {
   linkedin: LinkedInIcon,
   facebook: FacebookIcon,
   instagram: InstagramIcon,
+  codeforces: CodeforcesIcon,
+  leetcode: LeetCodeIcon,
+  vjudge: VJudgeIcon,
 };
 
 /**
- * Icon for an entry in `socialProfiles`. The judges (Codeforces, VJudge,
- * LeetCode) have no brand mark here, so they share a generic code glyph.
+ * Icon for an entry in `socialProfiles`. An unknown id falls back to a
+ * generic code glyph.
  * @param {{ id: string, size?: number, className?: string }} props
  */
 export function SocialIcon({ id, size = 18, className }) {

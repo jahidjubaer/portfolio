@@ -12,6 +12,7 @@ const coding = vi.hoisted(() => ({
   stats: null,
   paused: true,
   dimik: null,
+  dimikTotal: null,
 }));
 vi.mock("../../src/data/coding", async (importOriginal) => {
   const actual = await importOriginal();
@@ -28,6 +29,9 @@ vi.mock("../../src/data/coding", async (importOriginal) => {
     },
     get dimikSolved() {
       return coding.dimik;
+    },
+    get dimikTotal() {
+      return coding.dimikTotal;
     },
     distinctSolved: () => actual.distinctSolved(coding.stats, coding.dimik),
     practicePeriod: (stats = coding.stats) => actual.practicePeriod(stats),
@@ -124,6 +128,22 @@ describe("ProblemSolvingStats", () => {
     expect(within(card).getByText("40")).toBeVisible();
     expect(screen.getByText("181")).toBeVisible();
     expect(screen.getByText("on 3 judges, each counted once")).toBeVisible();
+  });
+
+  it("shows Dimik OJ as solved / total with a bar when the total is set", () => {
+    coding.stats = STATS;
+    coding.dimik = 40;
+    coding.dimikTotal = 52;
+    render(<ProblemSolvingStats />);
+    const card = screen.getByText("Dimik OJ", { selector: "p" }).parentElement
+      .parentElement;
+    expect(card).toHaveTextContent("40 / 52 solved");
+    expect(
+      within(card).getByRole("img", {
+        name: "40 of 52 Dimik OJ problems solved",
+      }),
+    ).toBeVisible();
+    coding.dimikTotal = null;
   });
 
   it("drops the archive framing while practice is active", () => {

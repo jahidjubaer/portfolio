@@ -88,13 +88,23 @@ describe("OpeningCurtain", () => {
 
   it("replays on request, with sound once audio is allowed", async () => {
     window.sessionStorage.setItem(OPENING_SEEN_KEY, "1");
-    const play = renderCurtain();
+    // An explicit style, so the test doesn't follow the stored setting.
+    const play = renderCurtain(vi.fn(), "torn");
     setUserActivation(true);
 
     act(() => replayOpening());
     expect(screen.getByTestId("opening-curtain")).toBeInTheDocument();
     await waitFor(() => expect(play).toHaveBeenCalledWith("pageOpen"));
     expect(play).toHaveBeenCalledTimes(1);
+  });
+
+  it("plays the shutter sound for the camera aperture", async () => {
+    window.sessionStorage.setItem(OPENING_SEEN_KEY, "1");
+    const play = renderCurtain(vi.fn(), "aperture");
+    setUserActivation(true);
+
+    act(() => replayOpening());
+    await waitFor(() => expect(play).toHaveBeenCalledWith("shutter"));
   });
 });
 

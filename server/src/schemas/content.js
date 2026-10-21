@@ -84,6 +84,12 @@ export const profileSchema = z.object({
       .int()
       .min(0, "Can't be negative.")
       .optional(),
+    // How many problems Dimik OJ has, so the count reads "40 / 52".
+    dimikTotal: z
+      .number({ error: "Enter a number." })
+      .int()
+      .min(1, "Must be at least 1.")
+      .optional(),
   }),
   resume: z.object({
     filename: text,

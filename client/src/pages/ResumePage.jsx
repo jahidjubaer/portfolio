@@ -13,10 +13,10 @@ import { profile } from "../data/profile";
 import { capabilityGroups } from "../data/capabilities";
 import { leadershipRoles } from "../data/leadership";
 import { degreeLine, educationEntries } from "../data/education";
-import { formatYearMonth } from "../lib/dates";
+import { formatRange } from "../lib/dates";
 import { ProjectStack } from "../features/projects/ProjectStack";
 import { getFeaturedProjects } from "../features/projects/project-selectors";
-import { Download, FileText, Code2, ExternalLink } from "lucide-react";
+import { Download, GraduationCap, Code2, ExternalLink } from "lucide-react";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
 
 export function ResumePage() {
@@ -96,19 +96,23 @@ export function ResumePage() {
 
           <Divider className="my-12" />
 
-          {/* Education & Problem Solving Grid */}
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Education Card */}
-            <Surface variant="default" className="p-6">
-              <div className="flex items-center gap-2.5 text-(--color-accent-primary)">
-                <FileText size={18} />
-                <h2 className="label text-(--color-text-muted) uppercase">
-                  Education
-                </h2>
-              </div>
-              {educationEntries.slice(0, 1).map((entry) => (
-                <div key={entry.id}>
-                  <h3 className="heading-md mt-3 text-(--color-text-primary)">
+          {/* Education timeline, then Problem Solving, each full width so
+              neither leaves an empty column beside the other. */}
+          <Surface variant="default" className="p-6">
+            <div className="flex items-center gap-2.5 text-(--color-accent-primary)">
+              <GraduationCap size={18} />
+              <h2 className="label text-(--color-text-muted) uppercase">
+                Education
+              </h2>
+            </div>
+            <ol className="mt-5 grid gap-5 border-l border-(--color-border) pl-5">
+              {educationEntries.map((entry) => (
+                <li key={entry.id} className="relative">
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-1.5 -left-[1.6875rem] size-2.5 rounded-full border-2 border-(--color-accent-primary) bg-(--color-canvas)"
+                  />
+                  <h3 className="heading-md text-(--color-text-primary)">
                     {degreeLine(entry)}
                   </h3>
                   <p className="body-sm mt-1 font-medium text-(--color-text-secondary)">
@@ -116,26 +120,25 @@ export function ResumePage() {
                       .filter(Boolean)
                       .join(", ")}
                   </p>
-                  {entry.end ? (
-                    <p className="mono-meta mt-2 text-(--color-text-muted)">
-                      Graduation: {formatYearMonth(entry.end)}
+                  {entry.end || entry.start ? (
+                    <p className="mono-meta mt-1.5 text-(--color-text-muted)">
+                      {formatRange(entry)}
                     </p>
                   ) : null}
-                </div>
+                </li>
               ))}
-            </Surface>
+            </ol>
+          </Surface>
 
-            {/* Problem Solving Card */}
-            <Surface variant="default" className="p-6">
-              <div className="flex items-center gap-2.5 text-(--color-accent-primary)">
-                <Code2 size={18} />
-                <h2 className="label text-(--color-text-muted) uppercase">
-                  Problem Solving
-                </h2>
-              </div>
-              <ProblemSolvingStats columns={1} className="mt-4" />
-            </Surface>
-          </div>
+          <Surface variant="default" className="mt-6 p-6">
+            <div className="flex items-center gap-2.5 text-(--color-accent-primary)">
+              <Code2 size={18} />
+              <h2 className="label text-(--color-text-muted) uppercase">
+                Problem Solving
+              </h2>
+            </div>
+            <ProblemSolvingStats className="mt-4" />
+          </Surface>
 
           <Divider className="my-12" />
 

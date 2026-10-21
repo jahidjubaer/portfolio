@@ -42,6 +42,18 @@ export const dimikSolved = Number.isInteger(profile.problemSolving.dimikSolved)
   : null;
 
 /**
+ * Dimik OJ's own problem count, so the card reads "40 / 52". Null when it
+ * isn't entered, or when it's smaller than the solved count (a typo).
+ * @type {number | null}
+ */
+export const dimikTotal =
+  dimikSolved !== null &&
+  Number.isInteger(profile.problemSolving.dimikTotal) &&
+  profile.problemSolving.dimikTotal >= dimikSolved
+    ? profile.problemSolving.dimikTotal
+    : null;
+
+/**
  * The headline: distinct problems across every judge (overlaps counted
  * once) plus Dimik OJ. Null before the first sync, when the profile's own
  * summary is shown instead.

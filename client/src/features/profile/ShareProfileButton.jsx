@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Share2 } from "lucide-react";
 import { usePreferences } from "../preferences/usePreferences";
-import { siteConfig } from "../../config/site";
+import { shareProfile } from "./share-profile";
 
 /**
  * Copies the profile URL. Uses the native share sheet where the device has
@@ -16,20 +16,11 @@ export function ShareProfileButton() {
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
   async function handleShare() {
-    const url = siteConfig.url;
-    try {
-      if (navigator.share && window.matchMedia("(pointer: coarse)").matches) {
-        await navigator.share({ title: siteConfig.title, url });
-        return;
-      }
-      await navigator.clipboard.writeText(url);
-      play("success");
-      setCopied(true);
-      clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Share sheet dismissed or clipboard blocked — nothing to report.
-    }
+    if ((await shareProfile()) !== "copied") return;
+    play("success");
+    setCopied(true);
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setCopied(false), 2000);
   }
 
   return (

@@ -31,7 +31,9 @@
       "codeforcesHandle": "jahidjubaer17",
       "vjudgeHandle": "jahidjubaer01",
       "practiceRepo": "Programming",
-      "status": "paused"
+      "status": "paused",
+      "dimikSolved": 40,
+      "dimikTotal": 52
     },
     "resume": {
       "filename": "jahid-hasan-resume.pdf",
@@ -696,7 +698,7 @@
       "url": "https://scouts.gov.bd/"
     },
     {
-      "id": "abu-abbas-collage",
+      "id": "abu-abbas-college",
       "order": 14,
       "name": "Abu Abbas College"
     },
@@ -929,9 +931,9 @@
       ]
     },
     {
-      "id": "collage",
+      "id": "hsc-abu-abbas-college",
       "order": 1,
-      "organizationId": "abu-abbas-collage",
+      "organizationId": "abu-abbas-college",
       "degree": "Higher Secondary School Certificate (HSC)",
       "field": "Science Group",
       "start": "2019",
@@ -944,7 +946,7 @@
       "order": 3,
       "organizationId": "takerghat-chunapathar-khoni-secondary-school-and-college",
       "degree": "Secondary School Certificate",
-      "start": "2009-01",
+      "start": "2019-01",
       "end": "2019-01"
     }
   ],
@@ -1080,7 +1082,13 @@
       "issued": "2025-04",
       "skills": [
         "Python"
-      ]
+      ],
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/jahid-hasan-python-1-8Pd5XO2nuzdsO1ctHHp4MhzC55ULXT.webp",
+        "width": 2400,
+        "height": 1480
+      },
+      "imageAlt": "python"
     },
     {
       "id": "kaggle-pandas",
@@ -1094,7 +1102,13 @@
       "skills": [
         "Pandas",
         "Data manipulation"
-      ]
+      ],
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/jahid-hasan-pandas-1-2wschQ9LVwifygnOVFXiQVDcF01qs7.webp",
+        "width": 2400,
+        "height": 1480
+      },
+      "imageAlt": "jahid-hasan-pandas"
     },
     {
       "id": "sust-path-to-academic-excellence",
@@ -1109,7 +1123,13 @@
       "skills": [
         "Research ethics",
         "Academic writing"
-      ]
+      ],
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/487-1-rWJmQhm9VmL8O9WLBX5JvOk9xFgduU.webp",
+        "width": 2000,
+        "height": 1414
+      },
+      "imageAlt": "jahid-hasan-sust-path-to-academic-excellence"
     },
     {
       "id": "ononno-deep-focus",
@@ -1191,7 +1211,14 @@
       "category": "professional",
       "status": "completed",
       "issued": "2026-01",
-      "credentialId": "158/2026"
+      "credentialId": "158/2026",
+      "skills": [],
+      "image": {
+        "url": "https://xppqj5cqih9puvoz.public.blob.vercel-storage.com/images/158-1-jTRnzH6LXIn535Z75GFKDbf1rrZgjO.webp",
+        "width": 2400,
+        "height": 1697
+      },
+      "imageAlt": "jahid-hasan-innovation-through-research-a-pathway-to-higher-education"
     },
     {
       "id": "first-aid-disaster-response-camp",
@@ -1312,7 +1339,7 @@
     "intro": {
       "enabled": true,
       "sound": true,
-      "style": "torn"
+      "style": "aperture"
     },
     "profileSections": [
       {

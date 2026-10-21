@@ -5,6 +5,7 @@ import { RouteLoading } from "../components/feedback/RouteLoading";
 import { LeftRail } from "../components/layout/LeftRail";
 import { RightRail } from "../components/layout/RightRail";
 import { BottomNav } from "../components/layout/BottomNav";
+import { BackToTop } from "../components/layout/BackToTop";
 import { ShellFooter } from "../components/layout/ShellFooter";
 import { PreferencesProvider } from "../features/preferences/PreferencesProvider";
 import { PageTransition } from "../features/motion/PageTransition";
@@ -37,6 +38,7 @@ export function AppLayout() {
         <RightRail />
       </div>
       <BottomNav />
+      <BackToTop />
       <CommandPalette />
       <AskJahid />
       <GreetingPopup />
