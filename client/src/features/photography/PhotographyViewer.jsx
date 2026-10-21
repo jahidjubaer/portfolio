@@ -6,6 +6,7 @@ import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 import { ImageWithFallback } from "../../components/media/ImageWithFallback";
 import { IconButton } from "../../components/ui/IconButton";
 import { detectTextLanguage } from "../../lib/language";
+import { PHOTO_ZOOM } from "./photo-zoom";
 
 function getFocusableElements(container) {
   if (!container) return [];
@@ -29,7 +30,9 @@ function getFocusableElements(container) {
  *   onNext: () => void,
  *   hasPrevious: boolean,
  *   hasNext: boolean,
- * }} props
+ *   zoom?: boolean,
+ * }} props  `zoom`: a view transition zooms the image in and out (see
+ *   photo-zoom.js), so the panel skips its own fade.
  */
 export function PhotographyViewer({
   photograph,
@@ -38,6 +41,7 @@ export function PhotographyViewer({
   onNext,
   hasPrevious,
   hasNext,
+  zoom = false,
 }) {
   const panelRef = useRef(null);
 
@@ -90,7 +94,7 @@ export function PhotographyViewer({
           : "Photograph viewer"
       }
       variants={fadeVariants}
-      initial="hidden"
+      initial={zoom ? false : "hidden"}
       animate="visible"
       exit="hidden"
       className="fixed inset-0 z-(--z-overlay) flex items-center justify-center bg-black/85 p-4"
@@ -124,15 +128,21 @@ export function PhotographyViewer({
       ) : null}
 
       <figure className="flex max-h-full max-w-full flex-col items-center">
-        <ImageWithFallback
-          src={photograph.src}
-          fallbackSrc="/assets/placeholders/photography-placeholder.svg"
-          alt={photograph.alt}
-          width={photograph.width}
-          height={photograph.height}
-          className="h-auto max-h-[80vh] max-w-full object-contain"
-          loading="eager"
-        />
+        <div
+          data-photo-viewer
+          className="w-fit max-w-full overflow-hidden rounded-(--radius-sm)"
+          style={zoom ? PHOTO_ZOOM : undefined}
+        >
+          <ImageWithFallback
+            src={photograph.src}
+            fallbackSrc="/assets/placeholders/photography-placeholder.svg"
+            alt={photograph.alt}
+            width={photograph.width}
+            height={photograph.height}
+            className="h-auto max-h-[80vh] max-w-full object-contain"
+            loading="eager"
+          />
+        </div>
         {photograph.title ? (
           <figcaption
             lang={detectTextLanguage(photograph.title)}

@@ -97,3 +97,42 @@ test("a new page starts at the top and Back returns to where you were", async ({
     .poll(() => page.evaluate(() => window.scrollY))
     .toBeCloseTo(before, -1);
 });
+
+test("a photo zooms out of its frame into the viewer and back", async ({
+  page,
+}) => {
+  await watchViewTransitions(page);
+  await page.route("**/_vercel/insights/**", (route) =>
+    route.fulfill({ status: 200, contentType: "text/javascript", body: "" }),
+  );
+  await page.goto("/beyond");
+  const frames = page.locator("[data-photo-id]");
+  test.skip((await frames.count()) === 0, "No photos published.");
+
+  const frame = page.getByRole("listitem").getByRole("button").first();
+  await frame.click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.waitForFunction(() => window.__viewTransitions[0]?.done);
+
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await page.waitForFunction(() => window.__viewTransitions[1]?.done);
+  await expect(frame).toBeFocused();
+
+  const [open, close] = await page.evaluate(() => window.__viewTransitions);
+  expect(open).toMatchObject({
+    before: ["photo-zoom"],
+    after: ["photo-zoom"],
+  });
+  expect(close).toMatchObject({
+    before: ["photo-zoom"],
+    after: ["photo-zoom"],
+  });
+  // Afterwards nothing keeps the name, ready for the next photo.
+  const left = await page.evaluate(() =>
+    [...document.querySelectorAll("[data-photo-id], [data-photo-viewer]")]
+      .map((el) => getComputedStyle(el).viewTransitionName)
+      .filter((name) => name !== "none"),
+  );
+  expect(left).toEqual([]);
+});
