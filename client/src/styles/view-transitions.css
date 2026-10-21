@@ -43,6 +43,15 @@
   object-fit: cover;
 }
 
+/* Theme switch (features/preferences/theme-transition.js): the new
+   theme opens over the old one as an aperture iris, animated from JS;
+   no cross-fade underneath. */
+:root[data-theme-switch]::view-transition-old(root),
+:root[data-theme-switch]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),

@@ -3,7 +3,7 @@ import { createContext } from "react";
 /**
  * @typedef {{
  *   theme: "light" | "dark",
- *   toggleTheme: () => void,
+ *   toggleTheme: (event?: { currentTarget?: Element }) => void,
  *   soundEnabled: boolean,
  *   toggleSound: () => void,
  *   accent: string,

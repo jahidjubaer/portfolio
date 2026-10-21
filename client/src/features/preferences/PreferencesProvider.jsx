@@ -16,6 +16,7 @@ import {
 } from "./preference-storage";
 import { playSound } from "./sound-engine";
 import { loadFont } from "./font-loader";
+import { originOf, switchThemeWithAperture } from "./theme-transition";
 import { useIsHydrating } from "../../lib/hydration";
 
 const THEME_COLORS = { dark: "#09090b", light: "#ffffff" };
@@ -91,12 +92,19 @@ export function PreferencesProvider({ children }) {
     [soundEnabled],
   );
 
-  const toggleTheme = useCallback(() => {
-    const next = theme === "dark" ? "light" : "dark";
-    writePreference(THEME_STORAGE_KEY, next);
-    setTheme(next);
-    play("toggle");
-  }, [theme, play]);
+  // Called from the toggle's click or a theme radio's change; the event's
+  // control is where the new theme opens from.
+  const toggleTheme = useCallback(
+    (event) => {
+      const next = theme === "dark" ? "light" : "dark";
+      writePreference(THEME_STORAGE_KEY, next);
+      switchThemeWithAperture(originOf(event?.currentTarget), () =>
+        setTheme(next),
+      );
+      play("toggle");
+    },
+    [theme, play],
+  );
 
   const toggleSound = useCallback(() => {
     const next = !soundEnabled;
