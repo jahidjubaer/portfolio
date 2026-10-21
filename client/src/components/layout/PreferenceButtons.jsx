@@ -3,7 +3,7 @@ import { usePreferences } from "../../features/preferences/usePreferences";
 import { cn } from "../../lib/cn";
 
 export const ROUND_BUTTON =
-  "inline-grid size-11 place-items-center rounded-full border border-(--color-border) bg-(--color-surface-raised) text-(--color-text-secondary) transition-colors duration-(--duration-quick) hover:text-(--color-text-primary) hover:border-(--color-border-strong)";
+  "inline-grid size-11 place-items-center rounded-full border border-(--color-border) bg-(--color-surface-raised) text-(--color-text-secondary) transition-[color,border-color,transform] duration-(--duration-quick) hover:text-(--color-text-primary) hover:border-(--color-border-strong) motion-safe:active:scale-95";
 
 /** @param {{ className?: string }} props */
 export function ThemeToggleButton({ className }) {

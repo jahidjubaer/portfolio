@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import { FocusBrackets } from "../../components/ui/FocusBrackets";
 import { cn } from "../../lib/cn";
 
 /**
@@ -28,10 +29,11 @@ export function ExternalSiteCard({
       target="_blank"
       rel="noreferrer"
       className={cn(
-        "group relative flex items-center gap-4 overflow-hidden rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-5 transition-colors hover:border-(--color-accent-primary)/60 focus-visible:border-(--color-accent-primary) sm:p-6",
+        "has-brackets group relative flex items-center gap-4 overflow-hidden rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-5 transition-colors hover:border-(--color-accent-primary)/60 focus-visible:border-(--color-accent-primary) sm:p-6",
         className,
       )}
     >
+      <FocusBrackets inside />
       {/* Soft accent wash in the corner; decoration only. */}
       <span
         aria-hidden="true"

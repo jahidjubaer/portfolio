@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { BookOpen, Globe, Lock } from "lucide-react";
-import { SpotlightCard } from "../../components/ui/SpotlightCard";
+import { FocusBrackets } from "../../components/ui/FocusBrackets";
 import { ImageWithFallback } from "../../components/media/ImageWithFallback";
 import { GitHubIcon } from "../../components/icons/BrandIcons";
 import { getProjectMedia } from "../../lib/project-assets";
@@ -71,10 +71,13 @@ export function ProjectCard({
   const morphing = useIsViewTransitioningPath(href);
 
   return (
-    <SpotlightCard
-      as="article"
-      className={cn("group flex h-full flex-col p-1.5", className)}
+    <article
+      className={cn(
+        "has-brackets group flex h-full flex-col rounded-(--radius-xl) border border-(--color-border) bg-(--color-surface) p-1.5",
+        className,
+      )}
     >
+      <FocusBrackets />
       <div
         className="project-media-gradient relative h-48 overflow-hidden rounded-[1.0625rem] sm:h-52"
         style={projectCoverTransition(project.slug, morphing)}
@@ -175,6 +178,6 @@ export function ProjectCard({
           ) : null}
         </div>
       </div>
-    </SpotlightCard>
+    </article>
   );
 }

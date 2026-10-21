@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { FocusBrackets } from "../../components/ui/FocusBrackets";
 import { Surface } from "../../components/ui/Surface";
 import { Tag } from "../../components/ui/Tag";
 import { ImageWithFallback } from "../../components/media/ImageWithFallback";
@@ -31,10 +32,11 @@ export function PostCard({
     <Surface
       as="article"
       className={cn(
-        "relative flex h-full flex-col p-6 transition-colors focus-within:border-(--color-accent-primary) hover:border-(--color-border-strong)",
+        "has-brackets relative flex h-full flex-col p-6 transition-colors focus-within:border-(--color-accent-primary) hover:border-(--color-border-strong)",
         className,
       )}
     >
+      <FocusBrackets />
       <div className="-mx-6 -mt-6 mb-6 aspect-video overflow-hidden rounded-t-(--radius-md) border-b border-(--color-border)">
         <ImageWithFallback
           src={post.cover?.url}

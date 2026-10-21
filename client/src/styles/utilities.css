@@ -87,6 +87,71 @@
     opacity: 1;
   }
 
+  /* Viewfinder focus brackets (components/ui/FocusBrackets.jsx): four
+     corner marks drawn as background gradients on one empty span. They
+     rest slightly wide and invisible, and snap in when their
+     `.has-brackets` card is hovered (mouse) or holds keyboard focus. */
+  .has-brackets {
+    position: relative;
+  }
+
+  .focus-brackets {
+    --bracket-color: var(--color-accent-primary);
+    --bracket-len: 0.75rem;
+    --bracket-w: 2px;
+    position: absolute;
+    inset: -0.375rem;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: 0;
+    background:
+      linear-gradient(var(--bracket-color) 0 0) top left / var(--bracket-len)
+        var(--bracket-w),
+      linear-gradient(var(--bracket-color) 0 0) top left / var(--bracket-w)
+        var(--bracket-len),
+      linear-gradient(var(--bracket-color) 0 0) top right / var(--bracket-len)
+        var(--bracket-w),
+      linear-gradient(var(--bracket-color) 0 0) top right / var(--bracket-w)
+        var(--bracket-len),
+      linear-gradient(var(--bracket-color) 0 0) bottom left / var(--bracket-len)
+        var(--bracket-w),
+      linear-gradient(var(--bracket-color) 0 0) bottom left / var(--bracket-w)
+        var(--bracket-len),
+      linear-gradient(var(--bracket-color) 0 0) bottom right /
+        var(--bracket-len) var(--bracket-w),
+      linear-gradient(var(--bracket-color) 0 0) bottom right / var(--bracket-w)
+        var(--bracket-len);
+    background-repeat: no-repeat;
+    opacity: 0;
+    transform: scale(1.025);
+    transition:
+      opacity var(--duration-quick) var(--ease-standard),
+      transform var(--duration-standard) var(--ease-standard);
+  }
+
+  .focus-brackets-inside {
+    inset: 0.5rem;
+  }
+
+  .has-brackets:focus-within > .focus-brackets {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .has-brackets:hover > .focus-brackets {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .focus-brackets {
+      transform: none;
+      transition: opacity var(--duration-quick) linear;
+    }
+  }
+
   /* Soft accent wash used by the "open to" and contact hero cards. */
   .glow-surface {
     background:

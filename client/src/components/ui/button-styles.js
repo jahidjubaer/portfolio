@@ -6,7 +6,7 @@ export const BUTTON_SIZES = ["sm", "md", "lg"];
 const VARIANT_CLASSES = {
   // Lit-from-inside fill: gradient + top highlight + accent edge + soft glow.
   primary:
-    "bg-linear-to-b from-(--color-accent-fill-from) to-(--color-accent-fill-to) text-(--color-on-accent-primary) border border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_1px_var(--color-accent-edge),0_8px_24px_-8px_var(--color-accent-glow)] hover:brightness-105 active:translate-y-px",
+    "bg-linear-to-b from-(--color-accent-fill-from) to-(--color-accent-fill-to) text-(--color-on-accent-primary) border border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_1px_var(--color-accent-edge),0_8px_24px_-8px_var(--color-accent-glow)] hover:brightness-105",
   secondary:
     "bg-(--color-surface-raised) text-(--color-text-primary) border border-(--color-border-strong) hover:border-(--color-text-muted)",
   ghost:
@@ -32,7 +32,7 @@ export function getButtonClasses({
   className = "",
 } = {}) {
   return cn(
-    "inline-flex items-center justify-center rounded-(--radius-md) font-semibold transition-[color,background-color,border-color,filter,transform] duration-(--duration-quick) min-touch-target",
+    "inline-flex items-center justify-center rounded-(--radius-md) font-semibold transition-[color,background-color,border-color,filter,transform] duration-(--duration-quick) min-touch-target motion-safe:active:scale-[0.97]",
     variant !== "text" && SIZE_CLASSES[size],
     VARIANT_CLASSES[variant],
     disabled && "cursor-not-allowed opacity-50",

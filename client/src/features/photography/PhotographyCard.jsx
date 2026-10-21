@@ -1,4 +1,5 @@
 import { ImageWithFallback } from "../../components/media/ImageWithFallback";
+import { FocusBrackets } from "../../components/ui/FocusBrackets";
 import { detectTextLanguage } from "../../lib/language";
 
 /**
@@ -23,8 +24,9 @@ export function PhotographyCard({ photograph, frame, onSelect }) {
     <button
       type="button"
       onClick={handleClick}
-      className="group block w-full rounded-(--radius-sm) bg-[#141414] p-1.5 pb-0 text-left shadow-[0_1px_2px_rgba(0,0,0,0.2)] transition-[translate,box-shadow] duration-(--duration-standard) ease-(--ease-standard) motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-[0_14px_30px_-14px_rgba(0,0,0,0.55)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-accent-primary)"
+      className="has-brackets group block w-full rounded-(--radius-sm) bg-[#141414] p-1.5 pb-0 text-left shadow-[0_1px_2px_rgba(0,0,0,0.2)] transition-[translate,box-shadow] duration-(--duration-standard) ease-(--ease-standard) motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-[0_14px_30px_-14px_rgba(0,0,0,0.55)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-accent-primary)"
     >
+      <FocusBrackets />
       <span
         data-photo-id={photograph.id}
         className="block overflow-hidden rounded-[0.1875rem]"
