@@ -4,11 +4,11 @@ import {
   Download,
   FileText,
   GraduationCap,
-  Layers,
   Target,
 } from "lucide-react";
 import { ProfileSection } from "./ProfileSection";
 import { CertificationsSection } from "./CertificationsSection";
+import { SkillsSection } from "./SkillsSection";
 import { ButtonLink } from "../../components/ui/ButtonLink";
 import { cn } from "../../lib/cn";
 import { profile } from "../../data/profile";
@@ -17,7 +17,6 @@ import { educationEntries } from "../../data/education";
 import { ExperienceList } from "../experience/ExperienceList";
 import { EducationList } from "../credentials/EducationList";
 import { ShowAllLink } from "./ShowAllLink";
-import { capabilityGroups } from "../../data/capabilities";
 import { githubSnapshot } from "../../data/github";
 import { codingStats, dimikSolved, distinctSolved } from "../../data/coding";
 import { siteSettings } from "../../data/settings";
@@ -133,45 +132,6 @@ function EducationSection() {
           </li>
         ))}
       </ul>
-    </ProfileSection>
-  );
-}
-
-function SkillsSection() {
-  return (
-    <ProfileSection id="skills" icon={Layers} title="Skills">
-      <div className="grid gap-5">
-        {capabilityGroups.map((group) => {
-          const learning = group.id === "currently-expanding";
-          return (
-            <div key={group.id}>
-              <h3 className="mb-2.5 text-sm font-semibold text-(--color-text-secondary)">
-                {group.title}
-                {learning ? (
-                  <span className="ml-2 font-normal text-(--color-text-muted)">
-                    learning, not expert yet
-                  </span>
-                ) : null}
-              </h3>
-              <ul className="flex flex-wrap gap-2">
-                {group.items.map((item) => (
-                  <li
-                    key={item}
-                    className={cn(
-                      "rounded-full border bg-(--color-surface-raised) px-3 py-1 text-sm font-medium",
-                      learning
-                        ? "border-dashed border-(--color-border-strong) text-(--color-text-secondary)"
-                        : "border-(--color-border) text-(--color-text-primary)",
-                    )}
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          );
-        })}
-      </div>
     </ProfileSection>
   );
 }
