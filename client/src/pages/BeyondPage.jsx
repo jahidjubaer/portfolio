@@ -12,6 +12,7 @@ import { Container } from "../components/ui/Container";
 import { ButtonLink } from "../components/ui/ButtonLink";
 import { Surface } from "../components/ui/Surface";
 import { Tag } from "../components/ui/Tag";
+import { FrameRule } from "../components/ui/FrameRule";
 import { Divider } from "../components/ui/Divider";
 import { Reveal } from "../features/motion/Reveal";
 import { PhotographyGallery } from "../features/photography/PhotographyGallery";
@@ -35,13 +36,15 @@ export function BeyondPage() {
   const samplePhotos = photographs.slice(0, showcase.limit);
 
   return (
-    <>
+    // Beyond is the personal side: a warm darkroom "safelight" accent
+    // (data-mood in accents.css) and a faint film grain.
+    <div data-mood="story" className="film-grain">
       <PageHeader>
         <PageHeaderTitle>Beyond</PageHeaderTitle>
       </PageHeader>
       <Container as="div" className="section-spacing max-w-5xl">
         <Reveal>
-          <div className="inline-flex items-center gap-2 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-soft) px-3.5 py-1 text-xs font-mono text-(--color-accent-secondary)">
+          <div className="inline-flex items-center gap-2 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-soft) px-3.5 py-1 text-xs font-mono text-(--color-accent-primary)">
             <Sparkles size={13} />
             <span>STORY / BEYOND THE CODE</span>
           </div>
@@ -58,14 +61,15 @@ export function BeyondPage() {
 
         {/* Photography Section */}
         <section className="mt-14">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-(--color-border) pb-4">
-            <div className="flex items-center gap-2 text-(--color-text-primary)">
+          <div className="flex">
+            <div className="flex flex-1 items-center gap-2 text-(--color-text-primary)">
               <Camera size={20} className="text-(--color-accent-primary)" />
-              <h2 className="heading-md text-(--color-text-primary)">
+              <h2 className="frame-heading heading-md flex flex-1 items-baseline gap-3 text-(--color-text-primary)">
                 Photography Showcase
               </h2>
             </div>
           </div>
+          <FrameRule className="mt-3" />
 
           {samplePhotos.length > 0 ? (
             <div className="mt-6">
@@ -100,12 +104,13 @@ export function BeyondPage() {
 
         {/* Sports & Campus Activities */}
         <section>
-          <div className="flex items-center gap-2 border-b border-(--color-border) pb-4">
+          <div className="flex items-center gap-2">
             <Trophy size={20} className="text-(--color-accent-secondary)" />
-            <h2 className="heading-md text-(--color-text-primary)">
+            <h2 className="frame-heading heading-md flex flex-1 items-baseline gap-3 text-(--color-text-primary)">
               Sports & Athletics Leadership
             </h2>
           </div>
+          <FrameRule className="mt-3" />
           <div className="mt-6 grid gap-5 sm:grid-cols-1">
             {sportsHighlights.map((item) => (
               <Surface key={item.title} variant="raised" className="p-6">
@@ -129,12 +134,13 @@ export function BeyondPage() {
 
         {/* Club Leadership */}
         <section>
-          <div className="flex items-center gap-2 border-b border-(--color-border) pb-4">
+          <div className="flex items-center gap-2">
             <Users size={20} className="text-(--color-accent-primary)" />
-            <h2 className="heading-md text-(--color-text-primary)">
+            <h2 className="frame-heading heading-md flex flex-1 items-baseline gap-3 text-(--color-text-primary)">
               University Club Leadership
             </h2>
           </div>
+          <FrameRule className="mt-3" />
           <div className="mt-6 grid gap-5 sm:grid-cols-2">
             {leadershipRoles.map((role) => (
               <Surface
@@ -163,12 +169,13 @@ export function BeyondPage() {
 
         {/* Volunteering & Community */}
         <section>
-          <div className="flex items-center gap-2 border-b border-(--color-border) pb-4">
+          <div className="flex items-center gap-2">
             <Heart size={20} className="text-(--color-danger)" />
-            <h2 className="heading-md text-(--color-text-primary)">
+            <h2 className="frame-heading heading-md flex flex-1 items-baseline gap-3 text-(--color-text-primary)">
               Volunteering & Social Impact
             </h2>
           </div>
+          <FrameRule className="mt-3" />
           <div className="mt-6 grid gap-5 sm:grid-cols-1">
             {volunteeringHighlights.map((item) => (
               <Surface key={item.organization} variant="raised" className="p-6">
@@ -201,7 +208,7 @@ export function BeyondPage() {
 
             {/* Languages & interests */}
             <section aria-labelledby="languages-heading">
-              <div className="flex items-center gap-2 border-b border-(--color-border) pb-4">
+              <div className="flex items-center gap-2">
                 <Languages
                   size={20}
                   aria-hidden="true"
@@ -209,11 +216,12 @@ export function BeyondPage() {
                 />
                 <h2
                   id="languages-heading"
-                  className="heading-md text-(--color-text-primary)"
+                  className="frame-heading heading-md flex flex-1 items-baseline gap-3 text-(--color-text-primary)"
                 >
                   Languages &amp; interests
                 </h2>
               </div>
+              <FrameRule className="mt-3" />
               <div className="mt-6 grid gap-5 md:grid-cols-2">
                 {languages.length > 0 ? (
                   <Surface variant="raised" className="p-6">
@@ -279,6 +287,6 @@ export function BeyondPage() {
           </Surface>
         </Reveal>
       </Container>
-    </>
+    </div>
   );
 }

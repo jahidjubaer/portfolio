@@ -100,3 +100,26 @@
   --color-banner-mid: #f59e0b;
   --color-banner-lo: #fcd34d;
 }
+
+/* Beyond's "safelight" mood: the warm amber of a darkroom lamp, whatever
+   accent the visitor picked for the rest of the site (BeyondPage sets
+   data-mood on its wrapper). */
+[data-mood="story"] {
+  --color-accent-primary: #fcd34d;
+  --color-accent-primary-soft: rgba(251, 191, 36, 0.12);
+  --color-accent-secondary: #fb923c;
+  --color-accent-fill-from: #fcd34d;
+  --color-accent-fill: #fbbf24;
+  --color-accent-fill-to: #f59e0b;
+  --color-accent-edge: #b45309;
+  --color-on-accent-primary: #451a03;
+  --color-accent-glow: rgba(251, 191, 36, 0.16);
+}
+
+:root[data-theme="light"] [data-mood="story"] {
+  --color-accent-primary: #92400e;
+  --color-accent-primary-soft: rgba(217, 119, 6, 0.12);
+  --color-accent-secondary: #c2410c;
+  --color-accent-edge: #d97706;
+  --color-accent-glow: rgba(245, 158, 11, 0.2);
+}
