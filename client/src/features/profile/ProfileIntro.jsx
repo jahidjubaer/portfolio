@@ -4,35 +4,15 @@ import { Link } from "react-router-dom";
 import { ImageWithFallback } from "../../components/media/ImageWithFallback";
 import { FocusBrackets } from "../../components/ui/FocusBrackets";
 import { TechLogo } from "../../components/icons/TechIcons";
-import { TECH_LOGOS } from "../../components/icons/tech-logos";
 import { cn } from "../../lib/cn";
 import { profile } from "../../data/profile";
 import { navSetting, siteSettings } from "../../data/settings";
 import { nowStudying } from "../../data/learning";
-import { capabilityGroups } from "../../data/capabilities";
 import { assetManifest } from "../../generated/asset-manifest";
 import { DURATIONS, EASE_STANDARD } from "../motion/motion-config";
 import { fadeUpVariants } from "../motion/motion-variants";
+import { HEADLINE_TECH } from "./headline-tech";
 import { INTRO_MS } from "./viewfinder";
-
-const strengths = capabilityGroups.find(
-  (group) => group.id === "current-strengths",
-);
-const expanding = capabilityGroups.find(
-  (group) => group.id === "currently-expanding",
-);
-
-// Headline stack (every technology with a logo): today's strengths, the
-// competitive-programming language, then the back-end tools being learned.
-const HEADLINE_TECH = [
-  ...strengths.items
-    .filter((item) => TECH_LOGOS[item])
-    .map((name) => ({ name, learning: false })),
-  { name: profile.problemSolving.primaryLanguage, learning: false },
-  ...expanding.items
-    .filter((item) => TECH_LOGOS[item])
-    .map((name) => ({ name, learning: true })),
-];
 
 const READOUT = "font-mono text-[0.8125rem] uppercase tracking-[0.08em]";
 

@@ -435,3 +435,20 @@
     opacity: 1;
   }
 }
+
+/* A shutter print (ProfileBanner) developing: washed out and soft, then
+   the picture comes up. The reduced-motion baseline shows it developed. */
+.print-develop > * {
+  animation: print-develop 1.4s ease-out both;
+}
+
+@keyframes print-develop {
+  from {
+    filter: sepia(0.7) brightness(1.7) contrast(0.45) blur(1.5px);
+    opacity: 0.35;
+  }
+  to {
+    filter: none;
+    opacity: 1;
+  }
+}
