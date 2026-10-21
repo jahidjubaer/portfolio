@@ -14,6 +14,16 @@ export function isAiConfigured() {
   return Boolean(env.geminiApiKey);
 }
 
+/**
+ * The HTTP status of a failed model call. After its retries the AI SDK
+ * wraps the last error (a RetryError), so the status sits one level down.
+ */
+export function statusOf(error) {
+  return (
+    error?.statusCode ?? error?.status ?? error?.lastError?.statusCode ?? null
+  );
+}
+
 // CLAUDE.md content rules, restated for the model: nothing that isn't in
 // the repository, and no inflated framing.
 const INSTRUCTIONS = `You draft portfolio content for Jahid Hasan, a junior frontend developer (React) who is growing into full-stack work and exploring AI/ML.
@@ -115,7 +125,7 @@ async function draft(schema, prompt) {
     });
     return output;
   } catch (error) {
-    const status = error.statusCode ?? error.status;
+    const status = statusOf(error);
     if (status === 429) {
       throw httpError(
         429,

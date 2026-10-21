@@ -120,6 +120,25 @@ describe("POST /api/ask", () => {
     expect(response.body.error).toBe("Questions aren't available right now.");
   });
 
+  it("reports a used-up quota even when the SDK wraps it after retrying", async () => {
+    generateText.mockRejectedValue(
+      Object.assign(new Error("Failed after 2 attempts"), {
+        name: "AI_RetryError",
+        lastError: { statusCode: 429 },
+      }),
+    );
+    const response = await ask({ question: "What does he build?" });
+    expect(response.status).toBe(429);
+    expect(response.body.error).toMatch(/That's all the questions for now/);
+  });
+
+  it("uses the Ask model, not the drafts' model", async () => {
+    generateText.mockResolvedValue({ output: { answer: "Yes.", sources: [] } });
+    await ask({ question: "What does he build?" });
+    expect(generateText.mock.calls[0][0].model.modelId).toBe(env.askModel);
+    expect(env.askModel).not.toBe(env.aiModel);
+  });
+
   it("turns model failures into a short message", async () => {
     generateText.mockRejectedValue(
       Object.assign(new Error("x"), { statusCode: 429 }),

@@ -3,7 +3,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { z } from "zod";
 import { env } from "../config/env.js";
 import { getContentSnapshot } from "./contentService.js";
-import { isAiConfigured } from "./aiDraftService.js";
+import { isAiConfigured, statusOf } from "./aiDraftService.js";
 
 /*
  * "Ask about Jahid": a visitor's question answered from the site's own
@@ -211,18 +211,20 @@ export async function askAboutJahid(question, now = Date.now()) {
   try {
     ({ output } = await generateText({
       model: createGoogleGenerativeAI({ apiKey: env.geminiApiKey })(
-        env.aiModel,
+        env.askModel,
       ),
       instructions: INSTRUCTIONS,
       prompt: `FACTS\n\n${digest.text}\n\nQUESTION (from a visitor)\n${question}`,
       output: Output.object({ schema: answerSchema }),
       maxRetries: 1,
-      abortSignal: AbortSignal.timeout(30_000),
+      abortSignal: AbortSignal.timeout(45_000),
     }));
   } catch (error) {
-    const status = error.statusCode ?? error.status;
-    if (status === 429) {
-      throw httpError(429, "Too many questions right now. Try again soon.");
+    if (statusOf(error) === 429) {
+      throw httpError(
+        429,
+        "That's all the questions for now. Try again later, or use the Contact page.",
+      );
     }
     throw httpError(502, "Couldn't answer just now. Try again in a moment.");
   }

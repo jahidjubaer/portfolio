@@ -40,4 +40,8 @@ export const env = {
   geminiApiKey: process.env.GEMINI_API_KEY || "",
   // A Gemini model id on the free tier (ai.google.dev/gemini-api/docs/pricing).
   aiModel: process.env.GEMINI_MODEL || "gemini-3.8-flash",
+  // "Ask about Jahid" on the public site. A lighter model than the drafts':
+  // free-tier quotas are per model, so visitors' questions can't use up
+  // the drafts' (small) daily allowance, and short lookups answer fast.
+  askModel: process.env.GEMINI_ASK_MODEL || "gemini-3.5-flash-lite",
 };
