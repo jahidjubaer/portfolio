@@ -20,6 +20,7 @@ export const SOUND_STORAGE_KEY = "sound";
 export const ACCENT_STORAGE_KEY = "accent";
 export const FONT_STORAGE_KEY = "font";
 export const SCENE_STORAGE_KEY = "scene";
+export const AMBIENCE_STORAGE_KEY = "ambience";
 
 /** @param {string} key */
 export function readPreference(key) {
@@ -86,6 +87,11 @@ export function getInitialSoundEnabled() {
   return readPreference(SOUND_STORAGE_KEY) !== "off";
 }
 
+/** Season ambience (docs/15 S2) is off until the visitor turns it on. */
+export function getInitialAmbience() {
+  return readPreference(AMBIENCE_STORAGE_KEY) === "on";
+}
+
 /** Mirrors the inline script in client/index.html. */
 export function getInitialAccent() {
   const stored = readPreference(ACCENT_STORAGE_KEY);
@@ -108,6 +114,7 @@ export function getPrerenderedPreferences() {
     theme: SITE_DEFAULTS.theme === "light" ? "light" : "dark",
     scene: isSceneChoice(SITE_DEFAULTS.scene) ? SITE_DEFAULTS.scene : "none",
     soundEnabled: true,
+    ambienceEnabled: false,
     accent: SITE_DEFAULTS.accent,
     font: SITE_DEFAULTS.font,
   };

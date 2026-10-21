@@ -152,6 +152,8 @@
   /* Z-index scale */
   --z-header: 50;
   --z-mobile-menu: 40;
+  /* season weather (docs/15): over the page, under the header and rails */
+  --z-weather: 45;
   --z-rail: 55; /* above the sticky page header so rail popovers overlap it */
   --z-overlay: 60;
   --z-curtain: 90; /* opening animation; the skip link still sits above it */

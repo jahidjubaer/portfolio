@@ -119,6 +119,16 @@ describe("AppearanceMenu", () => {
       screen.getByRole("radio", { name: /^This season/ }),
     ).not.toBeChecked();
     expect(window.localStorage.getItem("scene")).toBe("sheet");
+
+    // The season's sounds: off until turned on, only while a season is on.
+    const sounds = screen.getByRole("switch", { name: "Winter sounds" });
+    expect(sounds).not.toBeChecked();
+    await user.click(sounds);
+    expect(sounds).toBeChecked();
+    expect(window.localStorage.getItem("ambience")).toBe("on");
+
+    await user.click(screen.getByRole("radio", { name: "Graphite" }));
+    expect(screen.queryByRole("switch", { name: "Winter sounds" })).toBeNull();
   });
 
   it("remembers a scene across visits, and ignores an unknown one", () => {

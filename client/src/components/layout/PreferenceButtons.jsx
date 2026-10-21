@@ -1,5 +1,16 @@
-import { Moon, Sun, Volume2, VolumeX } from "lucide-react";
+import {
+  CloudRain,
+  Flower2,
+  Moon,
+  Snowflake,
+  Sun,
+  Volume2,
+  VolumeX,
+  Wheat,
+  Wind,
+} from "lucide-react";
 import { usePreferences } from "../../features/preferences/usePreferences";
+import { seasonOption } from "../../features/preferences/appearance-options";
 import { cn } from "../../lib/cn";
 
 export const ROUND_BUTTON =
@@ -43,6 +54,53 @@ export function SoundToggleButton({ className }) {
       ) : (
         <VolumeX size={18} aria-hidden="true" />
       )}
+    </button>
+  );
+}
+
+const SEASON_ICONS = {
+  grishma: Sun,
+  barsha: CloudRain,
+  sharat: Wind,
+  hemanta: Wheat,
+  sheet: Snowflake,
+  basanta: Flower2,
+};
+
+/**
+ * Turns the season's ambience (docs/15 S2) on and off. Only there while
+ * a season is on; lit in the accent while it plays.
+ * @param {{ className?: string }} props
+ */
+export function AmbienceToggleButton({ className }) {
+  const { scene, ambienceEnabled, toggleAmbience, play } = usePreferences();
+  const season = seasonOption(scene);
+  if (!season) return null;
+  const Icon = SEASON_ICONS[season.id];
+  const label = ambienceEnabled
+    ? `Stop the ${season.label.toLowerCase()} sounds`
+    : `Play the ${season.label.toLowerCase()} sounds`;
+
+  function handleClick() {
+    toggleAmbience();
+    play("tap");
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      aria-pressed={ambienceEnabled}
+      aria-label={label}
+      title={label}
+      className={cn(
+        ROUND_BUTTON,
+        ambienceEnabled &&
+          "border-(--color-accent-primary) text-(--color-accent-primary) hover:text-(--color-accent-primary)",
+        className,
+      )}
+    >
+      <Icon size={18} aria-hidden="true" />
     </button>
   );
 }

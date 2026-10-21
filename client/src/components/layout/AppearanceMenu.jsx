@@ -1,6 +1,14 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { BookOpen, Check, Palette, Volume2, VolumeX, X } from "lucide-react";
+import {
+  AudioLines,
+  BookOpen,
+  Check,
+  Palette,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
 import { usePreferences } from "../../features/preferences/usePreferences";
 import {
   ACCENT_OPTIONS,
@@ -140,6 +148,8 @@ export function AppearanceMenu({ placement = "rail", className }) {
     chooseTheme,
     soundEnabled,
     toggleSound,
+    ambienceEnabled,
+    toggleAmbience,
     accent,
     setAccent,
     font,
@@ -228,7 +238,7 @@ export function AppearanceMenu({ placement = "rail", className }) {
             exit={{ opacity: 0, scale: 0.96, y: 4 }}
             transition={{ duration: 0.16 }}
             className={cn(
-              "absolute z-(--z-overlay) w-72 [@media(max-height:50rem)]:max-h-[calc(100dvh-4.5rem)] [@media(max-height:50rem)]:overflow-y-auto rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-4 shadow-(--shadow-md)",
+              "absolute z-(--z-overlay) max-h-[calc(100dvh-4.5rem)] w-72 overflow-y-auto rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-4 shadow-(--shadow-md)",
               PANEL_PLACEMENT[placement],
             )}
           >
@@ -308,6 +318,28 @@ export function AppearanceMenu({ placement = "rail", className }) {
                   />
                 ))}
               </div>
+              {shownSeason ? (
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={ambienceEnabled}
+                  onClick={toggleAmbience}
+                  className="mt-2 inline-flex min-h-11 w-full items-center gap-2 rounded-(--radius-sm) border border-(--color-border) px-3 text-sm font-medium text-(--color-text-secondary) transition-colors hover:text-(--color-text-primary) aria-checked:border-(--color-accent-primary) aria-checked:text-(--color-text-primary)"
+                >
+                  <AudioLines
+                    size={16}
+                    aria-hidden="true"
+                    className="text-(--color-accent-primary)"
+                  />
+                  {shownSeason.label} sounds
+                  <span
+                    aria-hidden="true"
+                    className="ml-auto font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-(--color-text-muted)"
+                  >
+                    {ambienceEnabled ? "On" : "Off"}
+                  </span>
+                </button>
+              ) : null}
             </fieldset>
 
             {scene === "none" ? (

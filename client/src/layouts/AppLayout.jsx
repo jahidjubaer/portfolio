@@ -13,6 +13,7 @@ import { CommandPalette } from "../features/command-palette/CommandPalette";
 import { AskJahid } from "../features/ask/AskJahid";
 import { GreetingPopup } from "../features/greeting/GreetingPopup";
 import { OpeningCurtain } from "../features/intro/OpeningCurtain";
+import { SeasonLayer } from "../features/seasons/SeasonLayer";
 
 /**
  * Three-column app shell: navigation rail | page column | highlights rail.
@@ -37,6 +38,7 @@ export function AppLayout() {
         </div>
         <RightRail />
       </div>
+      <SeasonLayer />
       <BottomNav />
       <BackToTop />
       <CommandPalette />

@@ -2,11 +2,13 @@ import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { PreferencesContext } from "./preferences-context";
 import {
   ACCENT_STORAGE_KEY,
+  AMBIENCE_STORAGE_KEY,
   FONT_STORAGE_KEY,
   SCENE_STORAGE_KEY,
   SOUND_STORAGE_KEY,
   THEME_STORAGE_KEY,
   getInitialAccent,
+  getInitialAmbience,
   getInitialFont,
   getInitialScene,
   getInitialSoundEnabled,
@@ -17,7 +19,12 @@ import {
   writePreference,
 } from "./preference-storage";
 import { playSound } from "./sound-engine";
-import { SEASON_AUTO, isSceneChoice, sceneOption } from "./appearance-options";
+import {
+  SEASON_AUTO,
+  isSceneChoice,
+  sceneOption,
+  seasonOption,
+} from "./appearance-options";
 import { seasonOn } from "./seasons";
 import { loadFont } from "./font-loader";
 import { originOf, switchThemeWithAperture } from "./theme-transition";
@@ -49,6 +56,7 @@ export function PreferencesProvider({ children }) {
           theme: getInitialTheme(),
           scene: getInitialScene(),
           soundEnabled: getInitialSoundEnabled(),
+          ambienceEnabled: getInitialAmbience(),
           accent: getInitialAccent(),
           font: getInitialFont(),
         },
@@ -61,6 +69,9 @@ export function PreferencesProvider({ children }) {
   );
   const theme = activeScene ? activeScene.base : plainTheme;
   const [soundEnabled, setSoundEnabled] = useState(initial.soundEnabled);
+  const [ambienceEnabled, setAmbienceEnabled] = useState(
+    initial.ambienceEnabled,
+  );
   const [accent, setAccentState] = useState(initial.accent);
   const [font, setFontState] = useState(initial.font);
 
@@ -68,6 +79,7 @@ export function PreferencesProvider({ children }) {
     setTheme(getInitialTheme());
     setSceneState(getInitialScene());
     setSoundEnabled(getInitialSoundEnabled());
+    setAmbienceEnabled(getInitialAmbience());
     setAccentState(getInitialAccent());
     setFontState(getInitialFont());
   }, []);
@@ -111,6 +123,27 @@ export function PreferencesProvider({ children }) {
     query.addEventListener("change", handleChange);
     return () => query.removeEventListener("change", handleChange);
   }, []);
+
+  // The season's ambience (docs/15 S2), loaded only once it's turned on.
+  const seasonId = seasonOption(activeScene?.id)?.id ?? null;
+  useEffect(() => {
+    if (!ambienceEnabled || !seasonId) return undefined;
+    let stop = null;
+    let cancelled = false;
+    import("../seasons/ambience").then((module) => {
+      if (!cancelled) stop = module.startAmbience(seasonId);
+    });
+    return () => {
+      cancelled = true;
+      stop?.();
+    };
+  }, [ambienceEnabled, seasonId]);
+
+  const toggleAmbience = useCallback(() => {
+    const next = !ambienceEnabled;
+    writePreference(AMBIENCE_STORAGE_KEY, next ? "on" : "off");
+    setAmbienceEnabled(next);
+  }, [ambienceEnabled]);
 
   const play = useCallback(
     (name) => {
@@ -193,6 +226,8 @@ export function PreferencesProvider({ children }) {
         chooseTheme,
         soundEnabled,
         toggleSound,
+        ambienceEnabled,
+        toggleAmbience,
         accent,
         setAccent,
         font,

@@ -4,7 +4,11 @@ import { Search, Sparkles } from "lucide-react";
 import { openAsk } from "../../features/ask/ask-events";
 import { PRIMARY_NAV, SECONDARY_NAV } from "../../config/navigation";
 import { usePreferences } from "../../features/preferences/usePreferences";
-import { ThemeToggleButton, SoundToggleButton } from "./PreferenceButtons";
+import {
+  AmbienceToggleButton,
+  ThemeToggleButton,
+  SoundToggleButton,
+} from "./PreferenceButtons";
 import { BrandMark } from "./BrandMark";
 import { AppearanceMenu } from "./AppearanceMenu";
 import { cn } from "../../lib/cn";
@@ -140,6 +144,7 @@ export function LeftRail() {
         <div className="flex flex-col items-center gap-2 xl:flex-row">
           <ThemeToggleButton />
           <SoundToggleButton />
+          <AmbienceToggleButton />
           <AppearanceMenu />
         </div>
         <p className="hidden text-sm text-(--color-text-muted) xl:block">

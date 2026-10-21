@@ -109,9 +109,20 @@ for (const path of ["/", "/work", "/contact"]) {
   });
 }
 
-// Every full theme (docs/14 R7) on the pages with the most colour: chosen
+// Every full theme (docs/14 R7) and season (docs/15) on the pages with the most colour: chosen
 // the way a visitor's earlier pick would be, from storage before load.
-const SCENES = ["darkroom", "cyanotype", "golden-hour", "night-shoot"];
+const SCENES = [
+  "darkroom",
+  "cyanotype",
+  "golden-hour",
+  "night-shoot",
+  "grishma",
+  "barsha",
+  "sharat",
+  "hemanta",
+  "sheet",
+  "basanta",
+];
 const SCENE_ROUTES = ["/", "/work/sarabo", "/writing", "/beyond", "/contact"];
 
 for (const scene of SCENES) {
