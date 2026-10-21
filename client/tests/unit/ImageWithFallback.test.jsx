@@ -32,6 +32,27 @@ describe("ImageWithFallback", () => {
     );
   });
 
+  it("offers a srcset and drops it when switching to the fallback", () => {
+    render(
+      <ImageWithFallback
+        src="/assets/projects/sarabo/cover.webp"
+        srcSet="/assets/projects/sarabo/cover-640w.webp 640w, /assets/projects/sarabo/cover.webp 1280w"
+        sizes="100vw"
+        fallbackSrc="/assets/placeholders/project-cover-placeholder.svg"
+        alt="Sarabo project cover"
+      />,
+    );
+    const image = screen.getByRole("img");
+    expect(image).toHaveAttribute(
+      "srcset",
+      "/assets/projects/sarabo/cover-640w.webp 640w, /assets/projects/sarabo/cover.webp 1280w",
+    );
+    expect(image).toHaveAttribute("sizes", "100vw");
+    fireEvent.error(image);
+    expect(screen.getByRole("img")).not.toHaveAttribute("srcset");
+    expect(screen.getByRole("img")).not.toHaveAttribute("sizes");
+  });
+
   it("does not loop forever if the fallback also fails", () => {
     render(
       <ImageWithFallback

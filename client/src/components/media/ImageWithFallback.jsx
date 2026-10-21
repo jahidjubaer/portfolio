@@ -6,6 +6,8 @@ import { cn } from "../../lib/cn";
  * against an infinite fallback loop if the fallback itself fails.
  * @param {{
  *   src: string,
+ *   srcSet?: string | null,
+ *   sizes?: string,
  *   fallbackSrc: string,
  *   alt: string,
  *   className?: string,
@@ -17,6 +19,8 @@ import { cn } from "../../lib/cn";
  */
 export function ImageWithFallback({
   src,
+  srcSet,
+  sizes,
   fallbackSrc,
   alt,
   className = "",
@@ -56,6 +60,8 @@ export function ImageWithFallback({
   return (
     <img
       src={currentSrc}
+      srcSet={currentSrc === src && srcSet ? srcSet : undefined}
+      sizes={currentSrc === src && srcSet ? sizes : undefined}
       alt={alt}
       className={cn(className)}
       width={width}

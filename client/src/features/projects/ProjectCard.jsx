@@ -83,6 +83,8 @@ export function ProjectCard({
         {cover.available ? (
           <ImageWithFallback
             src={cover.src}
+            srcSet={cover.srcSet}
+            sizes="(min-width: 640px) 400px, 100vw"
             fallbackSrc={cover.fallback}
             alt={`${project.title} project cover`}
             className="h-full w-full object-cover object-top transition-transform duration-(--duration-slow) ease-(--ease-standard) motion-safe:group-hover:scale-[1.03]"

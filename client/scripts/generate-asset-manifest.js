@@ -14,7 +14,13 @@
  *   3. Restart `npm run dev` (or run `npm run build`).
  *   4. The manifest regenerates automatically via the predev/prebuild hook.
  */
-import { readdirSync, statSync, mkdirSync, writeFileSync } from "node:fs";
+import {
+  readdirSync,
+  readFileSync,
+  statSync,
+  mkdirSync,
+  writeFileSync,
+} from "node:fs";
 import { join, dirname, extname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -103,6 +109,37 @@ function buildResume() {
     : { available: false, src: null };
 }
 
+// A smaller copy saved next to a project image as `<name>-640w.<ext>` is
+// offered through srcset, so narrow layouts don't download the full-size
+// file. The full-size file's width is read from its WebP header; for any
+// other format (or an unreadable header) no srcset is produced.
+const SMALL_VARIANT_WIDTH = 640;
+
+function readWebpWidth(path) {
+  const bytes = readFileSync(path);
+  if (bytes.toString("ascii", 8, 12) !== "WEBP") return null;
+  let offset = 12;
+  while (offset + 8 <= bytes.length) {
+    const type = bytes.toString("ascii", offset, offset + 4);
+    const size = bytes.readUInt32LE(offset + 4);
+    if (type === "VP8X") return 1 + bytes.readUIntLE(offset + 12, 3);
+    if (type === "VP8 ") return bytes.readUInt16LE(offset + 14) & 0x3fff;
+    if (type === "VP8L") return (bytes.readUInt32LE(offset + 9) & 0x3fff) + 1;
+    offset += 8 + size + (size % 2);
+  }
+  return null;
+}
+
+function buildSrcSet(dir, urlBase, file) {
+  const ext = extname(file);
+  const smallFile = `${file.slice(0, -ext.length)}-${SMALL_VARIANT_WIDTH}w${ext}`;
+  if (!listFiles(dir).includes(smallFile)) return null;
+  const width =
+    ext.toLowerCase() === ".webp" ? readWebpWidth(join(dir, file)) : null;
+  if (!width || width <= SMALL_VARIANT_WIDTH) return null;
+  return `${urlBase}/${smallFile} ${SMALL_VARIANT_WIDTH}w, ${urlBase}/${file} ${width}w`;
+}
+
 function buildProjectCover(slug) {
   const dir = join(ASSETS_DIR, "projects", slug);
   const file = findByBaseName(dir, "cover");
@@ -110,6 +147,7 @@ function buildProjectCover(slug) {
     ? {
         available: true,
         src: `/assets/projects/${slug}/${file}`,
+        srcSet: buildSrcSet(dir, `/assets/projects/${slug}`, file),
         fallback: PLACEHOLDERS.projectCover,
       }
     : { available: false, src: null, fallback: PLACEHOLDERS.projectCover };
@@ -126,6 +164,7 @@ function buildProjectGallery(slug) {
   return files.map((file) => ({
     file,
     src: `/assets/projects/${slug}/${file}`,
+    srcSet: buildSrcSet(dir, `/assets/projects/${slug}`, file),
   }));
 }
 

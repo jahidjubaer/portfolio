@@ -45,6 +45,8 @@ export function ProjectHero({ project }) {
         >
           <ImageWithFallback
             src={cover.src}
+            srcSet={cover.srcSet}
+            sizes="(min-width: 1024px) 600px, 100vw"
             fallbackSrc={cover.fallback}
             alt={`${project.title} project cover`}
             className="h-full w-full object-cover"

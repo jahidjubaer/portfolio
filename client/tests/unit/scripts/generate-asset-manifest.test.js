@@ -50,6 +50,22 @@ describe("generate-asset-manifest", () => {
     expect(files).toEqual([...files].sort());
   });
 
+  it("offers a 640w copy through srcSet only when a smaller copy exists", () => {
+    const manifest = buildManifest();
+    const { cover, gallery } = manifest.projects.sarabo;
+    expect(cover.srcSet).toBe(
+      "/assets/projects/sarabo/cover-640w.webp 640w, /assets/projects/sarabo/cover.webp 1280w",
+    );
+    const byFile = Object.fromEntries(
+      gallery.map((image) => [image.file, image.srcSet]),
+    );
+    // screenshot-03 is a narrow portrait shot, so it has no smaller copy.
+    expect(byFile["screenshot-03.webp"]).toBeNull();
+    expect(byFile["screenshot-01.webp"]).toBe(
+      "/assets/projects/sarabo/screenshot-01-640w.webp 640w, /assets/projects/sarabo/screenshot-01.webp 1280w",
+    );
+  });
+
   it("reports Beyond photography as unavailable when no images exist", () => {
     const manifest = buildManifest();
     expect(manifest.beyond.photography.available).toBe(false);

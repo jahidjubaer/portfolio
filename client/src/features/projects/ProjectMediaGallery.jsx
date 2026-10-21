@@ -9,7 +9,7 @@ import { ImageWithFallback } from "../../components/media/ImageWithFallback";
  * showing a screenshot placeholder.
  * @param {{
  *   title: string,
- *   images: { file: string, src: string }[],
+ *   images: { file: string, src: string, srcSet?: string | null }[],
  *   captionsByFile?: Record<string, string>,
  *   className?: string,
  * }} props
@@ -37,6 +37,8 @@ export function ProjectMediaGallery({
           >
             <ImageWithFallback
               src={image.src}
+              srcSet={image.srcSet}
+              sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
               fallbackSrc="/assets/placeholders/project-screenshot-placeholder.svg"
               alt={caption}
               className="aspect-video w-full object-cover"

@@ -23,40 +23,49 @@ export const assetManifest = {
       cover: {
         available: true,
         src: "/assets/projects/sarabo/cover.webp",
+        srcSet: "/assets/projects/sarabo/cover-640w.webp 640w, /assets/projects/sarabo/cover.webp 1280w",
         fallback: "/assets/placeholders/project-cover-placeholder.svg",
       },
       gallery: [
         {
           file: "screenshot-01.webp",
           src: "/assets/projects/sarabo/screenshot-01.webp",
+          srcSet: "/assets/projects/sarabo/screenshot-01-640w.webp 640w, /assets/projects/sarabo/screenshot-01.webp 1280w",
         },
         {
           file: "screenshot-02.webp",
           src: "/assets/projects/sarabo/screenshot-02.webp",
+          srcSet: "/assets/projects/sarabo/screenshot-02-640w.webp 640w, /assets/projects/sarabo/screenshot-02.webp 1280w",
         },
         {
           file: "screenshot-03.webp",
           src: "/assets/projects/sarabo/screenshot-03.webp",
+          srcSet: null,
         },
         {
           file: "screenshot-04.webp",
           src: "/assets/projects/sarabo/screenshot-04.webp",
+          srcSet: "/assets/projects/sarabo/screenshot-04-640w.webp 640w, /assets/projects/sarabo/screenshot-04.webp 1280w",
         },
         {
           file: "screenshot-05.webp",
           src: "/assets/projects/sarabo/screenshot-05.webp",
+          srcSet: "/assets/projects/sarabo/screenshot-05-640w.webp 640w, /assets/projects/sarabo/screenshot-05.webp 1280w",
         },
         {
           file: "screenshot-06.webp",
           src: "/assets/projects/sarabo/screenshot-06.webp",
+          srcSet: "/assets/projects/sarabo/screenshot-06-640w.webp 640w, /assets/projects/sarabo/screenshot-06.webp 1280w",
         },
         {
           file: "screenshot-07.webp",
           src: "/assets/projects/sarabo/screenshot-07.webp",
+          srcSet: "/assets/projects/sarabo/screenshot-07-640w.webp 640w, /assets/projects/sarabo/screenshot-07.webp 1280w",
         },
         {
           file: "screenshot-08.webp",
           src: "/assets/projects/sarabo/screenshot-08.webp",
+          srcSet: "/assets/projects/sarabo/screenshot-08-640w.webp 640w, /assets/projects/sarabo/screenshot-08.webp 1280w",
         },
       ],
     },
