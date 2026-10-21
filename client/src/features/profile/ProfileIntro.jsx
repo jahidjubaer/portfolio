@@ -1,12 +1,14 @@
 import { Briefcase } from "lucide-react";
 import { motion } from "motion/react";
+import { Link } from "react-router-dom";
 import { ImageWithFallback } from "../../components/media/ImageWithFallback";
 import { FocusBrackets } from "../../components/ui/FocusBrackets";
 import { TechLogo } from "../../components/icons/TechIcons";
 import { TECH_LOGOS } from "../../components/icons/tech-logos";
 import { cn } from "../../lib/cn";
 import { profile } from "../../data/profile";
-import { siteSettings } from "../../data/settings";
+import { navSetting, siteSettings } from "../../data/settings";
+import { nowStudying } from "../../data/learning";
 import { capabilityGroups } from "../../data/capabilities";
 import { assetManifest } from "../../generated/asset-manifest";
 import { DURATIONS, EASE_STANDARD } from "../motion/motion-config";
@@ -62,6 +64,10 @@ function ReadoutSeparator() {
     </span>
   );
 }
+
+// The journal's current topic (R3), linked to it while /learning is shown.
+const showNowStudying =
+  nowStudying && navSetting("/learning", "Learning").visible;
 
 /** Avatar, name, headline, status, and headline technologies. */
 export function ProfileIntro() {
@@ -135,6 +141,22 @@ export function ProfileIntro() {
           {profile.title}
         </span>
       </p>
+
+      {showNowStudying ? (
+        <p className={cn(READOUT, "mt-2.5 text-(--color-text-secondary)")}>
+          <Link
+            to="/learning#now"
+            className="inline-flex min-h-11 items-center gap-2 underline decoration-transparent underline-offset-4 hover:decoration-(--color-accent-primary)"
+          >
+            <span className="text-(--color-accent-primary)">
+              ▸ Now studying
+            </span>
+            <span className="normal-case tracking-normal text-(--color-text-primary)">
+              {nowStudying.topic}
+            </span>
+          </Link>
+        </p>
+      ) : null}
 
       <div className="film-strip mx-auto mt-6 max-w-2xl">
         <p aria-hidden="true" className="film-strip-print">

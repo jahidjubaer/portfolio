@@ -43,6 +43,33 @@ export const listEducation = () => findOrdered("education");
 export const listSkills = () => findOrdered("skills");
 export const listCertifications = () => findOrdered("certifications");
 export const listLearningTracks = () => findOrdered("learningTracks");
+
+/** Study sessions, newest first. */
+export async function listStudyLog() {
+  const db = await getDb();
+  return db
+    .collection(COLLECTIONS.studyLog)
+    .find({}, HIDE_ID)
+    .sort({ date: -1, order: -1 })
+    .toArray();
+}
+
+const isPublic = (item) => item.visibility !== "private";
+
+/**
+ * The journal as the public site may see it: private tracks and entries
+ * are dropped (not hidden), and so are entries on a private track.
+ */
+export function publicJournal(learningTracks, studyLog) {
+  const tracks = learningTracks.filter(isPublic);
+  const trackIds = new Set(tracks.map((track) => track.id));
+  return {
+    learningTracks: tracks,
+    studyLog: studyLog.filter(
+      (entry) => isPublic(entry) && trackIds.has(entry.trackId),
+    ),
+  };
+}
 export const listPhotos = () => findOrdered("photos");
 
 const PUBLISHED = { status: "published" };
@@ -122,6 +149,7 @@ export async function getContentSnapshot({ includeDrafts = false } = {}) {
     beyond,
     photos,
     posts,
+    storedLog,
   ] = await Promise.all([
     getProfile(),
     listProjects({ includeHidden: includeDrafts }),
@@ -136,10 +164,14 @@ export async function getContentSnapshot({ includeDrafts = false } = {}) {
     getBeyond(),
     listPhotos(),
     listPosts({ includeDrafts }),
+    listStudyLog(),
   ]);
+  const journal = includeDrafts
+    ? { learningTracks: storedTracks, studyLog: storedLog }
+    : publicJournal(storedTracks, storedLog);
   const { projects, learningTracks } = includeDrafts
-    ? { projects: storedProjects, learningTracks: storedTracks }
-    : withoutMissingProjects(storedProjects, storedTracks);
+    ? { projects: storedProjects, learningTracks: journal.learningTracks }
+    : withoutMissingProjects(storedProjects, journal.learningTracks);
   return {
     profile,
     projects,
@@ -152,6 +184,7 @@ export async function getContentSnapshot({ includeDrafts = false } = {}) {
     certifications,
     learning,
     learningTracks,
+    studyLog: journal.studyLog,
     settings,
     beyond,
     photos,

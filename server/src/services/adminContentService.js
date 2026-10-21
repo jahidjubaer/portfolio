@@ -9,6 +9,7 @@ import {
   learningSchema,
   learningTrackSchema,
   organizationSchema,
+  studyLogSchema,
   photoSchema,
   postSchema,
   profileSchema,
@@ -36,6 +37,7 @@ export const LIST_SCHEMAS = {
   skills: skillGroupSchema,
   certifications: certificationSchema,
   learningTracks: learningTrackSchema,
+  studyLog: studyLogSchema,
   photos: photoSchema,
   posts: postSchema,
 };
@@ -72,6 +74,7 @@ const REFERENCES = {
   education: ["organizations"],
   certifications: ["organizations"],
   learningTracks: ["organizations", "certifications", "projects"],
+  studyLog: ["learningTracks"],
 };
 const REFERENCED_BY = {
   organizations: [
@@ -82,6 +85,7 @@ const REFERENCED_BY = {
   ],
   certifications: ["learningTracks"],
   projects: ["learningTracks"],
+  learningTracks: ["studyLog"],
 };
 
 async function loadLists(db, names) {
@@ -97,7 +101,12 @@ async function loadLists(db, names) {
 async function checkReferences(db, name, document) {
   if (!REFERENCES[name]) return;
   const content = await loadLists(db, REFERENCES[name]);
-  const issues = findBrokenReferences({ ...content, [name]: [document] });
+  // Only the saved item's own ids; the lists it points into are loaded
+  // without their own targets, so their references can't be judged here.
+  const issues = findBrokenReferences({
+    ...content,
+    [name]: [document],
+  }).filter((issue) => issue.path[0] === name);
   if (issues.length) {
     throw httpError(
       400,
@@ -141,7 +150,13 @@ async function checkNotReferenced(db, name, key) {
 function changeOf(name, item, action) {
   const key = item[KEY_FIELDS[name]];
   const label =
-    item.title ?? item.name ?? item.degree ?? item.caption ?? item.alt ?? key;
+    item.title ??
+    item.name ??
+    item.degree ??
+    item.caption ??
+    item.alt ??
+    item.topic ??
+    key;
   return { collection: name, key, label: String(label).slice(0, 120), action };
 }
 

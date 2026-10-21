@@ -5,10 +5,12 @@ import {
   certificationSchema,
   contentSchema,
   findBrokenReferences,
+  learningTrackSchema,
   photoSchema,
   postSchema,
   projectSchema,
   roleSchema,
+  studyLogSchema,
 } from "../../src/schemas/content.js";
 import { toYearMonth, upgradeContent } from "../../src/db/content-upgrade.js";
 import { CASE_STUDY_TEMPLATE } from "../../src/schemas/case-study-template.js";
@@ -354,5 +356,53 @@ describe("upgradeContent (R7 → organizations)", () => {
     expect(toYearMonth("2024")).toBe("2024");
     expect(toYearMonth("November 2024")).toBe("2024-11");
     expect(toYearMonth("someday")).toBeUndefined();
+  });
+});
+
+describe("learning journal schemas (R3)", () => {
+  const entry = {
+    id: "log-1",
+    order: 0,
+    date: "2026-10-21",
+    trackId: "react",
+    body: "Hooks.",
+  };
+
+  it("accepts a study session, and rejects bad dates and times", () => {
+    expect(studyLogSchema.safeParse(entry).success).toBe(true);
+    expect(
+      studyLogSchema.safeParse({ ...entry, date: "21/10/2026" }).success,
+    ).toBe(false);
+    expect(studyLogSchema.safeParse({ ...entry, minutes: 2000 }).success).toBe(
+      false,
+    );
+    expect(
+      studyLogSchema.safeParse({ ...entry, visibility: "friends" }).success,
+    ).toBe(false);
+  });
+
+  it("checks syllabus topic statuses", () => {
+    const track = {
+      id: "react",
+      order: 0,
+      title: "React",
+      status: "learning",
+      resources: [],
+      certificationIds: [],
+      projectSlugs: [],
+      notes: [],
+    };
+    expect(
+      learningTrackSchema.safeParse({
+        ...track,
+        syllabus: [{ title: "Hooks", status: "doing" }],
+      }).success,
+    ).toBe(true);
+    expect(
+      learningTrackSchema.safeParse({
+        ...track,
+        syllabus: [{ title: "Hooks", status: "started" }],
+      }).success,
+    ).toBe(false);
   });
 });

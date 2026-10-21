@@ -1,6 +1,7 @@
 import {
   learning as storedLearning,
   learningTracks as storedTracks,
+  studyLog as storedLog,
 } from "../generated/content.json";
 import { getOrganization } from "./organizations";
 import { getCertification } from "./certifications";
@@ -20,7 +21,22 @@ import { githubSnapshot } from "./github";
  *   projects: Array<{ slug: string, title: string }>,
  *   notes: Array<{ label: string, url: string }>,
  *   repos: Array<{ name: string, url: string, language?: string | null, pushedAt?: string }>,
+ *   goal?: string,
+ *   syllabus?: Array<{ title: string, status: "todo" | "doing" | "done", date?: string }>,
  * }} LearningTrack
+ */
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   date: string,
+ *   trackId: string,
+ *   trackTitle: string,
+ *   topic?: string,
+ *   body: string,
+ *   minutes?: number,
+ *   links: Array<{ label: string, url: string }>,
+ * }} StudyLogEntry
  */
 
 /** The "How I learn" steps at the top of /learning. */
@@ -99,3 +115,44 @@ export const learningTracks = [...storedTracks]
       projectList: projects,
     }),
   );
+
+const trackTitles = new Map(
+  learningTracks.map((track) => [track.id, track.title]),
+);
+
+/**
+ * Public study sessions, newest first (the export already left out
+ * private ones and those on private tracks).
+ * @type {StudyLogEntry[]}
+ */
+export const studyLog = [...(storedLog ?? [])]
+  .sort((a, b) => b.date.localeCompare(a.date) || b.order - a.order)
+  .filter((entry) => trackTitles.has(entry.trackId))
+  .map(({ order: _order, visibility: _visibility, links, ...entry }) => ({
+    ...entry,
+    trackTitle: trackTitles.get(entry.trackId),
+    links: links ?? [],
+  }));
+
+/**
+ * What the profile's "Now studying" line says: the topic marked "doing"
+ * on the first track being learned, else the newest session on such a
+ * track. Null when nothing is being learned publicly.
+ * @type {{ topic: string, track: string } | null}
+ */
+export const nowStudying = (() => {
+  const learning = learningTracks.filter(
+    (track) => track.status === "learning",
+  );
+  for (const track of learning) {
+    const doing = (track.syllabus ?? []).find(
+      (topic) => topic.status === "doing",
+    );
+    if (doing) return { topic: doing.title, track: track.title };
+  }
+  const ids = new Set(learning.map((track) => track.id));
+  const latest = studyLog.find((entry) => ids.has(entry.trackId));
+  return latest
+    ? { topic: latest.topic ?? latest.trackTitle, track: latest.trackTitle }
+    : null;
+})();

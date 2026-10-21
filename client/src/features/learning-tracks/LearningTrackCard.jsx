@@ -4,6 +4,9 @@ import { formatYearMonth } from "../../lib/dates";
 import { formatRelativeDate } from "../../lib/relativeTime";
 import { useNow } from "../../lib/hydration";
 import { cn } from "../../lib/cn";
+import { ProgressRing } from "./ProgressRing";
+import { SyllabusPath } from "./SyllabusPath";
+import { trackProgress } from "./journal";
 
 const STATUS_STYLES = {
   learning:
@@ -95,6 +98,7 @@ export function LearningTrackCard({ track }) {
     })),
   ];
 
+  const progress = trackProgress(track);
   const hasPath =
     learnedFrom.length > 0 ||
     Boolean(track.practice) ||
@@ -105,9 +109,18 @@ export function LearningTrackCard({ track }) {
   return (
     <article className="rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-5">
       <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
-        <h3 className="text-[1.0625rem] font-semibold text-(--color-text-primary)">
-          {track.title}
-        </h3>
+        <div className="flex min-w-0 items-center gap-3">
+          {progress ? (
+            <ProgressRing
+              done={progress.done}
+              total={progress.total}
+              size={40}
+            />
+          ) : null}
+          <h3 className="text-[1.0625rem] font-semibold text-(--color-text-primary)">
+            {track.title}
+          </h3>
+        </div>
         <span
           className={cn(
             "rounded-full border px-2.5 py-0.5 text-sm font-medium",
@@ -125,6 +138,12 @@ export function LearningTrackCard({ track }) {
       {track.summary ? (
         <p className="mt-3 text-[0.9375rem] text-(--color-text-secondary)">
           {track.summary}
+        </p>
+      ) : null}
+      {track.goal ? (
+        <p className="mt-2 text-[0.9375rem] text-(--color-text-secondary)">
+          <span className="font-medium text-(--color-text-primary)">Goal:</span>{" "}
+          {track.goal}
         </p>
       ) : null}
 
@@ -194,6 +213,7 @@ export function LearningTrackCard({ track }) {
           ) : null}
         </dl>
       ) : null}
+      {progress ? <SyllabusPath syllabus={track.syllabus} /> : null}
     </article>
   );
 }

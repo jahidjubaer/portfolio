@@ -152,7 +152,8 @@ function Field({ field, path, draft, errors, onChange, isNew }) {
   } else if (type === "select") {
     // A blank first option: "None" for an optional choice, or a
     // placeholder so a required one starts visibly unchosen.
-    const emptyLabel = field.optional ? "None" : field.placeholder;
+    const emptyLabel =
+      field.emptyLabel ?? (field.optional ? "None" : field.placeholder);
     control = (
       <select
         {...common}

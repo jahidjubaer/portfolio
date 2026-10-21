@@ -19,7 +19,7 @@ export function ProfileSection({ id, icon: Icon, title, children }) {
     >
       <h2
         id={id}
-        className="frame-heading flex items-center gap-3 text-[1.3125rem] font-semibold tracking-[-0.01em] text-(--color-text-primary)"
+        className="frame-heading flex scroll-mt-24 items-center gap-3 text-[1.3125rem] font-semibold tracking-[-0.01em] text-(--color-text-primary)"
       >
         <Icon
           size={22}

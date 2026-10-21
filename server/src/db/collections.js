@@ -13,6 +13,8 @@ export const COLLECTIONS = {
   certifications: "certifications",
   learning: "learning",
   learningTracks: "learningTracks",
+  // The learning journal's study sessions (R3).
+  studyLog: "studyLog",
   settings: "settings",
   beyond: "beyond",
   photos: "photos",
@@ -42,6 +44,7 @@ export const KEY_FIELDS = {
   skills: "id",
   certifications: "id",
   learningTracks: "id",
+  studyLog: "id",
   photos: "id",
   posts: "slug",
 };

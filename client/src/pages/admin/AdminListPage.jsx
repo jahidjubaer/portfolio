@@ -4,6 +4,7 @@ import {
   ArrowDown,
   ArrowUp,
   GripVertical,
+  Lock,
   Pencil,
   Plus,
   Search,
@@ -54,6 +55,7 @@ export function AdminListPage({ name }) {
     : items;
   // Reordering a filtered list would be ambiguous, so it waits.
   const canReorder = sortable && !needle;
+  const QuickAdd = config.quickAdd;
 
   async function run(action, message) {
     setBusy(true);
@@ -101,6 +103,7 @@ export function AdminListPage({ name }) {
           </ButtonLink>
         }
       />
+      {QuickAdd ? <QuickAdd /> : null}
       <p
         role="status"
         aria-live="polite"
@@ -195,8 +198,16 @@ export function AdminListPage({ name }) {
                   />
                 ) : null}
                 <div className="min-w-0 flex-1 basis-48">
-                  <p className="truncate font-semibold text-(--color-text-primary)">
-                    {title}
+                  <p className="flex items-center gap-1.5 font-semibold text-(--color-text-primary)">
+                    {config.isPrivate?.(item) ? (
+                      <Lock
+                        size={14}
+                        aria-label="Private"
+                        role="img"
+                        className="shrink-0 text-(--color-text-muted)"
+                      />
+                    ) : null}
+                    <span className="truncate">{title}</span>
                   </p>
                   <p className="truncate text-sm text-(--color-text-muted)">
                     {config.subtitleOf(item, content)}

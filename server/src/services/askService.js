@@ -62,6 +62,15 @@ function period(item) {
  * details (email, phone) are left out: the answer points to /contact.
  * @param {Record<string, any>} content a published content snapshot
  */
+/** " Topics: 3 of 8 done; now on Hooks." for a track with a syllabus. */
+function syllabusLine(track) {
+  const topics = track.syllabus ?? [];
+  if (topics.length === 0) return "";
+  const done = topics.filter((topic) => topic.status === "done").length;
+  const current = topics.find((topic) => topic.status === "doing");
+  return ` Topics: ${done} of ${topics.length} done${current ? `; now on ${current.title}` : ""}.`;
+}
+
 export function buildDigest(content) {
   const orgName = new Map(
     (content.organizations ?? []).map((org) => [org.id, org.name]),
@@ -128,8 +137,15 @@ export function buildDigest(content) {
     page("/learning", [
       ...(content.learningTracks ?? []).map(
         (track) =>
-          `Learning: ${track.title} (${track.status}, since ${track.since}). ${track.summary}`,
+          `Learning: ${track.title} (${track.status}, since ${track.since}). ${track.summary}${syllabusLine(track)}`,
       ),
+      // The journal is already public-only here (contentService drops private entries).
+      ...(content.studyLog ?? [])
+        .slice(0, 10)
+        .map(
+          (entry) =>
+            `Studied on ${entry.date}${entry.topic ? ` (${entry.topic})` : ""}: ${entry.body.slice(0, 200)}`,
+        ),
       coding?.total
         ? `Problem solving: ${coding.total} distinct problems solved across online judges (C++); Codeforces max rating ${coding.codeforces?.maxRating ?? "n/a"}. Practice is ${profile.problemSolving?.status === "paused" ? "paused (an archive)" : "ongoing"}.`
         : null,

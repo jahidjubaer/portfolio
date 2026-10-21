@@ -438,6 +438,8 @@ export const certificationSchema = z
     path: ["imageAlt"],
   });
 
+const isoDate = z.iso.date({ error: "Use the format YYYY-MM-DD." });
+
 /** The "How I learn" steps at the top of /learning. */
 export const learningSchema = z.object({
   intro: text.optional(),
@@ -447,6 +449,16 @@ export const learningSchema = z.object({
 });
 
 export const LEARNING_STATUS_VALUES = ["learning", "applied", "exploring"];
+
+/**
+ * Public items are exported to the site; private ones stay in the admin
+ * (R3: the export drops them, so they never reach the build or Ask).
+ * A missing value means public, as before visibility existed.
+ */
+export const VISIBILITY_VALUES = ["public", "private"];
+const visibility = z.enum(VISIBILITY_VALUES).optional();
+
+export const SYLLABUS_STATUS_VALUES = ["todo", "doing", "done"];
 
 /**
  * One topic and the path through it: what it was learned from, how it
@@ -473,6 +485,39 @@ export const learningTrackSchema = z.object({
   notes: z.array(z.object({ label: text, url })),
   // Names of repos of the synced GitHub account, shown with their stats.
   repos: z.array(text).optional(),
+  visibility,
+  goal: text.optional(),
+  // The topics in order; progress is done ÷ total, never typed.
+  syllabus: z
+    .array(
+      z.object({
+        title: text,
+        status: z.enum(SYLLABUS_STATUS_VALUES),
+        date: isoDate.optional(),
+      }),
+    )
+    .optional(),
+});
+
+/**
+ * One study session in the learning journal (R3): what was studied, on
+ * which track, and for how long. Shown on /learning's calendar and log.
+ */
+export const studyLogSchema = z.object({
+  id: slug,
+  order,
+  date: isoDate,
+  trackId: slug,
+  topic: text.optional(),
+  body: text,
+  minutes: z
+    .number({ error: "Enter a number of minutes." })
+    .int()
+    .min(1, "At least one minute.")
+    .max(1440, "A day has 1440 minutes.")
+    .optional(),
+  links: z.array(z.object({ label: text, url })).optional(),
+  visibility,
 });
 
 export const beyondSchema = z.object({
@@ -500,8 +545,6 @@ export const photoSchema = z.object({
   caption: text.optional(),
   album: text,
 });
-
-const isoDate = z.iso.date({ error: "Use the format YYYY-MM-DD." });
 
 export const POST_STATUS_VALUES = ["draft", "published"];
 
@@ -606,6 +649,7 @@ const REFERENCE_CHECKS = [
   ["certifications", "organizationId", "organizations", "id"],
   ["learningTracks", "certificationIds", "certifications", "id"],
   ["learningTracks", "projectSlugs", "projects", "slug"],
+  ["studyLog", "trackId", "learningTracks", "id"],
 ];
 
 /**
@@ -656,6 +700,8 @@ export const contentSchema = z
     certifications: z.array(certificationSchema),
     learning: learningSchema,
     learningTracks: z.array(learningTrackSchema),
+    // Optional so snapshots from before the journal still parse.
+    studyLog: z.array(studyLogSchema).default([]),
     settings: settingsSchema,
     beyond: beyondSchema,
     photos: z.array(photoSchema),

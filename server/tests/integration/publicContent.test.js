@@ -72,6 +72,7 @@ describe("GET /api/public/*", () => {
         "projects",
         "settings",
         "skills",
+        "studyLog",
       ].sort(),
     );
     expect(response.body.data.certifications).toHaveLength(

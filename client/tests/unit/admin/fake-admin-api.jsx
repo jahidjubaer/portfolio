@@ -71,6 +71,7 @@ export function installFakeAdminApi({
       certifications: structuredClone(snapshot.certifications),
       learning: structuredClone(snapshot.learning),
       learningTracks: [],
+      studyLog: [],
       beyond: { sports: [], volunteering: [] },
       photos: [],
       posts: [],

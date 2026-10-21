@@ -10,6 +10,7 @@ import {
   Inbox,
   Layers,
   Mountain,
+  NotebookPen,
   Package,
   PenLine,
   Route as RouteIcon,
@@ -25,6 +26,7 @@ import {
   learningSchema,
   learningTrackSchema,
   organizationSchema,
+  studyLogSchema,
   photoSchema,
   postSchema,
   profileSchema,
@@ -46,6 +48,9 @@ import {
   FONT_OPTIONS,
 } from "../preferences/appearance-options";
 import { organizationUsage } from "./attention";
+import { siteDateKey } from "../learning-tracks/journal";
+import { StudyLogQuickAdd } from "./StudyLogQuickAdd";
+import { isPrivate, syllabusTopics, trackOptions } from "./journal-options";
 
 const SOCIAL_LABELS = {
   github: "GitHub",
@@ -600,6 +605,16 @@ const ORGANIZATION_HINT =
 
 // "2024" or "2024-06"; durations on the site are worked out from these.
 const DATE_HINT = "Year, or year-month: 2024 or 2024-06.";
+
+// Missing means public; "private" items are never exported to the site.
+const VISIBILITY_FIELD = {
+  name: "visibility",
+  label: "Visibility",
+  type: "select",
+  optional: true,
+  emptyLabel: "Public",
+  options: [{ value: "private", label: "Private (only here in the admin)" }],
+};
 
 const EMPLOYMENT_TYPE_OPTIONS = [
   { value: "full-time", label: "Full-time" },
@@ -1213,12 +1228,24 @@ export const LISTS = {
     keyField: "id",
     schema: learningTrackSchema,
     titleOf: (item) => item.title,
-    subtitleOf: (item) =>
-      ({
-        learning: "Now learning",
-        applied: "Applied",
-        exploring: "Exploring",
-      })[item.status],
+    subtitleOf: (item) => {
+      const done = (item.syllabus ?? []).filter(
+        (topic) => topic.status === "done",
+      ).length;
+      return [
+        {
+          learning: "Now learning",
+          applied: "Applied",
+          exploring: "Exploring",
+        }[item.status],
+        item.syllabus?.length
+          ? `${done} of ${item.syllabus.length} topics done`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+    },
+    isPrivate,
     newItem: (state) => ({
       status: "learning",
       resources: [],
@@ -1255,11 +1282,49 @@ export const LISTS = {
       },
       { name: "since", label: "Since", optional: true, hint: DATE_HINT },
       {
+        ...VISIBILITY_FIELD,
+        hint: "A private track and all its log entries stay in the admin.",
+      },
+      {
         name: "summary",
         label: "Summary",
         type: "textarea",
         rows: 2,
         optional: true,
+      },
+      {
+        name: "goal",
+        label: "Goal",
+        optional: true,
+        hint: 'What finishing looks like, e.g. "Build a full-stack app with auth".',
+      },
+      {
+        name: "syllabus",
+        label: "Topics (syllabus)",
+        type: "objectList",
+        itemLabel: "topic",
+        hint: "In order. Progress on the site is done topics out of all of them. Mark one as Studying now.",
+        fields: [
+          { name: "title", label: "Topic" },
+          {
+            name: "status",
+            label: "Status",
+            type: "select",
+            half: true,
+            options: [
+              { value: "todo", label: "To do" },
+              { value: "doing", label: "Studying now" },
+              { value: "done", label: "Done" },
+            ],
+          },
+          {
+            name: "date",
+            label: "Finished on",
+            type: "date",
+            optional: true,
+            half: true,
+          },
+        ],
       },
       {
         name: "resources",
@@ -1322,6 +1387,82 @@ export const LISTS = {
         hint: "Repos from the GitHub sync. The Learning page shows each with its language and last update.",
         options: repoOptions(content, item?.repos),
       },
+    ],
+  },
+  studyLog: {
+    label: "Study log",
+    viewOnSite: () => "/learning#study-log",
+    itemLabel: "entry",
+    description:
+      "What you studied, day by day. Public entries fill the calendar and log on the Learning page.",
+    keyField: "id",
+    schema: studyLogSchema,
+    titleOf: (item) => item.topic || item.body.split("\n")[0].slice(0, 80),
+    subtitleOf: (item, content) =>
+      [
+        item.date,
+        content.learningTracks?.find((track) => track.id === item.trackId)
+          ?.title ?? item.trackId,
+        item.minutes ? `${item.minutes} min` : null,
+      ]
+        .filter(Boolean)
+        .join(" · "),
+    isPrivate,
+    // Newest first, like a diary.
+    sortable: false,
+    compare: (a, b) => b.date.localeCompare(a.date) || b.order - a.order,
+    quickAdd: StudyLogQuickAdd,
+    newItem: () => ({
+      id: `log-${Date.now().toString(36)}`,
+      date: siteDateKey(new Date()),
+      links: [],
+    }),
+    fields: (content) => [
+      {
+        name: "date",
+        label: "Date",
+        type: "date",
+        half: true,
+      },
+      {
+        name: "minutes",
+        label: "Time spent (minutes)",
+        type: "number",
+        optional: true,
+        half: true,
+      },
+      {
+        name: "trackId",
+        label: "Track",
+        type: "select",
+        placeholder: "Choose a track…",
+        options: trackOptions(content),
+      },
+      {
+        name: "topic",
+        label: "Topic",
+        optional: true,
+        suggestions: syllabusTopics(content),
+        hint: "One of the track's topics, or anything else.",
+      },
+      {
+        name: "body",
+        label: "What I studied",
+        type: "markdown",
+        rows: 8,
+      },
+      {
+        name: "links",
+        label: "Links",
+        type: "objectList",
+        itemLabel: "link",
+        hint: "The course, a repo, or your notes.",
+        fields: [
+          { name: "label", label: "Title" },
+          { name: "url", label: "Link", type: "url" },
+        ],
+      },
+      VISIBILITY_FIELD,
     ],
   },
   photos: {
@@ -1473,6 +1614,7 @@ export const ADMIN_GROUPS = [
     sections: [
       { path: "learning", icon: RouteIcon, ...SINGLETONS.learning },
       { path: "learningTracks", icon: Sprout, ...LISTS.learningTracks },
+      { path: "studyLog", icon: NotebookPen, ...LISTS.studyLog },
       { path: "posts", icon: PenLine, ...LISTS.posts },
     ],
   },

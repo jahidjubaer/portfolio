@@ -79,6 +79,7 @@ const ADMIN_LISTS = [
   "skills",
   "certifications",
   "learningTracks",
+  "studyLog",
   "posts",
   "photos",
 ];
