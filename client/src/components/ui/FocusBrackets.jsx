@@ -5,16 +5,21 @@ import { cn } from "../../lib/cn";
  * around the nearest `.has-brackets` ancestor when it is hovered with a
  * mouse or holds keyboard focus (see `.focus-brackets` in utilities.css).
  * Decoration only. `inside` keeps the corners within the card, for cards
- * that clip their overflow.
- * @param {{ inside?: boolean, className?: string }} props
+ * that clip their overflow; `locked` shows them all the time.
+ * @param {{ inside?: boolean, locked?: boolean, className?: string }} props
  */
-export function FocusBrackets({ inside = false, className = "" }) {
+export function FocusBrackets({
+  inside = false,
+  locked = false,
+  className = "",
+}) {
   return (
     <span
       aria-hidden="true"
       className={cn(
         "focus-brackets",
         inside && "focus-brackets-inside",
+        locked && "focus-brackets-locked",
         className,
       )}
     />
