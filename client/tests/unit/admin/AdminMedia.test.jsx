@@ -52,6 +52,13 @@ function buttonWithText(container, text) {
   return within(container).getByText(text).closest("button");
 }
 
+/** The fields in `container` whose labels start with `text`, in order. */
+function fieldsLabelled(container, text) {
+  return [...container.querySelectorAll("label")]
+    .filter((label) => label.textContent.startsWith(text))
+    .map((label) => document.getElementById(label.htmlFor));
+}
+
 describe("admin media editors", { timeout: 20_000 }, () => {
   it("edits case-study sections as Markdown with a live preview", async () => {
     const api = installFakeAdminApi({ withProjects: true });
@@ -59,7 +66,7 @@ describe("admin media editors", { timeout: 20_000 }, () => {
     renderAdmin("/admin/projects/sarabo");
 
     const sections = await findSectionsGroup();
-    const overview = within(sections).getAllByLabelText(/^Text/)[0];
+    const [overview] = fieldsLabelled(sections, "Text");
     // Pasted rather than typed: Sarabo's form is long (its diagram adds
     // dozens of inputs), and jsdom re-renders it for every keystroke.
     await user.clear(overview);
@@ -99,10 +106,9 @@ describe("admin media editors", { timeout: 20_000 }, () => {
 
     const sections = await findSectionsGroup();
     await user.click(buttonWithText(sections, "Add section"));
-    const headings = within(sections).getAllByLabelText("Heading");
-    await user.click(headings.at(-1));
+    await user.click(fieldsLabelled(sections, "Heading").at(-1));
     await user.paste("What I'd do next");
-    await user.click(within(sections).getAllByLabelText(/^Text/).at(-1));
+    await user.click(fieldsLabelled(sections, "Text").at(-1));
     await user.paste("Add tests.");
     await user.click(buttonWithText(document.body, "Save changes"));
 

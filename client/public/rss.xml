@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Jahid Hasan — Writing</title>
+    <link>http://localhost:5173/writing</link>
+    <description>Jahid Hasan's learning notes and technical writing, mostly in Bangla: JavaScript from the basics, and tools he uses along the way.</description>
+    <language>bn</language>
+    <atom:link href="http://localhost:5173/rss.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 12 Sep 2025 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>শুরুর আগে - কিভাবে কোথায় জাভা স্ক্রিপ্ট কোড লিখবো - JavaScript | জাভা স্ক্রিপ্ট | পর্ব - ২য়</title>
+      <link>http://localhost:5173/writing/javascript-where-to-write-code</link>
+      <guid isPermaLink="true">http://localhost:5173/writing/javascript-where-to-write-code</guid>
+      <pubDate>Fri, 12 Sep 2025 00:00:00 GMT</pubDate>
+      <description>জাভা স্ক্রিপ্ট শিখা শুরু করার আগে আমাদের জানা দরকার কোথায় জাভা স্ক্রিপ্ট কোড লিখবো । অনেক জায়গায় লিখা যায় তবে আমার যেইটা ব্যাবহার করবো আপাতত সেটাই দেখি : VS Code এখান থেকে ডাউনলোড করে নিন। অন্য…</description>
+      <category>জাভা স্ক্রিপ্ট</category>
+      <category>প্রোগ্রামিং</category>
+    </item>
+    <item>
+      <title>জাভা স্ক্রিপ্ট পরিচিতি পর্ব - JavaScript | জাভা স্ক্রিপ্ট | পর্ব - ১ম</title>
+      <link>http://localhost:5173/writing/javascript-introduction</link>
+      <guid isPermaLink="true">http://localhost:5173/writing/javascript-introduction</guid>
+      <pubDate>Fri, 12 Sep 2025 00:00:00 GMT</pubDate>
+      <description>আজকে আমারা শুরু করতে যাচ্ছি জাভা স্ক্রিপ্ট সিরিজ। আপাতত বেসিক পর্যন্ত ই আলোচনা করবো , পরে হয়তো কিছু এডভান্স জিনিস এড করা হবে । এখন জাভা স্ক্রিপ্ট তো শিখবো কিন্তু কেন? অনেক অনেক কারণ আছে গুগল করলেও…</description>
+      <category>জাভা স্ক্রিপ্ট</category>
+      <category>প্রোগ্রামিং</category>
+    </item>
+    <item>
+      <title>প্রেজেন্টেশন তৈরির সমাধান ন্যাপকিন - Napkin | টুলস | এআই | পর্ব - ১ম</title>
+      <link>http://localhost:5173/writing/napkin-ai-presentations</link>
+      <guid isPermaLink="true">http://localhost:5173/writing/napkin-ai-presentations</guid>
+      <pubDate>Mon, 25 Aug 2025 00:00:00 GMT</pubDate>
+      <description>আজকে আমরা জানবো ন্যাপকিন সম্পর্কে । খুবই চমৎকার একটি Al টুল । আচ্ছা টুল টা সম্পর্কে জানার আগে আমাদের জানা দরকার এই Al আমাদের কি কাজে লাগবে । এক কথায় বলতে গেলে আমারা যদি আমাদের কোন লেখার জন্য সুন্দর…</description>
+      <category>এআই</category>
+      <category>টুলস</category>
+    </item>
+  </channel>
+</rss>

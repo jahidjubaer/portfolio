@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NotebookPen, PenLine } from "lucide-react";
+import { NotebookPen, PenLine, Rss } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { PAGE_META } from "../routes/route-meta";
 import { Container } from "../components/ui/Container";
@@ -85,6 +85,18 @@ export function WritingPage() {
             </Surface>
           )}
         </div>
+
+        {posts.length > 0 ? (
+          <p className="mt-6">
+            <a
+              href="/rss.xml"
+              className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-(--color-text-secondary) underline decoration-(--color-border-strong) underline-offset-4 hover:text-(--color-text-primary) hover:decoration-(--color-accent-primary)"
+            >
+              <Rss size={15} aria-hidden="true" />
+              Follow by RSS
+            </a>
+          </p>
+        ) : null}
 
         {showcase.siteUrl ? (
           <ExternalSiteCard

@@ -112,3 +112,23 @@ test("the Beyond gallery fits a phone screen", async ({ page }) => {
   ).toBeVisible();
   await expectNoHorizontalOverflow(page);
 });
+
+test("Writing offers an RSS feed of the published posts", async ({
+  page,
+  request,
+}) => {
+  test.skip(content.posts.length === 0, "No posts published.");
+  const response = await request.get("/rss.xml");
+  expect(response.status()).toBe(200);
+  const feed = await response.text();
+  expect(feed).toContain('<rss version="2.0"');
+  expect(feed.match(/<item>/g)).toHaveLength(content.posts.length);
+
+  await page.goto("/writing");
+  await expect(
+    page.getByRole("link", { name: "Follow by RSS" }),
+  ).toHaveAttribute("href", "/rss.xml");
+  await expect(
+    page.locator('link[rel="alternate"][type="application/rss+xml"]'),
+  ).toHaveAttribute("href", "/rss.xml");
+});

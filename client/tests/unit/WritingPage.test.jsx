@@ -86,6 +86,17 @@ describe("WritingPage", () => {
     expect(screen.queryByText(/Blogger/)).toBeNull();
   });
 
+  it("never lazy-loads the first card's cover (the page's largest paint)", async () => {
+    renderAt("/writing");
+    await screen.findAllByRole("heading", { level: 1 });
+    const covers = screen
+      .getAllByRole("article")
+      .map((card) => card.querySelector("img"));
+    expect(covers[0]).toHaveAttribute("loading", "eager");
+    expect(covers[0]).toHaveAttribute("fetchpriority", "high");
+    expect(covers[1]).toHaveAttribute("loading", "lazy");
+  });
+
   it("filters by tag", async () => {
     const user = userEvent.setup();
     renderAt("/writing");

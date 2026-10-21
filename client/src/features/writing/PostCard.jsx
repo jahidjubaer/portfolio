@@ -14,10 +14,17 @@ const POST_PLACEHOLDER = "/assets/placeholders/learning-placeholder.svg";
  * @param {{
  *   post: import("../../data/posts").Post,
  *   headingLevel?: "h2" | "h3",
+ *   priorityImage?: boolean,
  *   className?: string,
- * }} props
+ * }} props  `priorityImage`: the first card on the Writing page, whose
+ *   cover is the page's largest paint — never lazy-loaded.
  */
-export function PostCard({ post, headingLevel = "h3", className }) {
+export function PostCard({
+  post,
+  headingLevel = "h3",
+  priorityImage = false,
+  className,
+}) {
   const HeadingTag = headingLevel;
 
   return (
@@ -37,7 +44,8 @@ export function PostCard({ post, headingLevel = "h3", className }) {
           width={post.cover?.width}
           height={post.cover?.height}
           className="h-full w-full object-cover"
-          loading="lazy"
+          loading={priorityImage ? "eager" : "lazy"}
+          fetchPriority={priorityImage ? "high" : undefined}
         />
       </div>
 

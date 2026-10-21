@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "assets:sync": "node scripts/generate-asset-manifest.js",
-    "seo:generate": "node scripts/generate-sitemap.js",
+    "seo:generate": "node scripts/generate-sitemap.js && node scripts/generate-feed.js",
     "predev": "npm run assets:sync",
     "prebuild": "npm run assets:sync && npm run seo:generate",
     "pretest": "npm run assets:sync",
