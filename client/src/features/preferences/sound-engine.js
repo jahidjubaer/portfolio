@@ -87,7 +87,33 @@ function playPageOpen(ctx) {
   whoosh.stop(start + 1);
 }
 
-const NOISE_SOUNDS = { pageOpen: playPageOpen };
+/**
+ * The aperture opening: a camera shutter, two short clicks of band-passed
+ * noise (the mirror flipping up, then the shutter closing behind it).
+ * @param {AudioContext} ctx
+ */
+function playShutter(ctx) {
+  const start = ctx.currentTime;
+  for (const [offset, level, pitch] of [
+    [0, 0.12, 3200],
+    [0.075, 0.08, 2300],
+  ]) {
+    const click = ctx.createBufferSource();
+    click.buffer = noiseBuffer(ctx, 0.05);
+    const filter = ctx.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.Q.value = 1.4;
+    filter.frequency.value = pitch;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(level, start + offset);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.045);
+    click.connect(filter).connect(gain).connect(ctx.destination);
+    click.start(start + offset);
+    click.stop(start + offset + 0.05);
+  }
+}
+
+const NOISE_SOUNDS = { pageOpen: playPageOpen, shutter: playShutter };
 
 /** @param {keyof typeof SOUNDS | keyof typeof NOISE_SOUNDS} name */
 export function playSound(name) {

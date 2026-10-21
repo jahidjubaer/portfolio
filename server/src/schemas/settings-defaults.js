@@ -10,7 +10,7 @@
 export const ACCENT_IDS = ["violet", "sky", "lime", "amber", "rose"];
 export const FONT_IDS = ["geist", "inter", "grotesk", "system"];
 export const THEME_IDS = ["system", "light", "dark"];
-export const INTRO_STYLES = ["torn", "split"];
+export const INTRO_STYLES = ["aperture", "torn", "split"];
 
 /** Resume-tab blocks on the profile, in their default order. */
 export const PROFILE_SECTIONS = [
@@ -36,7 +36,7 @@ export const NAV_ITEMS = [
 
 export const DEFAULT_SETTINGS = {
   appearance: { theme: "system", accent: "lime", font: "geist" },
-  intro: { enabled: true, sound: true, style: "torn" },
+  intro: { enabled: true, sound: true, style: "aperture" },
   profileSections: PROFILE_SECTIONS.map(({ id }) => ({ id, visible: true })),
   showGithubActivity: true,
   navigation: Object.fromEntries(

@@ -32,7 +32,7 @@ export function PostCard({
     <Surface
       as="article"
       className={cn(
-        "has-brackets relative flex h-full flex-col p-6 transition-colors focus-within:border-(--color-accent-primary) hover:border-(--color-border-strong)",
+        "has-brackets group relative flex h-full flex-col p-6 transition-colors focus-within:border-(--color-accent-primary) hover:border-(--color-border-strong)",
         className,
       )}
     >
@@ -45,7 +45,7 @@ export function PostCard({
           alt=""
           width={post.cover?.width}
           height={post.cover?.height}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition-transform duration-(--duration-slow) ease-(--ease-standard) motion-safe:group-hover:scale-[1.03]"
           loading={priorityImage ? "eager" : "lazy"}
           fetchPriority={priorityImage ? "high" : undefined}
         />

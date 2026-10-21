@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
-  hexagonPolygon,
   originOf,
   switchThemeWithAperture,
 } from "../../../src/features/preferences/theme-transition";
+import { apertureClip, hexagonPolygon } from "../../../src/lib/aperture";
 
 afterEach(() => {
   delete document.startViewTransition;
@@ -22,6 +22,21 @@ describe("hexagonPolygon", () => {
     expect(hexagonPolygon(20, 30, 0)).toBe(
       `polygon(${Array(6).fill("20.0px 30.0px").join(", ")})`,
     );
+  });
+});
+
+describe("apertureClip", () => {
+  it("covers the whole screen when closed and keeps the same points open", () => {
+    const closed = apertureClip(0, 800, 600);
+    const open = apertureClip(1, 800, 600);
+    expect(closed.startsWith("polygon(evenodd, 0px 0px, 800px 0px")).toBe(true);
+    expect(closed.split(",").length).toBe(open.split(",").length);
+    // Fully open, the hole reaches past the screen's corners.
+    const xs = [...open.matchAll(/(-?[\d.]+)px (-?[\d.]+)px/g)].map((m) =>
+      Number(m[1]),
+    );
+    expect(Math.max(...xs)).toBeGreaterThan(800);
+    expect(Math.min(...xs)).toBeLessThan(0);
   });
 });
 

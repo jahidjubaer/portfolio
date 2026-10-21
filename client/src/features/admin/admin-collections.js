@@ -281,7 +281,7 @@ export const SINGLETONS = {
       },
       {
         name: "intro.sound",
-        label: "With its paper sound, when the browser allows it",
+        label: "With its sound (shutter or paper), when the browser allows it",
         type: "checkbox",
       },
       {
@@ -290,6 +290,7 @@ export const SINGLETONS = {
         type: "select",
         half: true,
         options: [
+          { value: "aperture", label: "Camera aperture" },
           { value: "torn", label: "Torn pages" },
           { value: "split", label: "Clean split" },
         ],

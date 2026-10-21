@@ -8,6 +8,7 @@ import { ButtonLink } from "../components/ui/ButtonLink";
 import { Markdown } from "../components/ui/Markdown";
 import { Tag } from "../components/ui/Tag";
 import { Reveal } from "../features/motion/Reveal";
+import { ReadingProgressBar } from "../features/projects/ReadingProgressBar";
 import { formatPostDate, getPost } from "../data/posts";
 import { detectTextLanguage } from "../lib/language";
 
@@ -68,6 +69,7 @@ function PostArticle({ post }) {
   return (
     <>
       <PostPageHeader />
+      <ReadingProgressBar />
       <Container as="div" className="section-spacing max-w-3xl">
         <article lang={lang}>
           <Reveal>

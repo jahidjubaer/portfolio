@@ -1,27 +1,9 @@
 import { flushSync } from "react-dom";
+import { hexagonPolygon } from "../../lib/aperture";
 
 const DURATION_MS = 460;
 const EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
 const STEPS = 8;
-
-/**
- * A hexagon (the opening of a six-bladed aperture) as a CSS polygon,
- * centred on (x, y), turned by `rotation` radians.
- * @param {number} x
- * @param {number} y
- * @param {number} radius
- * @param {number} rotation
- */
-export function hexagonPolygon(x, y, radius, rotation = 0) {
-  const points = [];
-  for (let i = 0; i < 6; i += 1) {
-    const angle = rotation + (Math.PI / 3) * i;
-    const px = x + radius * Math.cos(angle);
-    const py = y + radius * Math.sin(angle);
-    points.push(`${px.toFixed(1)}px ${py.toFixed(1)}px`);
-  }
-  return `polygon(${points.join(", ")})`;
-}
 
 /** The centre of the control that asked for the switch. */
 export function originOf(element) {

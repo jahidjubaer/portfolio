@@ -153,14 +153,18 @@
     }
   }
 
-  /* Rule-of-thirds lines over the profile's viewfinder banner. */
+  /* Rule-of-thirds lines over a viewfinder (the profile banner, the
+     aperture opening); set --grid-line to change their color. */
   .viewfinder-grid {
-    --grid-line: color-mix(in srgb, var(--color-text-primary) 9%, transparent);
+    --line: var(
+      --grid-line,
+      color-mix(in srgb, var(--color-text-primary) 9%, transparent)
+    );
     background:
-      linear-gradient(var(--grid-line) 0 0) 33.333% 0 / 1px 100% no-repeat,
-      linear-gradient(var(--grid-line) 0 0) 66.666% 0 / 1px 100% no-repeat,
-      linear-gradient(var(--grid-line) 0 0) 0 33.333% / 100% 1px no-repeat,
-      linear-gradient(var(--grid-line) 0 0) 0 66.666% / 100% 1px no-repeat;
+      linear-gradient(var(--line) 0 0) 33.333% 0 / 1px 100% no-repeat,
+      linear-gradient(var(--line) 0 0) 66.666% 0 / 1px 100% no-repeat,
+      linear-gradient(var(--line) 0 0) 0 33.333% / 100% 1px no-repeat,
+      linear-gradient(var(--line) 0 0) 0 66.666% / 100% 1px no-repeat;
   }
 
   /* The profile's stack as a strip of 35 mm film: dark in both themes,

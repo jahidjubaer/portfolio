@@ -3,7 +3,7 @@ import { useReducedMotion } from "motion/react";
 
 /**
  * Thin decorative reading-progress indicator pinned under the sticky
- * header on case-study routes. Sticky with a negative margin (no layout
+ * header on case-study and post routes. Sticky with a negative margin (no layout
  * shift), updated
  * via requestAnimationFrame with a transform (no layout work), and not
  * rendered at all under prefers-reduced-motion — it is purely a motion

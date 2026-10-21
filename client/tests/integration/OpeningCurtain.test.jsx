@@ -9,10 +9,10 @@ import {
 import { tornClipPath } from "../../src/features/intro/torn-edge";
 import { PreferencesContext } from "../../src/features/preferences/preferences-context";
 
-function renderCurtain(play = vi.fn()) {
+function renderCurtain(play = vi.fn(), style) {
   render(
     <PreferencesContext.Provider value={{ play }}>
-      <OpeningCurtain />
+      <OpeningCurtain style={style} />
     </PreferencesContext.Provider>,
   );
   return play;
@@ -99,6 +99,19 @@ describe("OpeningCurtain", () => {
 });
 
 describe("tornClipPath", () => {
+  it("opens as a camera aperture, with a shutter sound", async () => {
+    setUserActivation(true);
+    const play = renderCurtain(vi.fn(), "aperture");
+    expect(screen.getByTestId("opening-curtain")).toHaveTextContent(
+      "Jahid Hasan",
+    );
+    await waitFor(() => expect(play).toHaveBeenCalledWith("shutter"));
+    await waitFor(
+      () => expect(screen.queryByTestId("opening-curtain")).toBeNull(),
+      { timeout: 3000 },
+    );
+  });
+
   it("gives both halves the same tear so they fit together", () => {
     const left = tornClipPath("left");
     const right = tornClipPath("right");

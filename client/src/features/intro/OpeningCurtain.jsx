@@ -12,6 +12,7 @@ import { cn } from "../../lib/cn";
 import { siteSettings } from "../../data/settings";
 import { TEAR_OVERLAP_PX, tornClipPath } from "./torn-edge";
 import { HOLD_MS, OPENING_SEEN_KEY, REPLAY_EVENT } from "./opening-state";
+import { ApertureSheet } from "./ApertureSheet";
 import { useIsHydrating } from "../../lib/hydration";
 
 // The sheet rests closed for HOLD_MS, then tears open. Total stays near a
@@ -42,9 +43,9 @@ const PAPER_STYLE = {
   },
 };
 
-// Switched on or off, with or without sound, torn or clean, in Site settings.
+// Switched on or off, with or without sound, and its style (camera
+// aperture, torn pages, or a clean split) in Site settings.
 const { intro } = siteSettings;
-const STRAIGHT = intro.style === "split";
 
 function shouldPlayOnLoad() {
   if (!intro.enabled) return false;
@@ -100,9 +101,9 @@ function SeamTitle({ side }) {
 }
 
 /**
- * @param {{ side: "left" | "right", open: boolean, fast: boolean, onOpened?: () => void }} props
+ * @param {{ side: "left" | "right", open: boolean, fast: boolean, straight: boolean, onOpened?: () => void }} props
  */
-function CurtainHalf({ side, open, fast, onOpened }) {
+function CurtainHalf({ side, open, fast, straight, onOpened }) {
   return (
     <motion.div
       initial={false}
@@ -121,7 +122,7 @@ function CurtainHalf({ side, open, fast, onOpened }) {
       style={{ width: `calc(50% + ${TEAR_OVERLAP_PX}px)` }}
     >
       {/* Lighter paper fibres peek out along the tear. */}
-      {STRAIGHT ? null : (
+      {straight ? null : (
         <div
           className="absolute inset-0 bg-(--color-paper-fibre)"
           style={{ clipPath: tornClipPath(side, FIBRE_PX) }}
@@ -131,7 +132,7 @@ function CurtainHalf({ side, open, fast, onOpened }) {
         className="absolute inset-0 overflow-hidden"
         style={{
           ...PAPER_STYLE[side],
-          clipPath: tornClipPath(side, 0, STRAIGHT),
+          clipPath: tornClipPath(side, 0, straight),
         }}
       >
         <SeamTitle side={side} />
@@ -141,13 +142,16 @@ function CurtainHalf({ side, open, fast, onOpened }) {
 }
 
 /**
- * Opening animation: the page arrives as one sheet that tears down the
- * middle and swings open to both sides, with a soft paper sound when the
- * browser allows audio. Once per session, never under reduced motion,
- * purely decorative (aria-hidden) — the real page is rendered underneath
- * from the first frame, so nothing waits on it.
+ * Opening animation, in the style chosen in Site settings: a camera
+ * aperture opening onto the page (with a shutter sound), or one sheet
+ * that tears (or splits) down the middle and swings open (with a paper
+ * sound), when the browser allows audio. Once per session, never under
+ * reduced motion, purely decorative (aria-hidden) — the real page is
+ * rendered underneath from the first frame, so nothing waits on it.
+ * @param {{ style?: "aperture" | "torn" | "split" }} props
  */
-export function OpeningCurtain() {
+export function OpeningCurtain({ style = intro.style }) {
+  const aperture = style === "aperture";
   const reduceMotion = useReducedMotion();
   const { play } = usePreferences();
   const hydrating = useIsHydrating();
@@ -165,8 +169,8 @@ export function OpeningCurtain() {
   const playTearSound = useCallback(() => {
     if (!intro.sound || soundPlayedRef.current || !canPlayAudio()) return;
     soundPlayedRef.current = true;
-    play("pageOpen");
-  }, [play]);
+    play(aperture ? "shutter" : "pageOpen");
+  }, [play, aperture]);
 
   useEffect(() => {
     if (!intro.enabled) return undefined;
@@ -229,13 +233,25 @@ export function OpeningCurtain() {
           transition={{ duration: 0.12 }}
           className="fixed inset-0 z-(--z-curtain) overflow-hidden [perspective:1800px]"
         >
-          <CurtainHalf
-            side="left"
-            open={open}
-            fast={fast}
-            onOpened={handleOpened}
-          />
-          <CurtainHalf side="right" open={open} fast={fast} />
+          {aperture ? (
+            <ApertureSheet open={open} fast={fast} onOpened={handleOpened} />
+          ) : (
+            <>
+              <CurtainHalf
+                side="left"
+                open={open}
+                fast={fast}
+                straight={style === "split"}
+                onOpened={handleOpened}
+              />
+              <CurtainHalf
+                side="right"
+                open={open}
+                fast={fast}
+                straight={style === "split"}
+              />
+            </>
+          )}
         </motion.div>
       ) : null}
     </AnimatePresence>
