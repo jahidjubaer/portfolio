@@ -3,8 +3,9 @@ import { photoSchema, postSchema } from "../schemas/content.js";
 import { COLLECTIONS } from "./collections.js";
 
 /**
- * One-time import of the two Blogger blogs (R8): the photography blog
- * becomes `photos`, the notes blog becomes `posts`. Pure apart from
+ * One-time import of the Blogger blogs (R8): the photography blog
+ * becomes `photos`, the notes blog becomes `posts`, and the personal Bangla
+ * blog (docs/14 R5) becomes draft posts of kind "blog". Pure apart from
  * `importBlogger`, which takes the feed entries and a `rehost` function
  * (download → Vercel Blob) so tests never touch the network.
  */
@@ -324,13 +325,19 @@ function findFirst(node, test) {
   return null;
 }
 
+// Theme flags on the personal blog ("slider" fed its carousel), not subjects.
+const NOT_A_TAG = new Set(["slider", "featured"]);
+
 /**
- * A notes-blog post as a published post. Its first image becomes the cover
- * (and leaves the body, so the post page doesn't show it twice).
+ * A blog post as a post. Its first image becomes the cover (and leaves the
+ * body, so the post page doesn't show it twice). Notes-blog posts arrive
+ * published; the personal blog's (R5) arrive as drafts of kind "blog" with
+ * their Blogger address, for Jahid to publish one by one.
  * @param {object} entry
  * @param {Record<string, string>} [slugs] permalink → chosen slug
+ * @param {{ kind?: "blog" }} [options]
  */
-export function postFromEntry(entry, slugs = {}) {
+export function postFromEntry(entry, slugs = {}, { kind } = {}) {
   const permalink = permalinkOf(entry);
   const html = entry.content?.$t ?? "";
   const title = collapse(entry.title?.$t ?? "").trim();
@@ -350,8 +357,9 @@ export function postFromEntry(entry, slugs = {}) {
     title,
     excerpt: truncate(plainText(html), 200),
     body,
-    tags: labelsOf(entry),
-    status: "published",
+    tags: labelsOf(entry).filter((tag) => !NOT_A_TAG.has(tag.toLowerCase())),
+    status: kind === "blog" ? "draft" : "published",
+    ...(kind === "blog" ? { kind, originalUrl: permalink } : {}),
     publishedAt: (entry.published?.$t ?? "").slice(0, 10),
     permalink,
     cover: cover ? fullSizeImageUrl(cover.src) : null,
@@ -438,6 +446,7 @@ async function nextOrder(collection) {
  * @param {{
  *   photoEntries: object[],
  *   postEntries: object[],
+ *   blogEntries?: object[],
  *   rehost: (src: string) => Promise<{ url: string, width: number, height: number }>,
  *   slugs?: Record<string, string>,
  *   dryRun?: boolean,
@@ -445,7 +454,14 @@ async function nextOrder(collection) {
  */
 export async function importBlogger(
   db,
-  { photoEntries, postEntries, rehost, slugs = {}, dryRun = false },
+  {
+    photoEntries,
+    postEntries,
+    blogEntries = [],
+    rehost,
+    slugs = {},
+    dryRun = false,
+  },
 ) {
   const photos = db.collection(COLLECTIONS.photos);
   const posts = db.collection(COLLECTIONS.posts);
@@ -480,9 +496,12 @@ export async function importBlogger(
     report.photos.push(doc);
   }
 
-  const postItems = postEntries
-    .map((entry) => postFromEntry(entry, slugs))
-    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  const postItems = [
+    ...postEntries.map((entry) => postFromEntry(entry, slugs)),
+    ...blogEntries.map((entry) =>
+      postFromEntry(entry, slugs, { kind: "blog" }),
+    ),
+  ].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
   // Links between imported posts ("previous part") stay on this site.
   const sitePaths = postItems.map((item) => [
     `](${item.permalink})`,
@@ -509,6 +528,7 @@ export async function importBlogger(
       tags: item.tags,
       status: item.status,
       publishedAt: item.publishedAt,
+      ...(item.kind ? { kind: item.kind, originalUrl: item.originalUrl } : {}),
       ...(item.cover
         ? {
             cover: await host(item.cover),

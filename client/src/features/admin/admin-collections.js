@@ -1520,7 +1520,12 @@ export const LISTS = {
     schema: postSchema,
     titleOf: (item) => item.title,
     subtitleOf: (item) =>
-      item.status === "published" ? `Published ${item.publishedAt}` : "Draft",
+      [
+        item.kind === "blog" ? "Blog" : null,
+        item.status === "published" ? `Published ${item.publishedAt}` : "Draft",
+      ]
+        .filter(Boolean)
+        .join(" · "),
     // Posts are listed newest first, so manual ordering doesn't apply.
     sortable: false,
     compare: (a, b) =>
@@ -1555,6 +1560,23 @@ export const LISTS = {
         label: "Publish date",
         type: "date",
         optional: true,
+      },
+      {
+        name: "kind",
+        label: "List on Writing",
+        type: "select",
+        optional: true,
+        emptyLabel: "Learning notes",
+        options: [{ value: "blog", label: "Blog (personal, 2020–2022)" }],
+        half: true,
+      },
+      {
+        name: "originalUrl",
+        label: "First published at",
+        type: "url",
+        optional: true,
+        half: true,
+        hint: "The post's original address, shown as “First published on Blogger”.",
       },
       { name: "tags", label: "Tags", type: "lines" },
       {

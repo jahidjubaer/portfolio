@@ -5,10 +5,10 @@ import { PAGE_META } from "../routes/route-meta";
 import { Container } from "../components/ui/Container";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { Surface } from "../components/ui/Surface";
-import { cn } from "../lib/cn";
-import { detectTextLanguage } from "../lib/language";
-import { posts } from "../data/posts";
+import { isBlogPost, posts, yearSpan } from "../data/posts";
 import { PostGrid } from "../features/writing/PostGrid";
+import { TagFilter } from "../features/writing/TagFilter";
+import { filterByTag } from "../features/writing/filter-by-tag";
 import { PageHeader, PageHeaderTitle } from "../components/layout/PageHeader";
 import { siteSettings } from "../data/settings";
 import { ExternalSiteCard } from "../features/showcase/ExternalSiteCard";
@@ -20,14 +20,9 @@ export function WritingPage() {
 
   usePageMeta(PAGE_META["/writing"]);
 
-  const tags = [...new Set(posts.flatMap((post) => post.tags))];
-  // Only worth showing once there is real variety to filter — a single
-  // tag (or none) would just be a control that does nothing useful.
-  const showFilters = tags.length >= 2;
-  const filteredPosts =
-    showFilters && selectedTag !== "All"
-      ? posts.filter((post) => post.tags.includes(selectedTag))
-      : posts;
+  const notes = posts.filter((post) => !isBlogPost(post));
+  const blog = posts.filter(isBlogPost);
+  const { tags, filtered: filteredPosts } = filterByTag(notes, selectedTag);
   // A sample of the newest notes; the full archive is on the original blog.
   const visiblePosts = filteredPosts.slice(0, showcase.limit);
 
@@ -44,34 +39,17 @@ export function WritingPage() {
           description="Notes from what I'm learning, building and figuring out along the way."
         />
 
-        {showFilters ? (
-          <div
-            role="group"
-            aria-label="Filter by tag"
-            className="mt-8 flex flex-wrap gap-2"
-          >
-            {["All", ...tags].map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                aria-pressed={selectedTag === tag}
-                onClick={() => setSelectedTag(tag)}
-                lang={detectTextLanguage(tag)}
-                className={cn(
-                  "min-touch-target rounded-(--radius-pill) border px-4 py-2 text-sm transition-colors",
-                  selectedTag === tag
-                    ? "border-(--color-accent-primary) bg-(--color-accent-primary-soft) font-semibold text-(--color-accent-primary)"
-                    : "border-(--color-border) text-(--color-text-secondary) hover:text-(--color-text-primary)",
-                )}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
+        {tags.length > 0 ? (
+          <TagFilter
+            className="mt-8"
+            tags={tags}
+            selected={selectedTag}
+            onSelect={setSelectedTag}
+          />
         ) : null}
 
         <div className="mt-10">
-          {posts.length > 0 ? (
+          {notes.length > 0 ? (
             <PostGrid posts={visiblePosts} headingLevel="h2" />
           ) : (
             <Surface variant="raised" className="p-10 text-center">
@@ -98,7 +76,7 @@ export function WritingPage() {
           </p>
         ) : null}
 
-        {showcase.siteUrl ? (
+        {showcase.siteUrl && notes.length > 0 ? (
           <ExternalSiteCard
             className="mt-8"
             href={showcase.siteUrl}
@@ -112,7 +90,46 @@ export function WritingPage() {
             }}
           />
         ) : null}
+
+        {blog.length > 0 ? <BlogSection posts={blog} /> : null}
       </Container>
     </>
+  );
+}
+
+/**
+ * The personal blog (docs/14 R5): older Bangla writing, below the learning
+ * notes and filtered on its own.
+ * @param {{ posts: import("../data/posts").Post[] }} props
+ */
+function BlogSection({ posts: blogPosts }) {
+  const [selectedTag, setSelectedTag] = useState("All");
+  const { tags, filtered } = filterByTag(blogPosts, selectedTag);
+
+  return (
+    <section
+      id="blog"
+      aria-labelledby="blog-heading"
+      className="mt-20 scroll-mt-24 border-t border-(--color-border) pt-14"
+    >
+      <SectionHeader
+        id="blog-heading"
+        label="Personal"
+        heading="Blog"
+        description={`My personal blog, written in Bangla, ${yearSpan(blogPosts)}.`}
+      />
+      {tags.length > 0 ? (
+        <TagFilter
+          className="mt-8"
+          label="Filter the blog by tag"
+          tags={tags}
+          selected={selectedTag}
+          onSelect={setSelectedTag}
+        />
+      ) : null}
+      <div className="mt-10">
+        <PostGrid posts={filtered} headingLevel="h3" />
+      </div>
+    </section>
   );
 }

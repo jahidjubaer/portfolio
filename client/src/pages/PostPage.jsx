@@ -9,7 +9,7 @@ import { Markdown } from "../components/ui/Markdown";
 import { Tag } from "../components/ui/Tag";
 import { Reveal } from "../features/motion/Reveal";
 import { ReadingProgressBar } from "../features/projects/ReadingProgressBar";
-import { formatPostDate, getPost } from "../data/posts";
+import { formatPostDate, getPost, originalSiteName } from "../data/posts";
 import { detectTextLanguage } from "../lib/language";
 
 /**
@@ -90,6 +90,17 @@ function PostArticle({ post }) {
                   </li>
                 ))}
               </ul>
+            ) : null}
+            {post.originalUrl ? (
+              <p className="mt-4 text-sm text-(--color-text-muted)" lang="en">
+                First published on{" "}
+                <a
+                  href={post.originalUrl}
+                  className="underline decoration-(--color-border-strong) underline-offset-4 hover:text-(--color-text-primary) hover:decoration-(--color-accent-primary)"
+                >
+                  {originalSiteName(post.originalUrl)}
+                </a>
+              </p>
             ) : null}
           </Reveal>
 

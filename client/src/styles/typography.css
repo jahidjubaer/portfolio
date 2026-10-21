@@ -5,10 +5,29 @@
  * keep first paint readable while the fonts load (font-display: swap).
  */
 
+/*
+ * Bangla posts, book titles and tags (docs/14 R5): none of the sans families
+ * has Bengali glyphs, so Noto Sans Bengali sits right after them in every
+ * stack. Only its Bengali subset is declared, and unicode-range means the
+ * file downloads only on a page that shows Bengali text.
+ */
+@font-face {
+  font-family: "Noto Sans Bengali Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/noto-sans-bengali/files/noto-sans-bengali-bengali-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0951-0952, U+0964-0965, U+0980-09FE, U+1CD0, U+1CD2, U+1CD5-1CD6, U+1CD8,
+    U+1CE1, U+1CEA, U+1CED, U+1CF2, U+1CF5-1CF7, U+200C-200D, U+20B9, U+25CC,
+    U+A8F1;
+}
+
 :root {
   --font-sans:
-    "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    sans-serif;
+    "Geist Variable", "Noto Sans Bengali Variable", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
   --font-mono:
     "Geist Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Consolas,
     monospace;
@@ -28,14 +47,14 @@
    load on demand (font-loader.js), so only Geist ships by default. */
 :root[data-font="inter"] {
   --font-sans:
-    "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    sans-serif;
+    "Inter Variable", "Noto Sans Bengali Variable", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
 }
 
 :root[data-font="grotesk"] {
   --font-sans:
-    "Space Grotesk Variable", ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", sans-serif;
+    "Space Grotesk Variable", "Noto Sans Bengali Variable", ui-sans-serif,
+    system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 :root[data-font="system"] {

@@ -133,6 +133,29 @@ describe("postFromEntry", () => {
   });
 });
 
+describe("postFromEntry for the personal blog", () => {
+  it("makes a draft of kind blog with its Blogger address and no theme flags", () => {
+    const href = "https://personal.blogspot.com/2021/03/blog-post_38.html";
+    const post = postFromEntry(
+      entry({
+        html: `<p>সোনালী শৈশব</p>`,
+        href,
+        labels: ["slider", "Featured", "লেখাগুচ্ছ"],
+      }),
+      { [href]: "golden-childhood" },
+      { kind: "blog" },
+    );
+    expect(post).toMatchObject({
+      slug: "golden-childhood",
+      tags: ["লেখাগুচ্ছ"],
+      status: "draft",
+      kind: "blog",
+      originalUrl: href,
+      publishedAt: "2025-09-12",
+    });
+  });
+});
+
 describe("helpers", () => {
   it("rewrites both Blogger CDN URL shapes to the 1600 px variant", () => {
     expect(fullSizeImageUrl("https://h/img/b/x/w474-h311/a.png")).toBe(

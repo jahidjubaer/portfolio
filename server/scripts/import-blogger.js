@@ -1,5 +1,6 @@
 /**
- * One-time import of the Blogger blogs into the database (R8). Every image
+ * One-time import of the Blogger blogs into the database (R8; the personal
+ * blog's posts arrive as drafts, docs/14 R5). Every image
  * is downloaded and re-uploaded to Vercel Blob, so nothing on the site
  * depends on Blogger afterwards. Already-imported items are skipped.
  *
@@ -17,6 +18,8 @@ import { env } from "../src/config/env.js";
 
 const PHOTO_BLOG = "https://jahid-thecapturecrew.blogspot.com";
 const NOTES_BLOG = "https://jahider-notekhata.blogspot.com";
+// The personal blog (docs/14 R5): imported as drafts of kind "blog".
+const PERSONAL_BLOG = "https://mdjahid-hasan.blogspot.com";
 
 // Blogger gave these posts dated, generic URLs ("2025/08/blog-post").
 const SLUGS = {
@@ -24,6 +27,31 @@ const SLUGS = {
     "javascript-where-to-write-code",
   [`${NOTES_BLOG}/2025/09/javascript.html`]: "javascript-introduction",
   [`${NOTES_BLOG}/2025/08/blog-post.html`]: "napkin-ai-presentations",
+  [`${PERSONAL_BLOG}/2022/08/blog-post_93.html`]: "niladri-lake-part-3",
+  [`${PERSONAL_BLOG}/2022/08/blog-post_18.html`]: "niladri-lake-part-2",
+  [`${PERSONAL_BLOG}/2022/08/blog-post.html`]: "niladri-lake-part-1",
+  [`${PERSONAL_BLOG}/2022/03/blog-post.html`]:
+    "cricket-video-games-and-lost-promise",
+  [`${PERSONAL_BLOG}/2021/10/blog-post_17.html`]: "comilla-communal-violence",
+  [`${PERSONAL_BLOG}/2021/10/blog-post.html`]:
+    "quran-desecration-politics-and-media",
+  [`${PERSONAL_BLOG}/2021/08/blog-post.html`]: "jamuna-group-and-evaly",
+  [`${PERSONAL_BLOG}/2021/05/blog-post_29.html`]: "pubg-free-fire-ban",
+  [`${PERSONAL_BLOG}/2021/05/blog-post_55.html`]: "corona-and-careless-crowds",
+  [`${PERSONAL_BLOG}/2021/05/blog-post_10.html`]: "takerghat-tourism-and-noise",
+  [`${PERSONAL_BLOG}/2021/05/blog-post_8.html`]: "battle-of-ain-jalut",
+  [`${PERSONAL_BLOG}/2021/05/blog-post_7.html`]: "luxury-as-a-nation",
+  [`${PERSONAL_BLOG}/2021/05/blog-post.html`]: "mosque-committees-today",
+  [`${PERSONAL_BLOG}/2021/03/blog-post_13.html`]: "moral-decline",
+  [`${PERSONAL_BLOG}/2021/03/blog-post_38.html`]: "golden-childhood",
+  [`${PERSONAL_BLOG}/2021/03/blog-post_23.html`]: "national-leaders-and-titles",
+  [`${PERSONAL_BLOG}/2021/03/blog-post_9.html`]: "news-portal-headlines",
+  [`${PERSONAL_BLOG}/2021/03/blog-post.html`]: "bdr-mutiny-2009",
+  [`${PERSONAL_BLOG}/2020/04/blog-post_22.html`]: "facebook-islamic-groups",
+  [`${PERSONAL_BLOG}/2020/04/blog-post_66.html`]:
+    "circulars-directives-and-corona",
+  [`${PERSONAL_BLOG}/2020/04/blog-post.html`]: "corona-lives-and-economy",
+  [`${PERSONAL_BLOG}/2020/03/blog-post.html`]: "lockdown-and-ordinary-people",
 };
 
 const EXTENSIONS = {
@@ -79,14 +107,16 @@ if (!dryRun && !env.blobToken) {
 }
 
 try {
-  const [photoEntries, postEntries] = await Promise.all([
+  const [photoEntries, postEntries, blogEntries] = await Promise.all([
     fetchEntries(PHOTO_BLOG),
     fetchEntries(NOTES_BLOG),
+    fetchEntries(PERSONAL_BLOG),
   ]);
   const db = await getDb();
   const report = await importBlogger(db, {
     photoEntries,
     postEntries,
+    blogEntries,
     rehost,
     slugs: SLUGS,
     dryRun,
@@ -105,7 +135,7 @@ try {
   console.log(`${verb} ${report.posts.length} posts:`);
   for (const post of report.posts) {
     console.log(
-      `  /writing/${post.slug} (${post.publishedAt}) ${post.title}\n    tags: ${post.tags.join(", ")}; cover: ${post.cover ? "yes" : "no"}; ${post.imageCount} images in the body; ${post.body.length} characters`,
+      `  /writing/${post.slug} (${post.publishedAt}${post.kind ? `, ${post.kind}, ${post.status}` : ""}) ${post.title}\n    tags: ${post.tags.join(", ")}; cover: ${post.cover ? "yes" : "no"}; ${post.imageCount} images in the body; ${post.body.length} characters`,
     );
   }
   if (report.skipped.length) {

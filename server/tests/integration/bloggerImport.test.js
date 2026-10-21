@@ -126,4 +126,38 @@ describe("importBlogger", () => {
     expect(again.skipped).toHaveLength(4);
     expect(rehost).toHaveBeenCalledTimes(5);
   });
+
+  it("imports the personal blog as drafts of kind blog", async () => {
+    const rehost = vi.fn(async (src) => ({
+      url: `https://store.public.blob.vercel-storage.com/photos/${src.split("/")[6]}.jpg`,
+      width: 1600,
+      height: 900,
+    }));
+    const href = "https://personal.blogspot.com/2021/03/blog-post.html";
+    const report = await importBlogger(db, {
+      photoEntries: [],
+      postEntries: [],
+      blogEntries: [
+        entry({
+          html: `<img src="${image("lake")}" /><p>নীলাদ্রি লেক</p>`,
+          title: "নীলাদ্রি লেক",
+          href,
+          published: "2021-03-09T10:00:00Z",
+        }),
+      ],
+      rehost,
+      slugs: { [href]: "niladri-lake" },
+    });
+    expect(report.posts).toHaveLength(1);
+
+    const post = await db.collection("posts").findOne({ slug: "niladri-lake" });
+    expect(post).toMatchObject({
+      status: "draft",
+      kind: "blog",
+      originalUrl: href,
+      publishedAt: "2021-03-09",
+      body: "নীলাদ্রি লেক",
+    });
+    expect(post.cover.url).toContain("/photos/lake.jpg");
+  });
 });

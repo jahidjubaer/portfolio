@@ -48,6 +48,31 @@ const INTRO = {
   publishedAt: "2025-09-12",
 };
 
+const LAKE = {
+  slug: "niladri-lake-part-1",
+  order: 2,
+  title: "নীলাদ্রি লেক",
+  excerpt: "লেক নিয়ে।",
+  body: "লেক নিয়ে।",
+  tags: ["লেখাগুচ্ছ"],
+  status: "published",
+  publishedAt: "2022-08-18",
+  kind: "blog",
+  originalUrl: "https://mdjahid-hasan.blogspot.com/2022/08/blog-post.html",
+};
+
+const CHILDHOOD = {
+  slug: "golden-childhood",
+  order: 3,
+  title: "সোনালী শৈশব",
+  excerpt: "শৈশব নিয়ে।",
+  body: "শৈশব নিয়ে।",
+  tags: ["অতীতবর্তমান", "লেখাগুচ্ছ"],
+  status: "published",
+  publishedAt: "2021-03-09",
+  kind: "blog",
+};
+
 /** Titles of the post cards, in page order. */
 function postTitles() {
   return screen
@@ -110,6 +135,48 @@ describe("WritingPage", () => {
     ).toHaveAttribute("aria-pressed", "true");
   });
 
+  it("lists the personal blog below the notes, with its own filter", async () => {
+    const user = userEvent.setup();
+    store.posts = [NAPKIN, INTRO, LAKE, CHILDHOOD];
+    renderAt("/writing");
+
+    const blog = await screen.findByRole("region", { name: "Blog" });
+    expect(
+      within(blog).getByText("My personal blog, written in Bangla, 2021–2022."),
+    ).toBeInTheDocument();
+    // Notes first, the blog after them, each list newest first.
+    expect(postTitles()).toEqual([
+      INTRO.title,
+      NAPKIN.title,
+      LAKE.title,
+      CHILDHOOD.title,
+    ]);
+    expect(
+      within(blog)
+        .getAllByRole("heading", { level: 3 })
+        .map((h) => h.textContent),
+    ).toEqual([LAKE.title, CHILDHOOD.title]);
+
+    const filters = within(blog).getByRole("group", {
+      name: "Filter the blog by tag",
+    });
+    await user.click(
+      within(filters).getByRole("button", { name: "অতীতবর্তমান" }),
+    );
+    expect(postTitles()).toEqual([INTRO.title, NAPKIN.title, CHILDHOOD.title]);
+    // The notes' own filter doesn't list the blog's tags.
+    const notesFilters = screen.getByRole("group", { name: "Filter by tag" });
+    expect(
+      within(notesFilters).queryByRole("button", { name: "অতীতবর্তমান" }),
+    ).toBeNull();
+  });
+
+  it("has no blog section until a blog post is published", async () => {
+    renderAt("/writing");
+    await screen.findAllByRole("heading", { level: 1 });
+    expect(screen.queryByRole("region", { name: "Blog" })).toBeNull();
+  });
+
   it("shows an empty state when nothing is published", async () => {
     store.posts = [];
     renderAt("/writing");
@@ -155,6 +222,16 @@ describe("PostPage", () => {
     expect(document.querySelectorAll(`img[src="${COVER.url}"]`)).toHaveLength(
       1,
     );
+  });
+
+  it("links a blog post to where it was first published", async () => {
+    store.posts = [LAKE];
+    renderAt("/writing/niladri-lake-part-1");
+    await screen.findByRole("heading", { level: 1 });
+    const link = screen.getByRole("link", { name: "Blogger" });
+    expect(link).toHaveAttribute("href", LAKE.originalUrl);
+    expect(link.closest("p")).toHaveTextContent("First published on Blogger");
+    expect(link.closest("p")).toHaveAttribute("lang", "en");
   });
 
   it("says when a post doesn't exist, and keeps it out of search", async () => {

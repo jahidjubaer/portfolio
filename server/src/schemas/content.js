@@ -553,6 +553,13 @@ export const photoSchema = z.object({
 
 export const POST_STATUS_VALUES = ["draft", "published"];
 
+/**
+ * Which list on /writing a post belongs to (R5). A missing value means the
+ * learning notes, as before kinds existed; "blog" is the personal Bangla
+ * blog from 2020–2022.
+ */
+export const POST_KIND_VALUES = ["notes", "blog"];
+
 /** Blog posts. Drafts are stored but never leave the admin. */
 export const postSchema = z
   .object({
@@ -566,6 +573,9 @@ export const postSchema = z
     publishedAt: isoDate.optional(),
     cover: blobImageSchema.optional(),
     coverAlt: text.optional(),
+    kind: z.enum(POST_KIND_VALUES).optional(),
+    // Where the post first appeared, shown as "First published on Blogger".
+    originalUrl: url.optional(),
   })
   .refine((post) => post.status !== "published" || post.publishedAt, {
     message: "A published post needs a publish date.",

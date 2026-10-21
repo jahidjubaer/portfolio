@@ -7,6 +7,7 @@ import { SectionLabel } from "./SectionLabel";
  *   heading: import("react").ReactNode,
  *   description?: import("react").ReactNode,
  *   as?: "h1" | "h2" | "h3",
+ *   id?: string,
  *   className?: string,
  * }} props
  */
@@ -15,12 +16,16 @@ export function SectionHeader({
   heading,
   description,
   as: HeadingTag = "h2",
+  id,
   className = "",
 }) {
   return (
     <div className={cn("max-w-2xl", className)}>
       {label ? <SectionLabel>{label}</SectionLabel> : null}
-      <HeadingTag className="heading-xl mt-3 text-(--color-text-primary)">
+      <HeadingTag
+        id={id}
+        className="heading-xl mt-3 text-(--color-text-primary)"
+      >
         {heading}
       </HeadingTag>
       {description ? (
