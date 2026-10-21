@@ -1,6 +1,8 @@
 import { syncGitHubRepos } from "./githubSyncService.js";
 import { syncCodingStats } from "./codingStatsService.js";
+import { syncBooks } from "./goodreadsService.js";
 import {
+  getBeyond,
   getContentSnapshot,
   getProfile,
   getSettings,
@@ -15,8 +17,8 @@ function withoutTimestamps(value) {
 }
 
 async function syncedFacts() {
-  const { github, coding } = await getContentSnapshot();
-  return withoutTimestamps({ github, coding });
+  const { github, coding, books } = await getContentSnapshot();
+  return withoutTimestamps({ github, coding, books });
 }
 
 /**
@@ -26,7 +28,13 @@ async function syncedFacts() {
  */
 export async function runDailySync() {
   const before = await syncedFacts();
-  const result = { github: null, coding: null, published: false, errors: {} };
+  const result = {
+    github: null,
+    coding: null,
+    books: null,
+    published: false,
+    errors: {},
+  };
   try {
     result.github = await syncGitHubRepos();
   } catch (error) {
@@ -38,6 +46,14 @@ export async function runDailySync() {
     result.coding = { errors: stats.errors };
   } catch (error) {
     result.errors.coding = error.message;
+  }
+  try {
+    const beyond = await getBeyond();
+    if (beyond?.goodreadsUserId) {
+      result.books = await syncBooks(beyond.goodreadsUserId);
+    }
+  } catch (error) {
+    result.errors.books = error.message;
   }
 
   const settings = await getSettings();

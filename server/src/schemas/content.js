@@ -521,6 +521,11 @@ export const studyLogSchema = z.object({
 });
 
 export const beyondSchema = z.object({
+  // Goodreads' numeric user id; the daily sync reads its public shelves.
+  goodreadsUserId: z
+    .string()
+    .regex(/^\d+$/, "The number in your Goodreads profile link.")
+    .optional(),
   // Optional: added after the first Beyond content (docs/09, P4).
   languages: z.array(z.object({ name: text, level: text })).optional(),
   interests: z.array(text).optional(),

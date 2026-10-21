@@ -12,6 +12,11 @@ import { Reveal } from "../features/motion/Reveal";
 import { profile } from "../data/profile";
 import { capabilityGroups } from "../data/capabilities";
 import { leadershipRoles } from "../data/leadership";
+import {
+  languages,
+  sportsHighlights,
+  volunteeringHighlights,
+} from "../data/beyond";
 import { degreeLine, educationEntries } from "../data/education";
 import { formatRange } from "../lib/dates";
 import { ProjectStack } from "../features/projects/ProjectStack";
@@ -223,8 +228,63 @@ export function ResumePage() {
                   </p>
                 </Surface>
               ))}
+              {sportsHighlights.map((item) => (
+                <Surface key={item.title} variant="raised" className="p-6">
+                  <h3 className="text-base font-semibold text-(--color-text-primary)">
+                    {item.title}
+                  </h3>
+                  <p className="body-sm mt-2 text-(--color-text-secondary)">
+                    {item.description}
+                  </p>
+                </Surface>
+              ))}
+              {volunteeringHighlights.map((item) => (
+                <Surface
+                  key={item.organization}
+                  variant="raised"
+                  className="p-6"
+                >
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                    <h3 className="text-base font-semibold text-(--color-text-primary)">
+                      Volunteer{" "}
+                      <span className="font-normal text-(--color-text-secondary)">
+                        at {item.organization}
+                      </span>
+                    </h3>
+                    <span className="mono-meta text-(--color-text-muted)">
+                      {item.period}
+                    </span>
+                  </div>
+                  <p className="body-sm mt-2 text-(--color-text-secondary)">
+                    {item.description}
+                  </p>
+                </Surface>
+              ))}
             </div>
           </section>
+
+          {languages.length ? (
+            <>
+              <Divider className="my-12" />
+              <section>
+                <h2 className="label text-(--color-text-muted) uppercase tracking-wider">
+                  Languages
+                </h2>
+                <dl className="mt-6 grid gap-4 sm:grid-cols-2">
+                  {languages.map((language) => (
+                    <div key={language.name}>
+                      <dt className="font-semibold text-(--color-text-primary)">
+                        {language.name}
+                      </dt>
+                      <dd className="body-sm text-(--color-text-secondary)">
+                        {language.level}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            </>
+          ) : null}
         </Reveal>
       </Container>
     </>

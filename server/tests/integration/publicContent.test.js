@@ -58,6 +58,7 @@ describe("GET /api/public/*", () => {
     expect(Object.keys(response.body.data).sort()).toEqual(
       [
         "beyond",
+        "books",
         "certifications",
         "coding",
         "education",

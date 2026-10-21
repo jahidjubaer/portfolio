@@ -410,6 +410,6 @@ test("Beyond page renders its sections on a mobile viewport", async ({
     page.getByRole("heading", { level: 2, name: "Photography" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { level: 2, name: "University Club Leadership" }),
+    page.getByText("What I do with a camera and a book."),
   ).toBeVisible();
 });

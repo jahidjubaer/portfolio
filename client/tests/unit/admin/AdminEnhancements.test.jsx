@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { withDefaultSettings } from "../../../../server/src/schemas/settings-defaults.js";
 import { installFakeAdminApi, renderAdmin } from "./fake-admin-api";
 import snapshot from "../../../src/generated/content.json";
 import {
@@ -179,7 +180,8 @@ describe("admin overview and editors", () => {
   it("edits site settings", async () => {
     const user = userEvent.setup();
     const api = installFakeAdminApi({
-      overrides: { settings: structuredClone(snapshot.settings) },
+      // As the API sends it: getSettings fills in sections added later.
+      overrides: { settings: withDefaultSettings(snapshot.settings) },
     });
     renderAdmin("/admin/settings");
 

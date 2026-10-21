@@ -48,9 +48,15 @@ describe("site settings on the public site", () => {
     const headings = screen
       .getAllByRole("heading", { level: 2 })
       .map((heading) => heading.textContent);
-    expect(headings.slice(0, 2)).toEqual(["Skills", "About"]);
+    // Sections a saved list didn't mention still show, each next to the
+    // section it follows by default (Languages after Skills, then Resume).
+    expect(headings.slice(0, 4)).toEqual([
+      "Skills",
+      "Languages",
+      "Resume",
+      "About",
+    ]);
     expect(headings).not.toContain("Open to");
-    // Sections a saved list didn't mention still show, after the rest.
     expect(headings).toContain("Experience & leadership");
   });
 

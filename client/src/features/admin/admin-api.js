@@ -169,3 +169,17 @@ export async function updateMessage(id, changes) {
 export function deleteMessage(id) {
   return adminRequest("DELETE", `/admin/messages/${encodeURIComponent(id)}`);
 }
+
+/** Refreshes the Goodreads shelves now (the daily cron does it otherwise). */
+export async function syncBooks() {
+  return (await adminRequest("POST", "/admin/books/sync")).data;
+}
+
+/** Hides a synced book from the site, or shows it again. */
+export async function setBookHidden(bookId, hidden) {
+  return (
+    await adminRequest("PATCH", `/admin/books/${encodeURIComponent(bookId)}`, {
+      hidden,
+    })
+  ).data;
+}

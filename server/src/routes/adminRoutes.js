@@ -22,6 +22,8 @@ import * as controller from "../controllers/adminContentController.js";
  *   POST   /github/sync              refresh the GitHub repo cache now
  *   POST   /publish                  rebuild the public site (deploy hook)
  *   POST   /coding/sync              refresh Codeforces / VJudge / repo stats
+ *   POST   /books/sync               refresh the Goodreads shelves
+ *   PATCH  /books/:bookId            { hidden } — hide a book from the site
  *   POST   /ai/project-draft         { repos: [...] } (or { repo }) →
  *                                    project fields to review
  *   POST   /ai/learning-draft        { repo } → learning-track fields
@@ -42,6 +44,8 @@ adminRouter.post("/uploads", controller.postUploadToken);
 adminRouter.post("/github/sync", controller.postGitHubSync);
 adminRouter.post("/publish", controller.postPublish);
 adminRouter.post("/coding/sync", controller.postCodingSync);
+adminRouter.post("/books/sync", controller.postBooksSync);
+adminRouter.patch("/books/:bookId", controller.patchBook);
 adminRouter.post("/ai/project-draft", aiRateLimit, controller.postProjectDraft);
 adminRouter.post(
   "/ai/learning-draft",

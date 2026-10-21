@@ -56,7 +56,7 @@ export function BottomNav() {
                       TAB,
                       isActive
                         ? "text-(--color-accent-primary)"
-                        : "text-(--color-text-muted)",
+                        : "text-(--color-text-secondary)",
                     )
                   }
                 >
@@ -81,7 +81,7 @@ export function BottomNav() {
                   TAB,
                   moreActive || moreOpen
                     ? "text-(--color-accent-primary)"
-                    : "text-(--color-text-muted)",
+                    : "text-(--color-text-secondary)",
                 )}
               >
                 <Ellipsis size={21} aria-hidden="true" />

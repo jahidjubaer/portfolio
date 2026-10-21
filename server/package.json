@@ -15,7 +15,8 @@
     "migrate:certifications": "node scripts/certification-categories.js",
     "add:portfolio-project": "node scripts/add-portfolio-project.js",
     "add:sarabo-architecture": "node scripts/sarabo-architecture.js",
-    "migrate:case-study-template": "node scripts/case-study-template.js"
+    "migrate:case-study-template": "node scripts/case-study-template.js",
+    "sync:books": "node scripts/sync-books.js"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.101",

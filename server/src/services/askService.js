@@ -133,6 +133,19 @@ export function buildDigest(content) {
             `Experience: ${role.title}, ${orgName.get(entry.organizationId) ?? ""} (${period(role)}, ${role.employmentType}).${role.description ? ` ${role.description}` : ""}`,
         ),
       ),
+      ...(content.beyond?.sports ?? []).map(
+        (item) => `Sports: ${item.title}. ${item.description ?? ""}`,
+      ),
+      ...(content.beyond?.volunteering ?? []).map(
+        (item) =>
+          `Volunteering: ${item.organization} (${item.period}). ${item.description ?? ""}`,
+      ),
+      line(
+        "Languages",
+        (content.beyond?.languages ?? []).map(
+          (language) => `${language.name} (${language.level})`,
+        ),
+      ),
     ]),
     page("/learning", [
       ...(content.learningTracks ?? []).map(
@@ -157,19 +170,15 @@ export function buildDigest(content) {
       ),
     ]),
     page("/beyond", [
-      line(
-        "Languages",
-        (content.beyond?.languages ?? []).map(
-          (language) => `${language.name} (${language.level})`,
-        ),
-      ),
-      line("Interests", content.beyond?.interests),
-      ...(content.beyond?.sports ?? []).map(
-        (item) => `Sports: ${item.title}. ${item.description ?? ""}`,
-      ),
-      ...(content.beyond?.volunteering ?? []).map(
-        (item) => `Volunteering: ${item.title}. ${item.description ?? ""}`,
-      ),
+      content.books?.currentlyReading?.length
+        ? `Currently reading: ${content.books.currentlyReading.map((book) => `${book.title} by ${book.author}`).join("; ")}.`
+        : null,
+      content.books?.read?.length
+        ? `Books read (Goodreads): ${content.books.read.length}, including ${content.books.read
+            .slice(0, 8)
+            .map((book) => book.title)
+            .join("; ")}.`
+        : null,
     ]),
     page("/contact", [
       "The Contact page has a message form and his public profiles.",

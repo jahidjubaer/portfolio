@@ -64,6 +64,9 @@ const AdminItemPage = lazy(() =>
 const AdminRepositoriesPage = lazy(() =>
   loadAdmin().then((m) => ({ default: m.AdminRepositoriesPage })),
 );
+const AdminBooksPage = lazy(() =>
+  loadAdmin().then((m) => ({ default: m.AdminBooksPage })),
+);
 const AdminMessagesPage = lazy(() =>
   loadAdmin().then((m) => ({ default: m.AdminMessagesPage })),
 );
@@ -104,6 +107,7 @@ export const routeConfig = [
       { path: "settings", element: <AdminSingletonPage name="settings" /> },
       { path: "repositories", element: <AdminRepositoriesPage /> },
       { path: "messages", element: <AdminMessagesPage /> },
+      { path: "books", element: <AdminBooksPage /> },
       { path: "linkedin-import", element: <AdminLinkedInImportPage /> },
       ...ADMIN_LISTS.flatMap((name) => [
         { path: name, element: <AdminListPage name={name} /> },

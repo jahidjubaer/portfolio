@@ -2,7 +2,6 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
-import { leadershipRoles } from "../../src/data/leadership";
 
 // The gallery reads the published snapshot; each test sets what's in it.
 const gallery = vi.hoisted(() => ({ photographs: [] }));
@@ -63,32 +62,14 @@ describe("BeyondPage", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("renders the Sports section with verified content", async () => {
-    renderBeyond();
-    expect(
-      await screen.findByRole("heading", {
-        name: "Sports & Athletics Leadership",
-      }),
-    ).toBeInTheDocument();
-    expect(screen.getAllByText(/cricket/i).length).toBeGreaterThan(0);
-  });
-
-  it("renders every verified leadership role", async () => {
+  it("keeps to photography and reading; the rest is on the résumé", async () => {
     renderBeyond();
     await screen.findByRole("heading", { level: 1 });
-    leadershipRoles.forEach((role) => {
-      expect(screen.getByText(role.description)).toBeInTheDocument();
-    });
-  });
-
-  it("renders the Volunteering section with verified content", async () => {
-    renderBeyond();
     expect(
-      await screen.findByRole("heading", {
-        name: "Volunteering & Social Impact",
-      }),
+      screen.getByText("What I do with a camera and a book."),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Red Crescent Youth/)).toBeInTheDocument();
+    expect(screen.queryByText(/Red Crescent Youth/)).toBeNull();
+    expect(screen.queryByRole("heading", { name: /Sports/ })).toBeNull();
   });
 
   it("links to contact for further connection", async () => {

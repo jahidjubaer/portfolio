@@ -27,8 +27,11 @@ describe("site settings defaults", () => {
       accent: "rose",
       font: "geist",
     });
-    // Saved order first, unknown ids dropped, new sections appended.
-    expect(merged.profileSections[0]).toEqual({ id: "skills", visible: false });
+    // Unknown ids dropped; missing sections go in at their default place.
+    expect(merged.profileSections.map((item) => item.id)).toEqual(
+      PROFILE_SECTIONS.map((item) => item.id),
+    );
+    expect(merged.profileSections[6]).toEqual({ id: "skills", visible: false });
     expect(merged.profileSections.map((item) => item.id)).not.toContain(
       "retired-section",
     );
@@ -36,5 +39,29 @@ describe("site settings defaults", () => {
     expect(merged.navigation.beyond.label).toBe("Life");
     expect(merged.navigation.work.label).toBe("Projects");
     expect(settingsSchema.safeParse(merged).success).toBe(true);
+  });
+
+  it("slots sections added later next to their neighbours, keeping the saved order", () => {
+    const saved = [
+      "about",
+      "open-to",
+      "skills",
+      "experience",
+      "education",
+      "certifications",
+      "resume",
+    ].map((id) => ({ id, visible: true }));
+    const merged = withDefaultSettings({ profileSections: saved });
+    expect(merged.profileSections.map((item) => item.id)).toEqual([
+      "about",
+      "open-to",
+      "skills",
+      "languages",
+      "experience",
+      "volunteering",
+      "education",
+      "certifications",
+      "resume",
+    ]);
   });
 });

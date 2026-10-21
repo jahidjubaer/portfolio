@@ -30,6 +30,10 @@ export const COLLECTIONS = {
   changeLog: "changeLog",
   // Codeforces / VJudge / practice-repo stats (singleton), synced daily.
   codingStats: "codingStats",
+  // Goodreads shelves (R4): one document per book, keyed by Goodreads'
+  // book id, plus a singleton with the last sync.
+  books: "books",
+  bookSync: "bookSync",
   // Contact-form messages, read in the admin inbox. Never public.
   messages: "messages",
 };
@@ -65,5 +69,8 @@ export async function ensureIndexes(db) {
       .createIndex({ id: 1 }, { unique: true }),
     db.collection(COLLECTIONS.messages).createIndex({ receivedAt: -1 }),
     db.collection(COLLECTIONS.changeLog).createIndex({ at: -1 }),
+    db
+      .collection(COLLECTIONS.books)
+      .createIndex({ bookId: 1 }, { unique: true }),
   ]);
 }

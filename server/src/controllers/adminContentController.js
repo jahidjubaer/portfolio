@@ -17,6 +17,12 @@ import {
   MAX_DRAFT_REPOS,
 } from "../services/aiDraftService.js";
 import * as messages from "../services/messageService.js";
+import {
+  getBooksStatus,
+  setBookHidden,
+  syncBooks,
+} from "../services/goodreadsService.js";
+import { getBeyond } from "../services/contentService.js";
 import { getProfile } from "../services/contentService.js";
 
 function notFound() {
@@ -49,6 +55,7 @@ export async function getContent(_req, res) {
       repositories: await getGitHubOverview(content.projects),
       publishing: await getPublishStatus(),
       codingStatus: await getCodingStatus(),
+      bookStatus: await getBooksStatus(),
       messages: await messages.listMessages(),
       aiConfigured: isAiConfigured(),
     },
@@ -100,6 +107,20 @@ export async function postCodingSync(_req, res) {
   await syncCodingStats(profile?.problemSolving);
   // With the per-judge merge, as the admin's Coding stats panel shows it.
   res.json({ success: true, data: await getCodingStatus() });
+}
+
+export async function postBooksSync(_req, res) {
+  const beyond = await getBeyond();
+  if (!beyond?.goodreadsUserId) {
+    throw badRequest("Add your Goodreads user ID under Beyond first.");
+  }
+  await syncBooks(beyond.goodreadsUserId);
+  res.json({ success: true, data: await getBooksStatus() });
+}
+
+export async function patchBook(req, res) {
+  const data = await setBookHidden(req.params.bookId, req.body?.hidden);
+  res.json({ success: true, data });
 }
 
 function badRequest(message) {

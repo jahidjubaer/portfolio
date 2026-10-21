@@ -17,9 +17,11 @@ export const PROFILE_SECTIONS = [
   { id: "about", label: "About" },
   { id: "open-to", label: "Open to" },
   { id: "experience", label: "Experience & leadership" },
+  { id: "volunteering", label: "Sports & volunteering" },
   { id: "education", label: "Education" },
   { id: "certifications", label: "Licenses & certifications" },
   { id: "skills", label: "Skills" },
+  { id: "languages", label: "Languages" },
   { id: "resume", label: "Resume" },
 ];
 
@@ -76,11 +78,14 @@ export function withDefaultSettings(stored) {
   const sections = (stored.profileSections ?? []).filter((item) =>
     known.has(item.id),
   );
-  for (const { id } of PROFILE_SECTIONS) {
-    if (!sections.some((item) => item.id === id)) {
-      sections.push({ id, visible: true });
-    }
-  }
+  // A section added after the settings were saved goes in at its default
+  // place: right after the section that comes before it in PROFILE_SECTIONS.
+  PROFILE_SECTIONS.forEach(({ id }, index) => {
+    if (sections.some((item) => item.id === id)) return;
+    const before = PROFILE_SECTIONS[index - 1]?.id;
+    const at = sections.findIndex((item) => item.id === before);
+    sections.splice(at + 1, 0, { id, visible: true });
+  });
   return {
     ...structuredClone(DEFAULT_SETTINGS),
     ...stored,

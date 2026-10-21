@@ -28,6 +28,23 @@ describe("HomePage (profile)", () => {
     }
   });
 
+  it("lists sports, volunteering, and languages on the Resume tab", () => {
+    renderHome();
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Sports & volunteering" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        level: 3,
+        name: "Red Crescent Youth (RCY)",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Languages" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Native")).toBeInTheDocument();
+  });
+
   it("opens on the Resume tab with About and Experience sections", () => {
     renderHome();
     expect(screen.getByRole("tab", { name: "Resume" })).toHaveAttribute(

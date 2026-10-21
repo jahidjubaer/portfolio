@@ -1,5 +1,6 @@
 import {
   BadgeCheck,
+  BookOpen,
   BriefcaseBusiness,
   Building2,
   CircleUserRound,
@@ -423,9 +424,15 @@ export const SINGLETONS = {
   beyond: {
     label: "Beyond",
     description:
-      "Sports, volunteering, languages, and interests on the Beyond page.",
+      "Your Goodreads shelves for the Beyond page, and the sports, volunteering, and languages shown on the résumé.",
     schema: beyondSchema,
     fields: [
+      {
+        name: "goodreadsUserId",
+        label: "Goodreads user ID",
+        optional: true,
+        hint: "The number in your Goodreads profile link (goodreads.com/user/show/192903871 → 192903871). Books sync daily; see Books.",
+      },
       {
         name: "sports",
         label: "Sports",
@@ -474,7 +481,6 @@ export const SINGLETONS = {
           },
         ],
       },
-      { name: "interests", label: "Interests", type: "lines" },
     ],
   },
 };
@@ -1620,7 +1626,15 @@ export const ADMIN_GROUPS = [
   },
   {
     label: "Media",
-    sections: [{ path: "photos", icon: Images, ...LISTS.photos }],
+    sections: [
+      { path: "photos", icon: Images, ...LISTS.photos },
+      {
+        path: "books",
+        icon: BookOpen,
+        label: "Books",
+        description: "Your Goodreads shelves, synced daily. Hide any book.",
+      },
+    ],
   },
 ];
 

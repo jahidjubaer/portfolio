@@ -4,6 +4,8 @@ import {
   Download,
   FileText,
   GraduationCap,
+  HandHeart,
+  Languages,
   Target,
 } from "lucide-react";
 import { ProfileSection } from "./ProfileSection";
@@ -20,6 +22,11 @@ import { ShowAllLink } from "./ShowAllLink";
 import { githubSnapshot } from "../../data/github";
 import { codingStats, dimikSolved, distinctSolved } from "../../data/coding";
 import { siteSettings } from "../../data/settings";
+import {
+  languages,
+  sportsHighlights,
+  volunteeringHighlights,
+} from "../../data/beyond";
 
 // The first two target roles are the primary positioning (CLAUDE.md);
 // they get the accent treatment, the management tracks stay neutral.
@@ -102,6 +109,79 @@ function ExperienceSection() {
   ) : null;
 }
 
+/** Sports organising and volunteering (moved from Beyond in R4). */
+function VolunteeringSection() {
+  const entries = [
+    ...sportsHighlights.map((item) => ({
+      key: item.title,
+      title: item.title,
+      meta: null,
+      description: item.description,
+      tags: item.tags,
+    })),
+    ...volunteeringHighlights.map((item) => ({
+      key: item.organization,
+      title: item.organization,
+      meta: item.period,
+      description: item.description,
+      tags: item.tags,
+    })),
+  ];
+  if (entries.length === 0) return null;
+  return (
+    <ProfileSection
+      id="volunteering"
+      icon={HandHeart}
+      title="Sports & volunteering"
+    >
+      <ul className="grid gap-5">
+        {entries.map((entry) => (
+          <li key={entry.key}>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+              <h3 className="font-semibold text-(--color-text-primary)">
+                {entry.title}
+              </h3>
+              {entry.meta ? (
+                <span className="mono-meta text-(--color-text-muted)">
+                  {entry.meta}
+                </span>
+              ) : null}
+            </div>
+            <p className="mt-1 max-w-[46em] text-[0.9375rem] text-(--color-text-secondary)">
+              {entry.description}
+            </p>
+            {entry.tags.length ? (
+              <p className="mt-1.5 text-sm text-(--color-text-muted)">
+                {entry.tags.join(" · ")}
+              </p>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </ProfileSection>
+  );
+}
+
+function LanguagesSection() {
+  if (languages.length === 0) return null;
+  return (
+    <ProfileSection id="languages" icon={Languages} title="Languages">
+      <dl className="grid gap-3 sm:grid-cols-2">
+        {languages.map((language) => (
+          <div key={language.name}>
+            <dt className="font-semibold text-(--color-text-primary)">
+              {language.name}
+            </dt>
+            <dd className="text-[0.9375rem] text-(--color-text-secondary)">
+              {language.level}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </ProfileSection>
+  );
+}
+
 function EducationSection() {
   return (
     <ProfileSection id="education" icon={GraduationCap} title="Education">
@@ -167,9 +247,11 @@ const SECTIONS = {
   about: AboutSection,
   "open-to": OpenToSection,
   experience: ExperienceSection,
+  volunteering: VolunteeringSection,
   education: EducationSection,
   certifications: CertificationsSection,
   skills: SkillsSection,
+  languages: LanguagesSection,
   resume: ResumeSection,
 };
 

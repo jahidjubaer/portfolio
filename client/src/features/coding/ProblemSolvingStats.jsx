@@ -56,7 +56,7 @@ function Stat({ value, label, detail, accent = false }) {
           {label}
         </span>
         {detail ? (
-          <span className="mono-meta mt-1 block text-(--color-text-muted)">
+          <span className="mono-meta mt-1 block text-(--color-text-secondary)">
             {detail}
           </span>
         ) : null}

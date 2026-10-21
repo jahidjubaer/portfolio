@@ -2,6 +2,7 @@ import { getDb } from "../db/client.js";
 import { COLLECTIONS, SINGLETON_ID } from "../db/collections.js";
 import { getGitHubSnapshot } from "./githubSyncService.js";
 import { getCodingSnapshot } from "./codingStatsService.js";
+import { getBooksSnapshot } from "./goodreadsService.js";
 import { withDefaultSettings } from "../schemas/settings-defaults.js";
 
 const HIDE_ID = { projection: { _id: 0 } };
@@ -191,5 +192,6 @@ export async function getContentSnapshot({ includeDrafts = false } = {}) {
     posts,
     github: await getGitHubSnapshot(projects, learningTracks),
     coding: await getCodingSnapshot(),
+    books: await getBooksSnapshot(),
   };
 }

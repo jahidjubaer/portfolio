@@ -41,8 +41,7 @@ export const PAGE_META = {
   },
   "/beyond": {
     title: "Beyond the Code — Jahid Hasan",
-    description:
-      "Photography, sports, leadership, and volunteering by Jahid Hasan.",
+    description: "Photography and the books Jahid Hasan is reading.",
   },
   "/contact": {
     title: "Contact — Jahid Hasan",

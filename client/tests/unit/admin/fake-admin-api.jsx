@@ -94,6 +94,7 @@ export function installFakeAdminApi({
       },
       messages: [],
       codingStatus: null,
+      bookStatus: { books: [], sync: null },
       aiConfigured: false,
       ...overrides,
     },
@@ -146,6 +147,22 @@ export function installFakeAdminApi({
     }
     if (/^\/admin\/ai\/(project|learning)-draft$/.test(path)) {
       return json(aiDraftResult.status, aiDraftResult.body);
+    }
+    if (path === "/admin/books/sync" && method === "POST") {
+      state.content.bookStatus.sync = {
+        userId: state.content.beyond.goodreadsUserId,
+        lastSyncAt: "2026-10-21T08:00:00Z",
+        errors: {},
+      };
+      return json(200, { success: true, data: state.content.bookStatus });
+    }
+    const bookPath = path.match(/^\/admin\/books\/([^/]+)$/);
+    if (bookPath && method === "PATCH") {
+      const book = state.content.bookStatus.books.find(
+        (item) => item.bookId === decodeURIComponent(bookPath[1]),
+      );
+      book.hidden = body.hidden;
+      return json(200, { success: true, data: book });
     }
     const message = path.match(/^\/admin\/messages\/([^/]+)$/);
     if (message) {
