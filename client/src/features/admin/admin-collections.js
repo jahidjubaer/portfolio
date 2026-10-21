@@ -47,6 +47,8 @@ import {
 import {
   ACCENT_OPTIONS,
   SCENE_OPTIONS,
+  SEASON_AUTO,
+  SEASON_OPTIONS,
   FONT_OPTIONS,
 } from "../preferences/appearance-options";
 import { organizationUsage } from "./attention";
@@ -283,6 +285,11 @@ export const SINGLETONS = {
           ...SCENE_OPTIONS.map((option) => ({
             value: option.id,
             label: option.label,
+          })),
+          { value: SEASON_AUTO, label: "Season (follows the calendar)" },
+          ...SEASON_OPTIONS.map((option) => ({
+            value: option.id,
+            label: `${option.label} (${option.bangla}), always`,
           })),
         ],
       },

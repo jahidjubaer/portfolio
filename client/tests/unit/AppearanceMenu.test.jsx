@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { PreferencesProvider } from "../../src/features/preferences/PreferencesProvider";
 import { AppearanceMenu } from "../../src/components/layout/AppearanceMenu";
+import { seasonOn } from "../../src/features/preferences/seasons";
 
 function renderMenu() {
   return render(
@@ -97,6 +98,27 @@ describe("AppearanceMenu", () => {
     expect(root.getAttribute("data-theme")).toBe("dark");
     expect(root.getAttribute("data-accent")).toBe("sky");
     expect(window.localStorage.getItem("scene")).toBe("none");
+  });
+
+  it("follows the calendar to today's season, or keeps a chosen one", async () => {
+    const user = userEvent.setup();
+    renderMenu();
+    await user.click(
+      screen.getByRole("button", { name: "Customize appearance" }),
+    );
+
+    await user.click(screen.getByRole("radio", { name: /^This season/ }));
+    expect(root.getAttribute("data-scene")).toBe(seasonOn(new Date()));
+    expect(window.localStorage.getItem("scene")).toBe("season");
+
+    await user.click(screen.getByRole("radio", { name: "Winter" }));
+    expect(root.getAttribute("data-scene")).toBe("sheet");
+    expect(root.getAttribute("data-theme")).toBe("light");
+    expect(screen.getByRole("radio", { name: "Winter" })).toBeChecked();
+    expect(
+      screen.getByRole("radio", { name: /^This season/ }),
+    ).not.toBeChecked();
+    expect(window.localStorage.getItem("scene")).toBe("sheet");
   });
 
   it("remembers a scene across visits, and ignores an unknown one", () => {

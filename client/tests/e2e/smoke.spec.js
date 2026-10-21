@@ -220,7 +220,9 @@ test("appearance menu works on mobile (theme, accent, font)", async ({
   await page.getByRole("button", { name: "Customize appearance" }).click();
   await expect(page.getByRole("switch", { name: "UI sounds" })).toBeVisible();
 
-  await page.getByRole("radio", { name: "Paper" }).check();
+  // Through the label, like a tap: check() keeps scrolling to bring a radio
+  // in the sticky header into view and never settles.
+  await page.locator("label").filter({ hasText: "Paper" }).click();
   await page.getByTitle("Sky").click();
   await page.getByText("Space Grotesk", { exact: true }).click();
   const html = page.locator("html");

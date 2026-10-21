@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import css from "../../src/styles/scenes.css?raw";
-import { SCENE_OPTIONS } from "../../src/features/preferences/appearance-options";
+import {
+  SCENE_OPTIONS,
+  SEASON_OPTIONS,
+} from "../../src/features/preferences/appearance-options";
 
-// Every scene in styles/scenes.css keeps the site's contrast rules
+// Every scene and season in styles/scenes.css keeps the site's contrast rules
 // (docs/14 R7): text 4.5:1 on every surface, accent ink 4.5:1 on canvas
 // and surfaces, text on accent fills 4.5:1.
 
@@ -54,7 +57,9 @@ const FILLS = [
   "color-accent-fill-to",
 ];
 
-describe.each(SCENE_OPTIONS.map((scene) => scene.id))("scene %s", (scene) => {
+const SCENES = [...SCENE_OPTIONS, ...SEASON_OPTIONS].map((scene) => scene.id);
+
+describe.each(SCENES)("scene %s", (scene) => {
   const tokens = tokensOf(scene);
 
   it("defines every colour it's checked on", () => {

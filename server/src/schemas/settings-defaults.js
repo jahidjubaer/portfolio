@@ -10,14 +10,22 @@
 export const ACCENT_IDS = ["violet", "sky", "lime", "amber", "rose"];
 export const FONT_IDS = ["geist", "inter", "grotesk", "system"];
 export const THEME_IDS = ["system", "light", "dark"];
-// Full themes (docs/14 R7); "none" is the plain theme above. Mirrors
-// SCENE_OPTIONS in client/src/features/preferences/appearance-options.js.
+// Full themes (docs/14 R7) and the six seasons (docs/15); "none" is the
+// plain theme above, "season" follows the calendar. Mirrors SCENE_OPTIONS
+// and SEASON_OPTIONS in client/src/features/preferences/appearance-options.js.
 export const SCENE_IDS = [
   "none",
   "darkroom",
   "cyanotype",
   "golden-hour",
   "night-shoot",
+  "season",
+  "grishma",
+  "barsha",
+  "sharat",
+  "hemanta",
+  "sheet",
+  "basanta",
 ];
 export const INTRO_STYLES = ["aperture", "torn", "split"];
 

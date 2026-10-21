@@ -41,6 +41,66 @@ export const SCENE_OPTIONS = [
   },
 ];
 
+/**
+ * The six seasons (docs/15), full themes like the scenes above, plus
+ * `bangla` (the season's name) and `caption` (what it brings). Colours in
+ * styles/scenes.css; when each starts in features/preferences/seasons.js.
+ * Mirrors SCENE_IDS in server/src/schemas/settings-defaults.js.
+ */
+export const SEASON_OPTIONS = [
+  {
+    id: "grishma",
+    label: "Summer",
+    bangla: "গ্রীষ্ম",
+    caption: "Storm clouds and ripe mangoes",
+    base: "dark",
+    swatch: ["#10131a", "#222a3b", "#ffc233", "#f3f1ea"],
+  },
+  {
+    id: "barsha",
+    label: "Monsoon",
+    bangla: "বর্ষা",
+    caption: "Rain on a tin roof",
+    base: "dark",
+    swatch: ["#08130f", "#162b23", "#6fd89a", "#e8f3ee"],
+  },
+  {
+    id: "sharat",
+    label: "Autumn",
+    bangla: "শরৎ",
+    caption: "Blue skies and kash flowers",
+    base: "light",
+    swatch: ["#eef6fd", "#d8e7f6", "#4aa6ee", "#0c2236"],
+  },
+  {
+    id: "hemanta",
+    label: "Late autumn",
+    bangla: "হেমন্ত",
+    caption: "The Aman harvest and Nabanna",
+    base: "dark",
+    swatch: ["#14110a", "#2c2417", "#e3b743", "#f6efdc"],
+  },
+  {
+    id: "sheet",
+    label: "Winter",
+    bangla: "শীত",
+    caption: "Morning fog over mustard fields",
+    base: "light",
+    swatch: ["#eef0ee", "#dbe0dc", "#eec41f", "#1a1f1c"],
+  },
+  {
+    id: "basanta",
+    label: "Spring",
+    bangla: "বসন্ত",
+    caption: "Shimul flowers and new leaves",
+    base: "light",
+    swatch: ["#fdf8f3", "#f3e3d8", "#f2604a", "#2a1410"],
+  },
+];
+
+/** The scene choice that follows the calendar to today's season. */
+export const SEASON_AUTO = "season";
+
 /** The plain themes, shown first in the picker. */
 export const PLAIN_THEMES = [
   {
@@ -55,9 +115,26 @@ export const PLAIN_THEMES = [
   },
 ];
 
+/** A photographic scene or a season, by id. */
+const ALL_SCENES = [...SCENE_OPTIONS, ...SEASON_OPTIONS];
+
 /** @param {string | null | undefined} id */
 export function sceneOption(id) {
-  return SCENE_OPTIONS.find((scene) => scene.id === id) ?? null;
+  return ALL_SCENES.find((scene) => scene.id === id) ?? null;
+}
+
+/** @param {string | null | undefined} id */
+export function seasonOption(id) {
+  return SEASON_OPTIONS.find((season) => season.id === id) ?? null;
+}
+
+/**
+ * A scene choice the visitor or Site settings can store: a scene, a
+ * season, or "season" (follow the calendar).
+ * @param {string | null | undefined} id
+ */
+export function isSceneChoice(id) {
+  return id === SEASON_AUTO || sceneOption(id) !== null;
 }
 export const DEFAULT_FONT = "geist";
 

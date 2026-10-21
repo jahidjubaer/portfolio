@@ -17,10 +17,11 @@ import {
   writePreference,
 } from "./preference-storage";
 import { playSound } from "./sound-engine";
-import { sceneOption } from "./appearance-options";
+import { SEASON_AUTO, isSceneChoice, sceneOption } from "./appearance-options";
+import { seasonOn } from "./seasons";
 import { loadFont } from "./font-loader";
 import { originOf, switchThemeWithAperture } from "./theme-transition";
-import { useIsHydrating } from "../../lib/hydration";
+import { useIsHydrating, useNow } from "../../lib/hydration";
 
 const THEME_COLORS = { dark: "#09090b", light: "#ffffff" };
 
@@ -32,7 +33,9 @@ const THEME_COLORS = { dark: "#09090b", light: "#ffffff" };
  * paint is right. A scene (a full theme, docs/14 R7) brings its own base
  * theme and colours, so while one is on, `theme` is its base and the
  * visitor's accent waits (stored, not applied) until they pick Graphite
- * or Paper again.
+ * or Paper again. The "season" choice (docs/15) follows the calendar: it
+ * shows today's season, resolved with useNow() so a prerendered page
+ * hydrates with the build's season first.
  * @param {{ children: import("react").ReactNode }} props
  */
 export function PreferencesProvider({ children }) {
@@ -52,7 +55,10 @@ export function PreferencesProvider({ children }) {
   );
   const [plainTheme, setTheme] = useState(initial.theme);
   const [scene, setSceneState] = useState(initial.scene);
-  const activeScene = sceneOption(scene);
+  const now = useNow();
+  const activeScene = sceneOption(
+    scene === SEASON_AUTO ? seasonOn(now) : scene,
+  );
   const theme = activeScene ? activeScene.base : plainTheme;
   const [soundEnabled, setSoundEnabled] = useState(initial.soundEnabled);
   const [accent, setAccentState] = useState(initial.accent);
@@ -131,13 +137,14 @@ export function PreferencesProvider({ children }) {
   );
 
   /**
-   * Picks a plain theme ("dark" Graphite, "light" Paper) or a scene id.
+   * Picks a plain theme ("dark" Graphite, "light" Paper), a scene or
+   * season id, or "season" (follow the calendar).
    * @param {string} id
    * @param {{ currentTarget?: Element }} [event]
    */
   const chooseTheme = useCallback(
     (id, event) => {
-      const nextScene = sceneOption(id) ? id : "none";
+      const nextScene = isSceneChoice(id) ? id : "none";
       const nextTheme = sceneOption(id)?.base ?? id;
       if (nextScene === "none") writePreference(THEME_STORAGE_KEY, nextTheme);
       writePreference(SCENE_STORAGE_KEY, nextScene);
@@ -182,6 +189,7 @@ export function PreferencesProvider({ children }) {
         theme,
         toggleTheme,
         scene: activeScene ? activeScene.id : "none",
+        sceneChoice: activeScene ? scene : "none",
         chooseTheme,
         soundEnabled,
         toggleSound,

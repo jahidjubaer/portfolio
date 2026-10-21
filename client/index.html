@@ -33,7 +33,7 @@
           // wins over the site's default scene.
           var storedScene = localStorage.getItem("scene");
           if (
-            /^(none|darkroom|cyanotype|golden-hour|night-shoot)$/.test(
+            /^(none|season|darkroom|cyanotype|golden-hour|night-shoot|grishma|barsha|sharat|hemanta|sheet|basanta)$/.test(
               storedScene,
             )
           )
@@ -52,8 +52,27 @@
           if (/^(geist|inter|grotesk|system)$/.test(storedFont))
             font = storedFont;
         } catch (e) {}
-        if (/^(darkroom|cyanotype|golden-hour|night-shoot)$/.test(scene)) {
-          theme = scene === "golden-hour" ? "light" : "dark";
+        // "season" follows the Bangla calendar (docs/15). Mirrors seasonOn()
+        // in src/features/preferences/seasons.js.
+        if (scene === "season") {
+          var now = new Date();
+          var day = (now.getMonth() + 1) * 100 + now.getDate();
+          scene = "sheet";
+          if (day >= 214) scene = "basanta";
+          if (day >= 414) scene = "grishma";
+          if (day >= 615) scene = "barsha";
+          if (day >= 816) scene = "sharat";
+          if (day >= 1017) scene = "hemanta";
+          if (day >= 1216) scene = "sheet";
+        }
+        if (
+          /^(darkroom|cyanotype|golden-hour|night-shoot|grishma|barsha|sharat|hemanta|sheet|basanta)$/.test(
+            scene,
+          )
+        ) {
+          theme = /^(golden-hour|sharat|sheet|basanta)$/.test(scene)
+            ? "light"
+            : "dark";
           accent = "lime";
           root.setAttribute("data-scene", scene);
         }

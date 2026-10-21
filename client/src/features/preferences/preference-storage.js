@@ -1,9 +1,8 @@
 import {
   ACCENT_OPTIONS,
   FONT_OPTIONS,
-  SCENE_OPTIONS,
   isKnownOption,
-  sceneOption,
+  isSceneChoice,
 } from "./appearance-options";
 import { siteSettings } from "../../data/settings";
 
@@ -68,17 +67,18 @@ export function getInitialTheme() {
 }
 
 /**
- * The full theme (docs/14 R7), or "none" for plain Graphite / Paper. A
- * stored scene wins; a stored plain theme means the visitor chose no
- * scene; else the site default. Mirrors the inline script in index.html.
+ * The full theme (docs/14 R7): a scene, a season, "season" (follow the
+ * calendar, docs/15), or "none" for plain Graphite / Paper. A stored
+ * scene wins; a stored plain theme means the visitor chose no scene; else
+ * the site default. Mirrors the inline script in index.html.
  * @returns {string}
  */
 export function getInitialScene() {
   const stored = readPreference(SCENE_STORAGE_KEY);
-  if (stored === "none" || isKnownOption(SCENE_OPTIONS, stored)) return stored;
+  if (stored === "none" || isSceneChoice(stored)) return stored;
   const storedTheme = readPreference(THEME_STORAGE_KEY);
   if (storedTheme === "light" || storedTheme === "dark") return "none";
-  return sceneOption(SITE_DEFAULTS.scene) ? SITE_DEFAULTS.scene : "none";
+  return isSceneChoice(SITE_DEFAULTS.scene) ? SITE_DEFAULTS.scene : "none";
 }
 
 /** Sound is on by default; only an explicit "off" mutes it. */
@@ -106,7 +106,7 @@ export function getInitialFont() {
 export function getPrerenderedPreferences() {
   return {
     theme: SITE_DEFAULTS.theme === "light" ? "light" : "dark",
-    scene: sceneOption(SITE_DEFAULTS.scene) ? SITE_DEFAULTS.scene : "none",
+    scene: isSceneChoice(SITE_DEFAULTS.scene) ? SITE_DEFAULTS.scene : "none",
     soundEnabled: true,
     accent: SITE_DEFAULTS.accent,
     font: SITE_DEFAULTS.font,

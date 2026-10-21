@@ -7,7 +7,12 @@ import {
   FONT_OPTIONS,
   PLAIN_THEMES,
   SCENE_OPTIONS,
+  SEASON_AUTO,
+  SEASON_OPTIONS,
+  seasonOption,
 } from "../../features/preferences/appearance-options";
+import { seasonOn } from "../../features/preferences/seasons";
+import { useNow } from "../../lib/hydration";
 import { loadFont } from "../../features/preferences/font-loader";
 import { replayOpening } from "../../features/intro/opening-state";
 import { siteSettings } from "../../data/settings";
@@ -54,18 +59,21 @@ const THEME_CHOICES = [...PLAIN_THEMES, ...SCENE_OPTIONS];
 
 /**
  * A theme as a small print of itself: its canvas, a surface card with a
- * line of text, and an accent dot. A native radio underneath.
+ * line of text, and an accent dot. A native radio underneath. `caption`
+ * replaces the visible label (the label stays the accessible name).
  * @param {{
  *   name: string,
  *   choice: { id: string, label: string, swatch: string[] },
+ *   caption?: string,
+ *   captionLang?: string,
  *   checked: boolean,
  *   onChange: (event: import("react").ChangeEvent<HTMLInputElement>) => void,
  * }} props
  */
-function ThemePrint({ name, choice, checked, onChange }) {
+function ThemePrint({ name, choice, caption, captionLang, checked, onChange }) {
   const [canvas, surface, accent, text] = choice.swatch;
   return (
-    <label className="relative">
+    <label className="relative" title={caption ? choice.label : undefined}>
       <input
         type="radio"
         name={name}
@@ -96,6 +104,7 @@ function ThemePrint({ name, choice, checked, onChange }) {
           />
         </span>
         <span
+          lang={captionLang}
           className={cn(
             "text-center text-[0.75rem] font-medium leading-tight",
             checked
@@ -103,7 +112,7 @@ function ThemePrint({ name, choice, checked, onChange }) {
               : "text-(--color-text-secondary)",
           )}
         >
-          {choice.label}
+          {caption ?? choice.label}
         </span>
       </span>
     </label>
@@ -111,7 +120,8 @@ function ThemePrint({ name, choice, checked, onChange }) {
 }
 
 /**
- * "Customize" popover: theme (Graphite, Paper, or a scene), UI sounds,
+ * "Customize" popover: theme (Graphite, Paper, or a scene), season
+ * (today's, by the calendar, or a fixed one; docs/15), UI sounds,
  * accent color (plain themes only), and font. A
  * disclosure (button + panel), not a modal — the page stays usable, and
  * Escape or a click outside closes it.
@@ -126,6 +136,7 @@ export function AppearanceMenu({ placement = "rail", className }) {
   const {
     theme,
     scene,
+    sceneChoice,
     chooseTheme,
     soundEnabled,
     toggleSound,
@@ -139,9 +150,12 @@ export function AppearanceMenu({ placement = "rail", className }) {
     (option) => option.id === accent,
   )?.label;
   const selectedTheme = scene === "none" ? theme : scene;
-  const themeLabel = THEME_CHOICES.find(
-    (choice) => choice.id === selectedTheme,
-  )?.label;
+  const shownSeason = seasonOption(scene);
+  const themeLabel = shownSeason
+    ? "Season"
+    : THEME_CHOICES.find((choice) => choice.id === selectedTheme)?.label;
+  const now = useNow();
+  const todaysSeason = seasonOption(seasonOn(now));
 
   useEffect(() => {
     if (!open) return undefined;
@@ -214,7 +228,7 @@ export function AppearanceMenu({ placement = "rail", className }) {
             exit={{ opacity: 0, scale: 0.96, y: 4 }}
             transition={{ duration: 0.16 }}
             className={cn(
-              "absolute z-(--z-overlay) w-72 rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-4 shadow-(--shadow-md)",
+              "absolute z-(--z-overlay) w-72 [@media(max-height:50rem)]:max-h-[calc(100dvh-4.5rem)] [@media(max-height:50rem)]:overflow-y-auto rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) p-4 shadow-(--shadow-md)",
               PANEL_PLACEMENT[placement],
             )}
           >
@@ -251,6 +265,46 @@ export function AppearanceMenu({ placement = "rail", className }) {
                     choice={choice}
                     checked={selectedTheme === choice.id}
                     onChange={(event) => chooseTheme(choice.id, event)}
+                  />
+                ))}
+              </div>
+            </fieldset>
+
+            <fieldset className="mt-4">
+              <legend className={LEGEND}>
+                Season
+                {shownSeason ? (
+                  <>
+                    <span className="sr-only">:</span>{" "}
+                    <span className="text-(--color-text-secondary)">
+                      {shownSeason.label}
+                    </span>
+                  </>
+                ) : null}
+              </legend>
+              {/* "Today" follows the calendar; the six keep one season.
+                  Shown by their Bangla names, read out in English. */}
+              <div className="grid grid-cols-4 gap-2">
+                <ThemePrint
+                  name={`${id}-season`}
+                  choice={{
+                    id: SEASON_AUTO,
+                    label: `This season (${todaysSeason.label})`,
+                    swatch: todaysSeason.swatch,
+                  }}
+                  caption="Today"
+                  checked={sceneChoice === SEASON_AUTO}
+                  onChange={(event) => chooseTheme(SEASON_AUTO, event)}
+                />
+                {SEASON_OPTIONS.map((season) => (
+                  <ThemePrint
+                    key={season.id}
+                    name={`${id}-season`}
+                    choice={season}
+                    caption={season.bangla}
+                    captionLang="bn"
+                    checked={sceneChoice === season.id}
+                    onChange={(event) => chooseTheme(season.id, event)}
                   />
                 ))}
               </div>

@@ -7,6 +7,7 @@ import { profile } from "../../data/profile";
 import { projects } from "../../data/projects";
 import { githubSnapshot } from "../../data/github";
 import { usePreferences } from "../preferences/usePreferences";
+import { seasonOption } from "../preferences/appearance-options";
 import { HEADLINE_TECH } from "./headline-tech";
 import { buildShutterItems, itemAt } from "./shutter-items";
 import { ShutterPrint } from "./ShutterPrint";
@@ -447,6 +448,9 @@ export function ProfileBanner() {
     };
   }, [theme, scene, reduceMotion]);
 
+  // While a season is on (docs/15), the location readout names it.
+  const season = seasonOption(scene);
+
   // "250+ programming problems solved" → "250+".
   const solved = profile.problemSolving.total.split(" ")[0];
   const repos = githubSnapshot.publicRepos;
@@ -480,7 +484,8 @@ export function ProfileBanner() {
           ref={flashRef}
           className="pointer-events-none absolute inset-0 bg-white opacity-0"
         />
-        {/* Golden hour's soft vignette (styles/scenes.css); none elsewhere. */}
+        {/* A scene's vignette (golden hour's glow, winter fog, evening
+            mist; styles/scenes.css); none elsewhere. */}
         <div className="pointer-events-none absolute inset-0 bg-(image:--scene-vignette)" />
         <FocusBrackets locked className="inset-3!" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-(--color-canvas) to-transparent" />
@@ -495,6 +500,15 @@ export function ProfileBanner() {
             ●{" "}
           </span>
           {profile.location.split(",")[0]}, BD
+          {season ? (
+            <>
+              {" · "}
+              <span lang="bn" className="text-(--color-text-primary)">
+                {season.bangla}
+              </span>
+              <span className="max-sm:hidden"> {season.label}</span>
+            </>
+          ) : null}
         </span>
         <span>
           <LocalTime className="tabular-nums" /> GMT+6

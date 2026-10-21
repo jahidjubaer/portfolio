@@ -167,6 +167,243 @@
   --banner-glow: 14;
 }
 
+/*
+ * The six seasons (docs/15), same tokens as the scenes above. The season
+ * choice "season" resolves to one of these by date (features/preferences/
+ * seasons.js), so data-scene is always a season id, never "season".
+ */
+
+/* গ্রীষ্ম Grishma: a kalboishakhi storm sky, mango yellow. */
+:root[data-scene="grishma"] {
+  color-scheme: dark;
+  --color-canvas: #10131a;
+  --color-canvas-subtle: #131721;
+  --color-surface: #161b26;
+  --color-surface-raised: #1b2130;
+  --color-surface-soft: #222a3b;
+  --color-text-primary: #f3f1ea;
+  --color-text-secondary: #c9c6bb;
+  --color-text-muted: #aaa89e;
+  --color-border: #2a3244;
+  --color-border-strong: #3b4660;
+  --color-accent-primary: #ffc94d;
+  --color-accent-primary-soft: rgba(255, 194, 51, 0.13);
+  --color-accent-secondary: #ffa95e;
+  --color-accent-secondary-soft: rgba(255, 169, 94, 0.12);
+  --color-accent-fill-from: #ffd977;
+  --color-accent-fill: #ffc233;
+  --color-accent-fill-to: #f5ad0f;
+  --color-accent-edge: #a66d00;
+  --color-on-accent-primary: #2a1c00;
+  --color-on-accent-secondary: #2a1400;
+  --color-accent-glow: rgba(255, 194, 51, 0.2);
+  --color-banner-hi: #ffe08a;
+  --color-banner-mid: #f59e0b;
+  --color-banner-lo: #64748b;
+  --color-success: #6ee7a0;
+  --color-warning: #fcd34d;
+  --color-danger: #ffa094;
+  --color-paper: #12161f;
+  --color-paper-fibre: #2f3a50;
+  --color-paper-rule: rgba(255, 201, 77, 0.05);
+  --color-paper-shade: rgba(0, 0, 0, 0.4);
+}
+
+/* বর্ষা Barsha: inside a hut in the rain, wet green, kadam yellow. */
+:root[data-scene="barsha"] {
+  color-scheme: dark;
+  --color-canvas: #08130f;
+  --color-canvas-subtle: #0a1712;
+  --color-surface: #0d1c16;
+  --color-surface-raised: #11231c;
+  --color-surface-soft: #162b23;
+  --color-text-primary: #e8f3ee;
+  --color-text-secondary: #b7cdc3;
+  --color-text-muted: #97b0a5;
+  --color-border: #1d362c;
+  --color-border-strong: #2b4a3d;
+  --color-accent-primary: #7fe0a6;
+  --color-accent-primary-soft: rgba(111, 216, 154, 0.13);
+  --color-accent-secondary: #f4d06f;
+  --color-accent-secondary-soft: rgba(244, 208, 111, 0.12);
+  --color-accent-fill-from: #9eeabb;
+  --color-accent-fill: #6fd89a;
+  --color-accent-fill-to: #4fc782;
+  --color-accent-edge: #1f7a4a;
+  --color-on-accent-primary: #032313;
+  --color-on-accent-secondary: #2b2004;
+  --color-accent-glow: rgba(111, 216, 154, 0.2);
+  --color-banner-hi: #c8f5da;
+  --color-banner-mid: #3f9e6f;
+  --color-banner-lo: #f4d06f;
+  --color-success: #86efac;
+  --color-warning: #fcd581;
+  --color-danger: #ffa094;
+  --color-paper: #0b1813;
+  --color-paper-fibre: #24453a;
+  --color-paper-rule: rgba(127, 224, 166, 0.05);
+  --color-paper-shade: rgba(0, 0, 0, 0.4);
+  /* Faint slanted rain over the page. */
+  --scene-texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='160'%3E%3Cg stroke='%23cfeee0' stroke-width='1' stroke-linecap='round'%3E%3Cpath d='M14 6l-5 22M58 40l-5 22M98 12l-5 22M36 92l-5 22M82 104l-5 22M112 70l-5 22M8 128l-5 22'/%3E%3C/g%3E%3C/svg%3E");
+  --scene-texture-opacity: 0.06;
+}
+
+/* শরৎ Sharat: deep blue sky, white clouds, kash flowers. */
+:root[data-scene="sharat"] {
+  color-scheme: light;
+  --color-canvas: #eef6fd;
+  --color-canvas-subtle: #e7f1fb;
+  --color-surface: #f8fbff;
+  --color-surface-raised: #e3eef9;
+  --color-surface-soft: #d8e7f6;
+  --color-text-primary: #0c2236;
+  --color-text-secondary: #2f4a63;
+  --color-text-muted: #415c75;
+  --color-border: #cfe0f0;
+  --color-border-strong: #a9c4de;
+  --color-accent-primary: #0b5a9c;
+  --color-accent-primary-soft: rgba(47, 147, 227, 0.14);
+  --color-accent-secondary: #36621f;
+  --color-accent-secondary-soft: rgba(80, 140, 50, 0.12);
+  --color-accent-fill-from: #7cc0f5;
+  --color-accent-fill: #4aa6ee;
+  --color-accent-fill-to: #2f93e3;
+  --color-accent-edge: #1d6fb8;
+  --color-on-accent-primary: #031a30;
+  --color-on-accent-secondary: #0f2408;
+  --color-accent-glow: rgba(74, 166, 238, 0.24);
+  --color-banner-hi: #2f7fc8;
+  --color-banner-mid: #8cc4f2;
+  --color-banner-lo: #ffffff;
+  --color-success: #166534;
+  --color-warning: #8a4600;
+  --color-danger: #b91c1c;
+  --color-paper: #e9f2fb;
+  --color-paper-fibre: #ffffff;
+  --color-paper-rule: rgba(10, 60, 120, 0.06);
+  --color-paper-shade: rgba(20, 70, 130, 0.12);
+}
+
+/* হেমন্ত Hemanta: misty dusk over golden Aman paddy. */
+:root[data-scene="hemanta"] {
+  color-scheme: dark;
+  --color-canvas: #14110a;
+  --color-canvas-subtle: #18140c;
+  --color-surface: #1c170e;
+  --color-surface-raised: #231d12;
+  --color-surface-soft: #2c2417;
+  --color-text-primary: #f6efdc;
+  --color-text-secondary: #d3c6a6;
+  --color-text-muted: #b3a684;
+  --color-border: #352c1b;
+  --color-border-strong: #4d4027;
+  --color-accent-primary: #e8c25a;
+  --color-accent-primary-soft: rgba(227, 183, 67, 0.13);
+  --color-accent-secondary: #f0a868;
+  --color-accent-secondary-soft: rgba(240, 168, 104, 0.12);
+  --color-accent-fill-from: #f2d27e;
+  --color-accent-fill: #e3b743;
+  --color-accent-fill-to: #d4a22a;
+  --color-accent-edge: #8a6510;
+  --color-on-accent-primary: #2a1d02;
+  --color-on-accent-secondary: #2e1404;
+  --color-accent-glow: rgba(227, 183, 67, 0.2);
+  --color-banner-hi: #f5dc94;
+  --color-banner-mid: #c99a2e;
+  --color-banner-lo: #8a7a5a;
+  --color-success: #a3e6a0;
+  --color-warning: #f2c26b;
+  --color-danger: #ffa094;
+  --color-paper: #19150d;
+  --color-paper-fibre: #3e3422;
+  --color-paper-rule: rgba(232, 194, 90, 0.05);
+  --color-paper-shade: rgba(0, 0, 0, 0.4);
+  /* Evening mist settling at the bottom of the banner. */
+  --scene-vignette: linear-gradient(
+    to bottom,
+    transparent 40%,
+    rgba(246, 239, 220, 0.08) 100%
+  );
+}
+
+/* শীত Sheet: morning fog, mustard fields. */
+:root[data-scene="sheet"] {
+  color-scheme: light;
+  --color-canvas: #eef0ee;
+  --color-canvas-subtle: #e9ecea;
+  --color-surface: #f7f8f6;
+  --color-surface-raised: #e4e8e5;
+  --color-surface-soft: #dbe0dc;
+  --color-text-primary: #1a1f1c;
+  --color-text-secondary: #3d4641;
+  --color-text-muted: #4c5650;
+  --color-border: #d3d9d5;
+  --color-border-strong: #b3bcb6;
+  --color-accent-primary: #6b4f00;
+  --color-accent-primary-soft: rgba(238, 196, 31, 0.18);
+  --color-accent-secondary: #8a3b12;
+  --color-accent-secondary-soft: rgba(160, 70, 20, 0.12);
+  --color-accent-fill-from: #f7d94c;
+  --color-accent-fill: #eec41f;
+  --color-accent-fill-to: #e0b000;
+  --color-accent-edge: #a37f00;
+  --color-on-accent-primary: #2b2100;
+  --color-on-accent-secondary: #2b0f02;
+  --color-accent-glow: rgba(238, 196, 31, 0.26);
+  --color-banner-hi: #7d8a83;
+  --color-banner-mid: #e8c21f;
+  --color-banner-lo: #ffffff;
+  --color-success: #166534;
+  --color-warning: #7c3f00;
+  --color-danger: #b91c1c;
+  --color-paper: #eceeec;
+  --color-paper-fibre: #ffffff;
+  --color-paper-rule: rgba(40, 50, 45, 0.06);
+  --color-paper-shade: rgba(40, 50, 45, 0.12);
+  /* Fog thickening toward the banner's edges. */
+  --scene-vignette: radial-gradient(
+    ellipse at 50% 55%,
+    transparent 35%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+}
+
+/* বসন্ত Basanta: shimul red, new-leaf green. */
+:root[data-scene="basanta"] {
+  color-scheme: light;
+  --color-canvas: #fdf8f3;
+  --color-canvas-subtle: #fbf3ec;
+  --color-surface: #fffdfa;
+  --color-surface-raised: #f8eee6;
+  --color-surface-soft: #f3e3d8;
+  --color-text-primary: #2a1410;
+  --color-text-secondary: #5a3a32;
+  --color-text-muted: #66463d;
+  --color-border: #f0dccf;
+  --color-border-strong: #e0bfae;
+  --color-accent-primary: #a8231b;
+  --color-accent-primary-soft: rgba(242, 96, 74, 0.14);
+  --color-accent-secondary: #3a6310;
+  --color-accent-secondary-soft: rgba(90, 150, 30, 0.12);
+  --color-accent-fill-from: #ff8a73;
+  --color-accent-fill: #f2604a;
+  --color-accent-fill-to: #ea5039;
+  --color-accent-edge: #a3200f;
+  --color-on-accent-primary: #240401;
+  --color-on-accent-secondary: #112003;
+  --color-accent-glow: rgba(242, 96, 74, 0.22);
+  --color-banner-hi: #c2341f;
+  --color-banner-mid: #f58a6e;
+  --color-banner-lo: #8cc45a;
+  --color-success: #166534;
+  --color-warning: #8a4600;
+  --color-danger: #b91c1c;
+  --color-paper: #f9efe6;
+  --color-paper-fibre: #fffaf4;
+  --color-paper-rule: rgba(120, 40, 20, 0.06);
+  --color-paper-shade: rgba(120, 40, 20, 0.12);
+}
+
 /* The scene's texture (grain, paper fibre) over the whole page, too faint
    to change what text reads like; never in forced colours or print. */
 :root[data-scene] body::before {
