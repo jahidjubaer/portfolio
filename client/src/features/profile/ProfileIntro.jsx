@@ -1,7 +1,9 @@
+import { Briefcase } from "lucide-react";
 import { motion } from "motion/react";
 import { ImageWithFallback } from "../../components/media/ImageWithFallback";
 import { FocusBrackets } from "../../components/ui/FocusBrackets";
-import { LocalTime } from "../../components/ui/LocalTime";
+import { TechLogo } from "../../components/icons/TechIcons";
+import { TECH_LOGOS } from "../../components/icons/tech-logos";
 import { cn } from "../../lib/cn";
 import { profile } from "../../data/profile";
 import { siteSettings } from "../../data/settings";
@@ -9,21 +11,7 @@ import { capabilityGroups } from "../../data/capabilities";
 import { assetManifest } from "../../generated/asset-manifest";
 import { DURATIONS, EASE_STANDARD } from "../motion/motion-config";
 import { fadeUpVariants } from "../motion/motion-variants";
-
-// Technologies shown in the header's stack strip, in this order of
-// preference within each group.
-const HEADLINE_NAMES = new Set([
-  "React",
-  "JavaScript",
-  "Tailwind CSS",
-  "HTML",
-  "CSS",
-  "Git & GitHub",
-  "C++",
-  "Node.js",
-  "Express.js",
-  "MongoDB",
-]);
+import { INTRO_MS } from "./viewfinder";
 
 const strengths = capabilityGroups.find(
   (group) => group.id === "current-strengths",
@@ -32,45 +20,34 @@ const expanding = capabilityGroups.find(
   (group) => group.id === "currently-expanding",
 );
 
-// Headline stack: today's strengths, the competitive-programming
-// language, then the first back-end tools being learned (hollow marker).
+// Headline stack (every technology with a logo): today's strengths, the
+// competitive-programming language, then the back-end tools being learned.
 const HEADLINE_TECH = [
   ...strengths.items
-    .filter((item) => HEADLINE_NAMES.has(item))
+    .filter((item) => TECH_LOGOS[item])
     .map((name) => ({ name, learning: false })),
   { name: profile.problemSolving.primaryLanguage, learning: false },
   ...expanding.items
-    .filter((item) => HEADLINE_NAMES.has(item))
+    .filter((item) => TECH_LOGOS[item])
     .map((name) => ({ name, learning: true })),
 ];
 
 const READOUT = "font-mono text-[0.8125rem] uppercase tracking-[0.08em]";
 
-function StackMarker({ learning }) {
+/** One frame on the stack's film strip; dashed while still being learned. */
+function FilmFrame({ name, learning, index }) {
   return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "inline-block size-1.5 shrink-0",
-        learning
-          ? "border border-(--color-text-muted)"
-          : "bg-(--color-accent-fill)",
-      )}
-    />
-  );
-}
-
-function TechLabel({ name, learning }) {
-  return (
-    <li
-      className={cn(
-        "inline-flex items-center gap-2 transition-colors",
-        learning ? "text-(--color-text-muted)" : "text-(--color-text-primary)",
-      )}
-    >
-      <StackMarker learning={learning} />
-      {name}
-      {learning ? <span className="sr-only">(currently learning)</span> : null}
+    <li className={cn("film-frame", learning && "film-frame-learning")}>
+      <span aria-hidden="true" className="film-frame-number">
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <TechLogo name={name} size={22} className="text-white" />
+      <span className="film-frame-label">
+        {name}
+        {learning ? (
+          <span className="sr-only"> (currently learning)</span>
+        ) : null}
+      </span>
     </li>
   );
 }
@@ -118,7 +95,8 @@ export function ProfileIntro() {
           initial={{ opacity: 0, scale: 1.35 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{
-            delay: 0.15,
+            // Lands as the banner's focus point reaches the portrait.
+            delay: INTRO_MS / 1000 - 0.25,
             duration: DURATIONS.slow,
             ease: EASE_STANDARD,
           }}
@@ -148,39 +126,33 @@ export function ProfileIntro() {
             <ReadoutSeparator />
           </>
         ) : null}
-        <span className="text-(--color-text-primary)">{profile.title}</span>
-        <span className="inline-flex basis-full items-center justify-center gap-1.5">
-          {profile.location.split(",")[0]}
-          <LocalTime className="tabular-nums" />
-          <span className="text-(--color-text-muted)">GMT+6</span>
+        <span className="text-balance font-sans text-[0.9375rem] font-semibold normal-case tracking-normal text-(--color-text-primary)">
+          <Briefcase
+            size={16}
+            aria-hidden="true"
+            className="mr-1.5 inline align-[-0.15em] text-(--color-text-secondary)"
+          />
+          {profile.title}
         </span>
       </p>
 
-      <ul
-        aria-label="Main technologies"
-        className={cn(
-          READOUT,
-          "mx-auto mt-5 flex max-w-2xl flex-wrap justify-center gap-x-5 gap-y-2 border-y border-(--color-border) px-2 py-3 text-xs",
-        )}
-      >
-        {HEADLINE_TECH.map((tech) => (
-          <TechLabel key={tech.name} {...tech} />
-        ))}
-      </ul>
-      <p
-        aria-hidden="true"
-        className={cn(
-          READOUT,
-          "mt-2 inline-flex items-center gap-4 text-[0.6875rem] text-(--color-text-muted)",
-        )}
-      >
-        <span className="inline-flex items-center gap-1.5">
-          <StackMarker /> building with
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <StackMarker learning /> learning
-        </span>
-      </p>
+      <div className="film-strip mx-auto mt-6 max-w-2xl">
+        <p aria-hidden="true" className="film-strip-print">
+          <span>▸ Stack</span>
+          <span className="flex gap-3">
+            <span>■ building</span>
+            <span className="text-white/45">⬚ learning</span>
+          </span>
+        </p>
+        <ul
+          aria-label="Main technologies"
+          className="flex flex-wrap justify-center gap-1.5 sm:flex-nowrap"
+        >
+          {HEADLINE_TECH.map((tech, index) => (
+            <FilmFrame key={tech.name} index={index} {...tech} />
+          ))}
+        </ul>
+      </div>
     </motion.div>
   );
 }
