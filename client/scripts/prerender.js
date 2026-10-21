@@ -20,6 +20,13 @@ import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { resolveSiteUrl } from "./site-url.js";
 import {
+  OG_HEIGHT,
+  OG_WIDTH,
+  cardFor,
+  ogImagePath,
+  renderOgImage,
+} from "./og-images.js";
+import {
   SITE,
   getPublicRoutes,
   homeMeta,
@@ -126,6 +133,41 @@ async function loadRenderer() {
   return renderPage;
 }
 
+/**
+ * Writes the page's link-preview card to dist/og/ and returns it as an
+ * og:image. A card that fails to render leaves the page with the share
+ * image (the build log says which), so a preview never breaks the build.
+ * @returns {Promise<{ url: string, width: number, height: number } | null>}
+ */
+async function writeCard(route, siteUrl) {
+  const url = ogImagePath(route.path);
+  try {
+    const png = await renderOgImage({
+      ...cardFor(route),
+      host: new URL(siteUrl).host,
+    });
+    const file = join(DIST, ...url.slice(1).split("/"));
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, png);
+    return { url, width: OG_WIDTH, height: OG_HEIGHT };
+  } catch (error) {
+    console.warn(
+      `[prerender] ${route.path}: no preview card (${error.message})`,
+    );
+    return null;
+  }
+}
+
+/**
+ * A page's og:image: its own (a post cover), else its card. The home page
+ * keeps the share image from Site settings (or the built-in default).
+ */
+async function imageFor(route, siteUrl, shared) {
+  if (route.image) return route.image;
+  if (route.path === "/") return shared;
+  return (await writeCard(route, siteUrl)) ?? shared;
+}
+
 function outputFile(path) {
   if (path === "/") return join(DIST, "index.html");
   return `${join(DIST, ...path.slice(1).split("/"))}.html`;
@@ -141,7 +183,10 @@ async function main() {
   const renderPage = await loadRenderer();
   const now = new Date();
   let rendered = 0;
+  let cards = 0;
   for (const route of routes) {
+    const routeImage = await imageFor(route, siteUrl, image);
+    if (routeImage.url.startsWith("/og/")) cards += 1;
     let body;
     if (renderPage) {
       try {
@@ -158,7 +203,7 @@ async function main() {
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(
       file,
-      renderRoute(template, route, siteUrl, route.image ?? image, body),
+      renderRoute(template, route, siteUrl, routeImage, body),
     );
   }
   writeFileSync(
@@ -171,7 +216,7 @@ async function main() {
     ),
   );
   console.log(
-    `[prerender] wrote ${routes.length} routes (${rendered} with the page rendered) + 200.html fallback (base ${siteUrl})`,
+    `[prerender] wrote ${routes.length} routes (${rendered} with the page rendered, ${cards} preview cards) + 200.html fallback (base ${siteUrl})`,
   );
 }
 

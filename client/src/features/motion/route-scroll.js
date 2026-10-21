@@ -3,31 +3,24 @@ import { useLocation, useNavigationType } from "react-router-dom";
 
 // Last scroll position per history entry (location.key), for Back/Forward.
 const positions = new Map();
+// The entry whose page is on screen, set as each page mounts.
+let shownKey = null;
 
 /**
- * Keeps the current history entry's scroll position up to date. The key
- * is read from history.state (React Router's entry key) when the scroll
- * happens, so a scroll caused by a navigation is filed under the entry
- * being shown, never the one being left.
+ * Keeps the shown page's scroll position up to date. Scroll events are
+ * filed under the entry whose page is on screen (set by RouteScrollReset
+ * as each page mounts), not the one history has moved to: a scroll event
+ * can arrive a frame late, after Back has already changed the entry, and
+ * would otherwise overwrite the position Back is about to restore.
  */
 export function useRememberScroll() {
   useEffect(() => {
     window.history.scrollRestoration = "manual";
-    let frame = 0;
     function save() {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        // The entry the visitor landed on has no state; React Router
-        // calls it "default".
-        const key = window.history.state?.key ?? "default";
-        positions.set(key, window.scrollY);
-      });
+      if (shownKey) positions.set(shownKey, window.scrollY);
     }
     window.addEventListener("scroll", save, { passive: true });
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", save);
-    };
+    return () => window.removeEventListener("scroll", save);
   }, []);
 }
 
@@ -46,11 +39,13 @@ export function useRememberScroll() {
 export function RouteScrollReset({ initial }) {
   const location = useLocation();
   const navigationType = useNavigationType();
-  const done = useRef(initial);
+  const done = useRef(false);
 
   useLayoutEffect(() => {
     if (done.current) return;
     done.current = true;
+    shownKey = location.key;
+    if (initial) return;
 
     const target = location.hash
       ? document.getElementById(decodeURIComponent(location.hash.slice(1)))
@@ -62,7 +57,7 @@ export function RouteScrollReset({ initial }) {
     const restored =
       navigationType === "POP" ? positions.get(location.key) : undefined;
     window.scrollTo({ top: restored ?? 0, behavior: "instant" });
-  }, [location, navigationType]);
+  }, [initial, location, navigationType]);
 
   return null;
 }

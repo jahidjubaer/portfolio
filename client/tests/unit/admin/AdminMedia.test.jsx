@@ -38,15 +38,27 @@ function fileInput(accept) {
 const IMAGE_ACCEPT = "image/jpeg,image/png,image/webp,image/avif";
 const photoFile = () => new File(["x"], "dusk.jpg", { type: "image/jpeg" });
 
+// Sarabo's project form is long (its architecture diagram adds dozens of
+// inputs). Role and label queries over all of it are slow in jsdom, so the
+// case-study tests find their landmarks by text.
+async function findSectionsGroup() {
+  const legend = await screen.findByText("Case study sections", {
+    selector: "legend",
+  });
+  return legend.closest("fieldset");
+}
+
+function buttonWithText(container, text) {
+  return within(container).getByText(text).closest("button");
+}
+
 describe("admin media editors", { timeout: 20_000 }, () => {
   it("edits case-study sections as Markdown with a live preview", async () => {
     const api = installFakeAdminApi({ withProjects: true });
     const user = userEvent.setup();
     renderAdmin("/admin/projects/sarabo");
 
-    const sections = await screen.findByRole("group", {
-      name: "Case study sections",
-    });
+    const sections = await findSectionsGroup();
     const overview = within(sections).getAllByLabelText(/^Text/)[0];
     // Pasted rather than typed: Sarabo's form is long (its diagram adds
     // dozens of inputs), and jsdom re-renders it for every keystroke.
@@ -66,7 +78,7 @@ describe("admin media editors", { timeout: 20_000 }, () => {
       .closest("div.grid.gap-3");
     expect(within(galleryItem).queryByLabelText(/^Text/)).toBeNull();
 
-    await user.click(screen.getByRole("button", { name: "Save changes" }));
+    await user.click(buttonWithText(document.body, "Save changes"));
     await screen.findByText("Saved.");
     const saved = lastWrite(api).body.caseStudy;
     expect(saved.sections[0]).toMatchObject({
@@ -85,20 +97,14 @@ describe("admin media editors", { timeout: 20_000 }, () => {
     const user = userEvent.setup();
     renderAdmin("/admin/projects/sarabo");
 
-    // Queries stay inside the sections group: label lookups across the
-    // whole (long) project form are slow in jsdom.
-    const sections = await screen.findByRole("group", {
-      name: "Case study sections",
-    });
-    await user.click(
-      within(sections).getByRole("button", { name: "Add section" }),
-    );
+    const sections = await findSectionsGroup();
+    await user.click(buttonWithText(sections, "Add section"));
     const headings = within(sections).getAllByLabelText("Heading");
     await user.click(headings.at(-1));
     await user.paste("What I'd do next");
     await user.click(within(sections).getAllByLabelText(/^Text/).at(-1));
     await user.paste("Add tests.");
-    await user.click(screen.getByRole("button", { name: "Save changes" }));
+    await user.click(buttonWithText(document.body, "Save changes"));
 
     await screen.findByText("Saved.");
     expect(lastWrite(api).body.caseStudy.sections.at(-1)).toEqual({

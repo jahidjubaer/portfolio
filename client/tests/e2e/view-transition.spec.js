@@ -1,4 +1,9 @@
 import { test, expect } from "@playwright/test";
+import { readFileSync } from "node:fs";
+
+const content = JSON.parse(
+  readFileSync(new URL("../../src/generated/content.json", import.meta.url)),
+);
 
 // Records the view-transition-name of every element the browser captures,
 // so the test can check the card cover and the hero cover share a name.
@@ -106,8 +111,8 @@ test("a photo zooms out of its frame into the viewer and back", async ({
     route.fulfill({ status: 200, contentType: "text/javascript", body: "" }),
   );
   await page.goto("/beyond");
-  const frames = page.locator("[data-photo-id]");
-  test.skip((await frames.count()) === 0, "No photos published.");
+  test.skip(content.photos.length === 0, "No photos published.");
+  await expect(page.locator("[data-photo-id]").first()).toBeVisible();
 
   const frame = page.getByRole("listitem").getByRole("button").first();
   await frame.click();

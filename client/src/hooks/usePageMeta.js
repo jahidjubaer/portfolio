@@ -1,6 +1,21 @@
 import { useEffect } from "react";
 import { siteConfig, absoluteUrl } from "../config/site";
 
+// The og:image the prerendered HTML shipped for the page the visitor
+// landed on: its own link-preview card (scripts/og-images.js) or the share
+// image. Kept for that page, so crawlers that run JavaScript see the same
+// image as those that don't.
+const LANDING =
+  typeof document === "undefined"
+    ? null
+    : {
+        path: window.location.pathname,
+        image:
+          document.head
+            .querySelector('meta[property="og:image"]')
+            ?.getAttribute("content") ?? null,
+      };
+
 /**
  * Upserts an element matched by `selector`; if it must be created, the
  * attributes in `identify` mark it (e.g. name/property/rel). Returns a
@@ -72,7 +87,10 @@ export function usePageMeta({
     const resolvedPath =
       path ?? (typeof window !== "undefined" ? window.location.pathname : "/");
     const canonical = absoluteUrl(resolvedPath);
-    const ogImage = absoluteUrl(image ?? siteConfig.defaultOgImage);
+    const landingImage = LANDING?.path === resolvedPath ? LANDING.image : null;
+    const ogImage = image
+      ? absoluteUrl(image)
+      : (landingImage ?? absoluteUrl(siteConfig.defaultOgImage));
 
     const previousTitle = document.title;
     document.title = title;
