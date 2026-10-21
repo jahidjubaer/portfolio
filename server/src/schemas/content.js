@@ -5,6 +5,7 @@ import {
   INTRO_STYLES,
   NAV_ITEMS,
   PROFILE_SECTIONS,
+  SCENE_IDS,
   THEME_IDS,
 } from "./settings-defaults.js";
 
@@ -606,6 +607,7 @@ const showcaseSchema = z.object({
 export const settingsSchema = z.object({
   appearance: z.object({
     theme: z.enum(THEME_IDS),
+    scene: z.enum(SCENE_IDS),
     accent: z.enum(ACCENT_IDS),
     font: z.enum(FONT_IDS),
   }),

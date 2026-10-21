@@ -1,7 +1,9 @@
 import {
   ACCENT_OPTIONS,
   FONT_OPTIONS,
+  SCENE_OPTIONS,
   isKnownOption,
+  sceneOption,
 } from "./appearance-options";
 import { siteSettings } from "../../data/settings";
 
@@ -18,6 +20,7 @@ export const THEME_STORAGE_KEY = "theme";
 export const SOUND_STORAGE_KEY = "sound";
 export const ACCENT_STORAGE_KEY = "accent";
 export const FONT_STORAGE_KEY = "font";
+export const SCENE_STORAGE_KEY = "scene";
 
 /** @param {string} key */
 export function readPreference(key) {
@@ -64,6 +67,20 @@ export function getInitialTheme() {
   return followsSystemTheme() ? getSystemTheme() : SITE_DEFAULTS.theme;
 }
 
+/**
+ * The full theme (docs/14 R7), or "none" for plain Graphite / Paper. A
+ * stored scene wins; a stored plain theme means the visitor chose no
+ * scene; else the site default. Mirrors the inline script in index.html.
+ * @returns {string}
+ */
+export function getInitialScene() {
+  const stored = readPreference(SCENE_STORAGE_KEY);
+  if (stored === "none" || isKnownOption(SCENE_OPTIONS, stored)) return stored;
+  const storedTheme = readPreference(THEME_STORAGE_KEY);
+  if (storedTheme === "light" || storedTheme === "dark") return "none";
+  return sceneOption(SITE_DEFAULTS.scene) ? SITE_DEFAULTS.scene : "none";
+}
+
 /** Sound is on by default; only an explicit "off" mutes it. */
 export function getInitialSoundEnabled() {
   return readPreference(SOUND_STORAGE_KEY) !== "off";
@@ -89,6 +106,7 @@ export function getInitialFont() {
 export function getPrerenderedPreferences() {
   return {
     theme: SITE_DEFAULTS.theme === "light" ? "light" : "dark",
+    scene: sceneOption(SITE_DEFAULTS.scene) ? SITE_DEFAULTS.scene : "none",
     soundEnabled: true,
     accent: SITE_DEFAULTS.accent,
     font: SITE_DEFAULTS.font,

@@ -1,0 +1,187 @@
+/*
+ * Full themes ("scenes", docs/14 R7), named after photographic processes.
+ * Graphite and Paper are the plain dark and light themes in tokens.css;
+ * each scene below replaces every colour token at once (canvas, surfaces,
+ * text, accent, banner tones, the opening's paper) and may add a texture.
+ * PreferencesProvider sets data-scene on <html> together with the scene's
+ * base data-theme, and leaves data-accent at lime so the visitor's accent
+ * (Graphite and Paper only) can't override a scene. Imported after
+ * tokens.css, so at equal specificity the scene wins.
+ *
+ * Contrast: text-muted is at least 4.5:1 on every surface, accent ink at
+ * least 4.5:1 on canvas and surfaces, on-accent at least 4.5:1 on all three
+ * fill stops (checked by tests/unit/scenes-contrast.test.js).
+ */
+
+/* Darkroom: near-black, a deep red safelight, heavy grain. */
+:root[data-scene="darkroom"] {
+  color-scheme: dark;
+  --color-canvas: #0a0606;
+  --color-canvas-subtle: #0e0808;
+  --color-surface: #120a0a;
+  --color-surface-raised: #190e0e;
+  --color-surface-soft: #211313;
+  --color-text-primary: #f4e7e4;
+  --color-text-secondary: #cfb2ad;
+  --color-text-muted: #b0918b;
+  --color-border: #2d1919;
+  --color-border-strong: #472727;
+  --color-accent-primary: #ff8e80;
+  --color-accent-primary-soft: rgba(240, 82, 64, 0.14);
+  --color-accent-secondary: #fdba74;
+  --color-accent-secondary-soft: rgba(253, 186, 116, 0.12);
+  --color-accent-fill-from: #ff9a8c;
+  --color-accent-fill: #f26a59;
+  --color-accent-fill-to: #e4523f;
+  --color-accent-edge: #8f1d12;
+  --color-on-accent-primary: #2a0503;
+  --color-on-accent-secondary: #2a1203;
+  --color-accent-glow: rgba(242, 106, 89, 0.2);
+  --color-banner-hi: #ffb3a8;
+  --color-banner-mid: #e0442f;
+  --color-banner-lo: #6b1309;
+  --color-success: #6ee7a0;
+  --color-warning: #f2c26b;
+  --color-danger: #ffa094;
+  --color-paper: #140a0a;
+  --color-paper-fibre: #3d2121;
+  --color-paper-rule: rgba(255, 140, 128, 0.05);
+  --color-paper-shade: rgba(0, 0, 0, 0.4);
+  --scene-texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.85 0 0 0 0 0.8 0 0 0 1.4 -0.45'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  --scene-texture-opacity: 0.09;
+}
+
+/* Cyanotype: Prussian-blue paper, white print, pale cyan. */
+:root[data-scene="cyanotype"] {
+  color-scheme: dark;
+  --color-canvas: #0b2545;
+  --color-canvas-subtle: #0d2a4e;
+  --color-surface: #0f2e55;
+  --color-surface-raised: #12345e;
+  --color-surface-soft: #163a68;
+  --color-text-primary: #f3f7fc;
+  --color-text-secondary: #c8d8eb;
+  --color-text-muted: #a9c0db;
+  --color-border: #22477a;
+  --color-border-strong: #315b92;
+  --color-accent-primary: #a5ecff;
+  --color-accent-primary-soft: rgba(125, 225, 255, 0.14);
+  --color-accent-secondary: #f9e2a6;
+  --color-accent-secondary-soft: rgba(249, 226, 166, 0.12);
+  --color-accent-fill-from: #b9f0ff;
+  --color-accent-fill: #8fe3fb;
+  --color-accent-fill-to: #6fd3f0;
+  --color-accent-edge: #1f6f99;
+  --color-on-accent-primary: #04243a;
+  --color-on-accent-secondary: #2b2004;
+  --color-accent-glow: rgba(143, 227, 251, 0.18);
+  --color-banner-hi: #eefaff;
+  --color-banner-mid: #8fd2ee;
+  --color-banner-lo: #3b7cb0;
+  --color-success: #86efac;
+  --color-warning: #fcd581;
+  --color-danger: #ffb0a8;
+  --color-paper: #0c2748;
+  --color-paper-fibre: #2c5689;
+  --color-paper-rule: rgba(255, 255, 255, 0.05);
+  --color-paper-shade: rgba(0, 10, 30, 0.4);
+  --scene-texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.035 0.6' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.2 -0.5'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23p)'/%3E%3C/svg%3E");
+  --scene-texture-opacity: 0.07;
+}
+
+/* Golden hour: warm cream to amber, burnt orange, a soft vignette. */
+:root[data-scene="golden-hour"] {
+  color-scheme: light;
+  --color-canvas: #fbf4e6;
+  --color-canvas-subtle: #f8efdc;
+  --color-surface: #fffaf1;
+  --color-surface-raised: #f7ecd6;
+  --color-surface-soft: #f2e3c6;
+  --color-text-primary: #2a1a0c;
+  --color-text-secondary: #5c4430;
+  --color-text-muted: #6c5440;
+  --color-border: #ead8b6;
+  --color-border-strong: #d9bf95;
+  --color-accent-primary: #9a3d08;
+  --color-accent-primary-soft: rgba(234, 108, 22, 0.14);
+  --color-accent-secondary: #8a4b0f;
+  --color-accent-secondary-soft: rgba(180, 100, 20, 0.12);
+  --color-accent-fill-from: #ffb877;
+  --color-accent-fill: #f8953f;
+  --color-accent-fill-to: #f07f22;
+  --color-accent-edge: #c2570c;
+  --color-on-accent-primary: #2e1102;
+  --color-on-accent-secondary: #2e1102;
+  --color-accent-glow: rgba(245, 140, 50, 0.24);
+  --color-banner-hi: #c2570c;
+  --color-banner-mid: #f59e42;
+  --color-banner-lo: #fcd29a;
+  --color-success: #166534;
+  --color-warning: #92400e;
+  --color-danger: #b91c1c;
+  --color-paper: #f7ead0;
+  --color-paper-fibre: #fff8ea;
+  --color-paper-rule: rgba(90, 50, 10, 0.06);
+  --color-paper-shade: rgba(120, 70, 10, 0.14);
+  --scene-vignette: radial-gradient(
+    ellipse at 50% 40%,
+    transparent 45%,
+    rgba(196, 98, 16, 0.22) 100%
+  );
+}
+
+/* Night shoot: ink black, neon teal and pink, glowing bokeh. */
+:root[data-scene="night-shoot"] {
+  color-scheme: dark;
+  --color-canvas: #05060a;
+  --color-canvas-subtle: #080a10;
+  --color-surface: #0b0e15;
+  --color-surface-raised: #10141d;
+  --color-surface-soft: #161b26;
+  --color-text-primary: #ecf7f6;
+  --color-text-secondary: #a9bfc1;
+  --color-text-muted: #91a8ab;
+  --color-border: #1c2430;
+  --color-border-strong: #2a3543;
+  --color-accent-primary: #5eead4;
+  --color-accent-primary-soft: rgba(45, 212, 191, 0.13);
+  --color-accent-secondary: #ff8cc6;
+  --color-accent-secondary-soft: rgba(255, 140, 198, 0.13);
+  --color-accent-fill-from: #7cf3df;
+  --color-accent-fill: #3ee0c7;
+  --color-accent-fill-to: #22c9b0;
+  --color-accent-edge: #0f766e;
+  --color-on-accent-primary: #032622;
+  --color-on-accent-secondary: #33041b;
+  --color-accent-glow: rgba(45, 212, 191, 0.24);
+  --color-banner-hi: #ff8cc6;
+  --color-banner-mid: #2dd4bf;
+  --color-banner-lo: #be185d;
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-danger: #ff8c8c;
+  --color-paper: #090b11;
+  --color-paper-fibre: #263040;
+  --color-paper-rule: rgba(94, 234, 212, 0.05);
+  --color-paper-shade: rgba(0, 0, 0, 0.45);
+  --banner-glow: 14;
+}
+
+/* The scene's texture (grain, paper fibre) over the whole page, too faint
+   to change what text reads like; never in forced colours or print. */
+:root[data-scene] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  /* Over everything (it's only light noise), skip link excepted. */
+  z-index: 95;
+  pointer-events: none;
+  background-image: var(--scene-texture, none);
+  opacity: var(--scene-texture-opacity, 0);
+}
+
+@media (forced-colors: active), print {
+  :root[data-scene] body::before {
+    display: none;
+  }
+}

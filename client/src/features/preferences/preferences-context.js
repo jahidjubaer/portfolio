@@ -4,13 +4,15 @@ import { createContext } from "react";
  * @typedef {{
  *   theme: "light" | "dark",
  *   toggleTheme: (event?: { currentTarget?: Element }) => void,
+ *   scene: string,
+ *   chooseTheme: (id: string, event?: { currentTarget?: Element }) => void,
  *   soundEnabled: boolean,
  *   toggleSound: () => void,
  *   accent: string,
  *   setAccent: (id: string) => void,
  *   font: string,
  *   setFont: (id: string) => void,
- *   play: (name: "tap" | "toggle" | "message" | "success" | "pageOpen") => void,
+ *   play: (name: "tap" | "toggle" | "message" | "success" | "pageOpen" | "shutter") => void,
  * }} Preferences
  */
 
@@ -25,6 +27,8 @@ const noop = () => {};
 export const PreferencesContext = createContext({
   theme: "dark",
   toggleTheme: noop,
+  scene: "none",
+  chooseTheme: noop,
   soundEnabled: false,
   toggleSound: noop,
   accent: "lime",

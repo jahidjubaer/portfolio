@@ -16,7 +16,7 @@ const root = document.documentElement;
 
 afterEach(() => {
   window.localStorage.clear();
-  for (const name of ["data-theme", "data-accent", "data-font"]) {
+  for (const name of ["data-theme", "data-scene", "data-accent", "data-font"]) {
     root.removeAttribute(name);
   }
 });
@@ -69,5 +69,44 @@ describe("AppearanceMenu", () => {
     window.localStorage.setItem("accent", "neon");
     renderMenu();
     expect(root.getAttribute("data-accent")).toBe("lime");
+  });
+
+  it("switches to a full theme, which sets its own base and accent", async () => {
+    const user = userEvent.setup();
+    window.localStorage.setItem("accent", "sky");
+    window.localStorage.setItem("theme", "light");
+    renderMenu();
+    await user.click(
+      screen.getByRole("button", { name: "Customize appearance" }),
+    );
+    expect(screen.getByRole("radio", { name: "Paper" })).toBeChecked();
+
+    await user.click(screen.getByRole("radio", { name: "Darkroom" }));
+    expect(root.getAttribute("data-scene")).toBe("darkroom");
+    expect(root.getAttribute("data-theme")).toBe("dark");
+    // The visitor's accent waits while a scene sets the colours.
+    expect(root.getAttribute("data-accent")).toBe("lime");
+    expect(window.localStorage.getItem("scene")).toBe("darkroom");
+    expect(screen.queryByRole("radio", { name: "Sky" })).toBeNull();
+
+    await user.click(screen.getByRole("radio", { name: "Golden hour" }));
+    expect(root.getAttribute("data-theme")).toBe("light");
+
+    await user.click(screen.getByRole("radio", { name: "Graphite" }));
+    expect(root.hasAttribute("data-scene")).toBe(false);
+    expect(root.getAttribute("data-theme")).toBe("dark");
+    expect(root.getAttribute("data-accent")).toBe("sky");
+    expect(window.localStorage.getItem("scene")).toBe("none");
+  });
+
+  it("remembers a scene across visits, and ignores an unknown one", () => {
+    window.localStorage.setItem("scene", "cyanotype");
+    const { unmount } = renderMenu();
+    expect(root.getAttribute("data-scene")).toBe("cyanotype");
+    unmount();
+
+    window.localStorage.setItem("scene", "sepia");
+    renderMenu();
+    expect(root.hasAttribute("data-scene")).toBe(false);
   });
 });

@@ -3,10 +3,12 @@ import { PreferencesContext } from "./preferences-context";
 import {
   ACCENT_STORAGE_KEY,
   FONT_STORAGE_KEY,
+  SCENE_STORAGE_KEY,
   SOUND_STORAGE_KEY,
   THEME_STORAGE_KEY,
   getInitialAccent,
   getInitialFont,
+  getInitialScene,
   getInitialSoundEnabled,
   followsSystemTheme,
   getInitialTheme,
@@ -15,6 +17,7 @@ import {
   writePreference,
 } from "./preference-storage";
 import { playSound } from "./sound-engine";
+import { sceneOption } from "./appearance-options";
 import { loadFont } from "./font-loader";
 import { originOf, switchThemeWithAperture } from "./theme-transition";
 import { useIsHydrating } from "../../lib/hydration";
@@ -22,10 +25,14 @@ import { useIsHydrating } from "../../lib/hydration";
 const THEME_COLORS = { dark: "#09090b", light: "#ffffff" };
 
 /**
- * Owns the visitor's appearance (theme, accent, font) and UI-sound
+ * Owns the visitor's appearance (theme, scene, accent, font) and UI-sound
  * preferences. Each is applied as a data attribute on <html> (`data-theme`,
- * `data-accent`, `data-font`) that the stylesheets switch on; index.html
- * sets the same attributes before React loads so the first paint is right.
+ * `data-scene`, `data-accent`, `data-font`) that the stylesheets switch
+ * on; index.html sets the same attributes before React loads so the first
+ * paint is right. A scene (a full theme, docs/14 R7) brings its own base
+ * theme and colours, so while one is on, `theme` is its base and the
+ * visitor's accent waits (stored, not applied) until they pick Graphite
+ * or Paper again.
  * @param {{ children: import("react").ReactNode }} props
  */
 export function PreferencesProvider({ children }) {
@@ -37,33 +44,47 @@ export function PreferencesProvider({ children }) {
       ? getPrerenderedPreferences()
       : {
           theme: getInitialTheme(),
+          scene: getInitialScene(),
           soundEnabled: getInitialSoundEnabled(),
           accent: getInitialAccent(),
           font: getInitialFont(),
         },
   );
-  const [theme, setTheme] = useState(initial.theme);
+  const [plainTheme, setTheme] = useState(initial.theme);
+  const [scene, setSceneState] = useState(initial.scene);
+  const activeScene = sceneOption(scene);
+  const theme = activeScene ? activeScene.base : plainTheme;
   const [soundEnabled, setSoundEnabled] = useState(initial.soundEnabled);
   const [accent, setAccentState] = useState(initial.accent);
   const [font, setFontState] = useState(initial.font);
 
   useLayoutEffect(() => {
     setTheme(getInitialTheme());
+    setSceneState(getInitialScene());
     setSoundEnabled(getInitialSoundEnabled());
     setAccentState(getInitialAccent());
     setFontState(getInitialFont());
   }, []);
 
   useLayoutEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
+    const root = document.documentElement;
+    root.setAttribute("data-theme", theme);
+    if (activeScene) root.setAttribute("data-scene", activeScene.id);
+    else root.removeAttribute("data-scene");
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute("content", THEME_COLORS[theme]);
-  }, [theme]);
+      ?.setAttribute(
+        "content",
+        activeScene ? activeScene.swatch[0] : THEME_COLORS[theme],
+      );
+  }, [theme, activeScene]);
 
   useLayoutEffect(() => {
-    document.documentElement.setAttribute("data-accent", accent);
-  }, [accent]);
+    document.documentElement.setAttribute(
+      "data-accent",
+      activeScene ? "lime" : accent,
+    );
+  }, [accent, activeScene]);
 
   useLayoutEffect(() => {
     document.documentElement.setAttribute("data-font", font);
@@ -93,17 +114,40 @@ export function PreferencesProvider({ children }) {
   );
 
   // Called from the toggle's click or a theme radio's change; the event's
-  // control is where the new theme opens from.
+  // control is where the new theme opens from. From a scene, the toggle
+  // goes to the plain theme opposite the scene's base.
   const toggleTheme = useCallback(
     (event) => {
       const next = theme === "dark" ? "light" : "dark";
       writePreference(THEME_STORAGE_KEY, next);
-      switchThemeWithAperture(originOf(event?.currentTarget), () =>
-        setTheme(next),
-      );
+      writePreference(SCENE_STORAGE_KEY, "none");
+      switchThemeWithAperture(originOf(event?.currentTarget), () => {
+        setTheme(next);
+        setSceneState("none");
+      });
       play("toggle");
     },
     [theme, play],
+  );
+
+  /**
+   * Picks a plain theme ("dark" Graphite, "light" Paper) or a scene id.
+   * @param {string} id
+   * @param {{ currentTarget?: Element }} [event]
+   */
+  const chooseTheme = useCallback(
+    (id, event) => {
+      const nextScene = sceneOption(id) ? id : "none";
+      const nextTheme = sceneOption(id)?.base ?? id;
+      if (nextScene === "none") writePreference(THEME_STORAGE_KEY, nextTheme);
+      writePreference(SCENE_STORAGE_KEY, nextScene);
+      switchThemeWithAperture(originOf(event?.currentTarget), () => {
+        if (nextScene === "none") setTheme(nextTheme);
+        setSceneState(nextScene);
+      });
+      play("toggle");
+    },
+    [play],
   );
 
   const toggleSound = useCallback(() => {
@@ -137,6 +181,8 @@ export function PreferencesProvider({ children }) {
       value={{
         theme,
         toggleTheme,
+        scene: activeScene ? activeScene.id : "none",
+        chooseTheme,
         soundEnabled,
         toggleSound,
         accent,

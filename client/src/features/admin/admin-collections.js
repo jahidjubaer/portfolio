@@ -46,6 +46,7 @@ import {
 } from "../../../../server/src/schemas/case-study-template.js";
 import {
   ACCENT_OPTIONS,
+  SCENE_OPTIONS,
   FONT_OPTIONS,
 } from "../preferences/appearance-options";
 import { organizationUsage } from "./attention";
@@ -269,6 +270,20 @@ export const SINGLETONS = {
           { value: "system", label: "Follow the visitor's device" },
           { value: "dark", label: "Dark" },
           { value: "light", label: "Light" },
+        ],
+      },
+      {
+        name: "appearance.scene",
+        label: "Default full theme",
+        type: "select",
+        half: true,
+        hint: "A full theme replaces the default theme and accent until a visitor picks their own.",
+        options: [
+          { value: "none", label: "None (Graphite or Paper)" },
+          ...SCENE_OPTIONS.map((option) => ({
+            value: option.id,
+            label: option.label,
+          })),
         ],
       },
       {

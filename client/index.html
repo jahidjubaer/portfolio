@@ -26,8 +26,19 @@
         var theme = siteTheme === "light" ? "light" : "dark";
         var accent = "__SITE_ACCENT__";
         var font = "__SITE_FONT__";
+        var scene = "__SITE_SCENE__";
         try {
           var stored = localStorage.getItem("theme");
+          // A visitor's own theme pick (from before scenes existed, too)
+          // wins over the site's default scene.
+          var storedScene = localStorage.getItem("scene");
+          if (
+            /^(none|darkroom|cyanotype|golden-hour|night-shoot)$/.test(
+              storedScene,
+            )
+          )
+            scene = storedScene;
+          else if (stored === "light" || stored === "dark") scene = "none";
           if (stored === "light" || stored === "dark") theme = stored;
           else if (
             siteTheme === "system" &&
@@ -41,6 +52,11 @@
           if (/^(geist|inter|grotesk|system)$/.test(storedFont))
             font = storedFont;
         } catch (e) {}
+        if (/^(darkroom|cyanotype|golden-hour|night-shoot)$/.test(scene)) {
+          theme = scene === "golden-hour" ? "light" : "dark";
+          accent = "lime";
+          root.setAttribute("data-scene", scene);
+        }
         root.setAttribute("data-theme", theme);
         root.setAttribute("data-accent", accent);
         root.setAttribute("data-font", font);

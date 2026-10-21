@@ -10,6 +10,15 @@
 export const ACCENT_IDS = ["violet", "sky", "lime", "amber", "rose"];
 export const FONT_IDS = ["geist", "inter", "grotesk", "system"];
 export const THEME_IDS = ["system", "light", "dark"];
+// Full themes (docs/14 R7); "none" is the plain theme above. Mirrors
+// SCENE_OPTIONS in client/src/features/preferences/appearance-options.js.
+export const SCENE_IDS = [
+  "none",
+  "darkroom",
+  "cyanotype",
+  "golden-hour",
+  "night-shoot",
+];
 export const INTRO_STYLES = ["aperture", "torn", "split"];
 
 /** Resume-tab blocks on the profile, in their default order. */
@@ -37,7 +46,12 @@ export const NAV_ITEMS = [
 ];
 
 export const DEFAULT_SETTINGS = {
-  appearance: { theme: "system", accent: "lime", font: "geist" },
+  appearance: {
+    theme: "system",
+    scene: "none",
+    accent: "lime",
+    font: "geist",
+  },
   intro: { enabled: true, sound: true, style: "aperture" },
   profileSections: PROFILE_SECTIONS.map(({ id }) => ({ id, visible: true })),
   showGithubActivity: true,

@@ -40,6 +40,8 @@ function readColors() {
       get("--color-banner-lo"),
     ],
     accent: get("--color-accent-primary"),
+    // Night shoot's bokeh glow (styles/scenes.css), in pixels of blur.
+    glow: Number.parseFloat(get("--banner-glow")) || 0,
     light: document.documentElement.getAttribute("data-theme") === "light",
   };
 }
@@ -88,7 +90,7 @@ export function ProfileBanner() {
   const printKey = useRef(0);
   const [prints, setPrints] = useState([]);
   const [announcement, setAnnouncement] = useState("");
-  const { theme, play } = usePreferences();
+  const { theme, scene, play } = usePreferences();
   const reduceMotion = useReducedMotion();
 
   const takeShot = useCallback(
@@ -216,11 +218,16 @@ export function ProfileBanner() {
         ctx.strokeStyle = color;
         hexagon(ctx, x, y, r);
         ctx.globalAlpha = (0.1 + 0.22 * sharp) * strength;
+        if (colors.glow) {
+          ctx.shadowColor = color;
+          ctx.shadowBlur = colors.glow * (0.4 + sharp);
+        }
         ctx.fill();
         ctx.lineWidth = 1 + 1.2 * sharp;
         ctx.globalAlpha = (0.18 + 0.72 * sharp) * strength;
         ctx.stroke();
       }
+      ctx.shadowBlur = 0;
       if (pointerInside) {
         // The aperture around the reticle, tightening (and turning) on a catch.
         const turn = (APERTURE_OPEN - aperture.r) / 20;
@@ -438,7 +445,7 @@ export function ProfileBanner() {
       observer?.disconnect();
       viewObserver?.disconnect();
     };
-  }, [theme, reduceMotion]);
+  }, [theme, scene, reduceMotion]);
 
   // "250+ programming problems solved" → "250+".
   const solved = profile.problemSolving.total.split(" ")[0];
@@ -473,6 +480,8 @@ export function ProfileBanner() {
           ref={flashRef}
           className="pointer-events-none absolute inset-0 bg-white opacity-0"
         />
+        {/* Golden hour's soft vignette (styles/scenes.css); none elsewhere. */}
+        <div className="pointer-events-none absolute inset-0 bg-(image:--scene-vignette)" />
         <FocusBrackets locked className="inset-3!" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-(--color-canvas) to-transparent" />
       </div>

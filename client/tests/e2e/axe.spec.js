@@ -108,3 +108,28 @@ for (const path of ["/", "/work", "/contact"]) {
     expect(results.violations).toEqual([]);
   });
 }
+
+// Every full theme (docs/14 R7) on the pages with the most colour: chosen
+// the way a visitor's earlier pick would be, from storage before load.
+const SCENES = ["darkroom", "cyanotype", "golden-hour", "night-shoot"];
+const SCENE_ROUTES = ["/", "/work/sarabo", "/writing", "/beyond", "/contact"];
+
+for (const scene of SCENES) {
+  test(`the ${scene} theme has no accessibility violations on the main pages`, async ({
+    page,
+  }) => {
+    await page.addInitScript((value) => {
+      window.localStorage.setItem("scene", value);
+    }, scene);
+    for (const path of SCENE_ROUTES) {
+      await gotoAndWaitForContent(page, path);
+      expect(
+        await page.evaluate(() =>
+          document.documentElement.getAttribute("data-scene"),
+        ),
+      ).toBe(scene);
+      const results = await new AxeBuilder({ page }).analyze();
+      expect(results.violations, `${scene} ${path}`).toEqual([]);
+    }
+  });
+}

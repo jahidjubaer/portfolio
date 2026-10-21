@@ -24,6 +24,7 @@ describe("site settings defaults", () => {
     });
     expect(merged.appearance).toEqual({
       theme: "system",
+      scene: "none",
       accent: "rose",
       font: "geist",
     });

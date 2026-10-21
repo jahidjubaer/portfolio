@@ -39,10 +39,11 @@ function siteDefaultsPlugin() {
         ),
       );
       const settings = withDefaultSettings(content.settings);
-      const { theme, accent, font } = settings.appearance;
+      const { theme, scene, accent, font } = settings.appearance;
       return html
         .replace("__SITE_INTRO__", settings.intro.enabled ? "on" : "off")
         .replace("__SITE_THEME__", theme)
+        .replace("__SITE_SCENE__", scene)
         .replace("__SITE_ACCENT__", accent)
         .replace("__SITE_FONT__", font);
     },

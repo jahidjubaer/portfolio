@@ -1,19 +1,12 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import {
-  BookOpen,
-  Check,
-  Moon,
-  Palette,
-  Sun,
-  Volume2,
-  VolumeX,
-  X,
-} from "lucide-react";
+import { BookOpen, Check, Palette, Volume2, VolumeX, X } from "lucide-react";
 import { usePreferences } from "../../features/preferences/usePreferences";
 import {
   ACCENT_OPTIONS,
   FONT_OPTIONS,
+  PLAIN_THEMES,
+  SCENE_OPTIONS,
 } from "../../features/preferences/appearance-options";
 import { loadFont } from "../../features/preferences/font-loader";
 import { replayOpening } from "../../features/intro/opening-state";
@@ -56,8 +49,70 @@ function RadioTile({ name, checked, onChange, className, style, children }) {
   );
 }
 
+// Graphite and Paper, then the scenes (docs/14 R7).
+const THEME_CHOICES = [...PLAIN_THEMES, ...SCENE_OPTIONS];
+
 /**
- * "Customize" popover: theme, UI sounds, accent color, and font. A
+ * A theme as a small print of itself: its canvas, a surface card with a
+ * line of text, and an accent dot. A native radio underneath.
+ * @param {{
+ *   name: string,
+ *   choice: { id: string, label: string, swatch: string[] },
+ *   checked: boolean,
+ *   onChange: (event: import("react").ChangeEvent<HTMLInputElement>) => void,
+ * }} props
+ */
+function ThemePrint({ name, choice, checked, onChange }) {
+  const [canvas, surface, accent, text] = choice.swatch;
+  return (
+    <label className="relative">
+      <input
+        type="radio"
+        name={name}
+        checked={checked}
+        onChange={onChange}
+        className="peer sr-only"
+      />
+      <span className="sr-only">{choice.label}</span>
+      <span
+        aria-hidden="true"
+        className="flex cursor-pointer flex-col gap-1.5 rounded-(--radius-sm) border border-(--color-border) p-1.5 pb-1 transition-colors peer-checked:border-(--color-accent-primary) peer-checked:bg-(--color-accent-primary-soft) peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-accent-primary) hover:border-(--color-border-strong)"
+      >
+        <span
+          className="relative block h-9 overflow-hidden rounded-[5px] shadow-[inset_0_0_0_1px_rgb(127_127_127/0.25)]"
+          style={{ background: canvas }}
+        >
+          <span
+            className="absolute inset-x-1.5 bottom-1.5 top-3 rounded-[3px]"
+            style={{ background: surface }}
+          />
+          <span
+            className="absolute bottom-3 left-3 h-[3px] w-6 rounded-full"
+            style={{ background: text }}
+          />
+          <span
+            className="absolute right-2.5 top-1.5 size-2 rounded-full"
+            style={{ background: accent }}
+          />
+        </span>
+        <span
+          className={cn(
+            "text-center text-[0.75rem] font-medium leading-tight",
+            checked
+              ? "text-(--color-text-primary)"
+              : "text-(--color-text-secondary)",
+          )}
+        >
+          {choice.label}
+        </span>
+      </span>
+    </label>
+  );
+}
+
+/**
+ * "Customize" popover: theme (Graphite, Paper, or a scene), UI sounds,
+ * accent color (plain themes only), and font. A
  * disclosure (button + panel), not a modal — the page stays usable, and
  * Escape or a click outside closes it.
  * @param {{ placement?: "rail" | "header", className?: string }} props
@@ -70,7 +125,8 @@ export function AppearanceMenu({ placement = "rail", className }) {
   const panelId = `${id}-panel`;
   const {
     theme,
-    toggleTheme,
+    scene,
+    chooseTheme,
     soundEnabled,
     toggleSound,
     accent,
@@ -81,6 +137,10 @@ export function AppearanceMenu({ placement = "rail", className }) {
   } = usePreferences();
   const accentLabel = ACCENT_OPTIONS.find(
     (option) => option.id === accent,
+  )?.label;
+  const selectedTheme = scene === "none" ? theme : scene;
+  const themeLabel = THEME_CHOICES.find(
+    (choice) => choice.id === selectedTheme,
   )?.label;
 
   useEffect(() => {
@@ -176,67 +236,68 @@ export function AppearanceMenu({ placement = "rail", className }) {
             </div>
 
             <fieldset>
-              <legend className={LEGEND}>Theme</legend>
-              <div className="grid grid-cols-2 gap-2">
-                <RadioTile
-                  name={`${id}-theme`}
-                  checked={theme === "dark"}
-                  onChange={toggleTheme}
-                >
-                  <Moon size={15} aria-hidden="true" />
-                  Dark
-                </RadioTile>
-                <RadioTile
-                  name={`${id}-theme`}
-                  checked={theme === "light"}
-                  onChange={toggleTheme}
-                >
-                  <Sun size={15} aria-hidden="true" />
-                  Light
-                </RadioTile>
-              </div>
-            </fieldset>
-
-            <fieldset className="mt-4">
               <legend className={LEGEND}>
-                Accent
+                Theme
                 <span className="sr-only">:</span>{" "}
                 <span className="text-(--color-text-secondary)">
-                  {accentLabel}
+                  {themeLabel}
                 </span>
               </legend>
-              <div className="flex justify-between">
-                {ACCENT_OPTIONS.map((option) => (
-                  <label
-                    key={option.id}
-                    title={option.label}
-                    className="relative"
-                  >
-                    <input
-                      type="radio"
-                      name={`${id}-accent`}
-                      checked={accent === option.id}
-                      onChange={() => setAccent(option.id)}
-                      className="peer sr-only"
-                    />
-                    <span className="sr-only">{option.label}</span>
-                    <span
-                      aria-hidden="true"
-                      className="grid size-11 cursor-pointer place-items-center rounded-full border-2 border-transparent transition-transform hover:scale-105 peer-checked:border-(--color-text-primary) peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-accent-primary)"
-                    >
-                      <span
-                        className="grid size-8 place-items-center rounded-full text-[#111] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]"
-                        style={{ background: option.swatch }}
-                      >
-                        {accent === option.id ? (
-                          <Check size={15} strokeWidth={3} />
-                        ) : null}
-                      </span>
-                    </span>
-                  </label>
+              <div className="grid grid-cols-3 gap-2">
+                {THEME_CHOICES.map((choice) => (
+                  <ThemePrint
+                    key={choice.id}
+                    name={`${id}-theme`}
+                    choice={choice}
+                    checked={selectedTheme === choice.id}
+                    onChange={(event) => chooseTheme(choice.id, event)}
+                  />
                 ))}
               </div>
             </fieldset>
+
+            {scene === "none" ? (
+              <fieldset className="mt-4">
+                <legend className={LEGEND}>
+                  Accent
+                  <span className="sr-only">:</span>{" "}
+                  <span className="text-(--color-text-secondary)">
+                    {accentLabel}
+                  </span>
+                </legend>
+                <div className="flex justify-between">
+                  {ACCENT_OPTIONS.map((option) => (
+                    <label
+                      key={option.id}
+                      title={option.label}
+                      className="relative"
+                    >
+                      <input
+                        type="radio"
+                        name={`${id}-accent`}
+                        checked={accent === option.id}
+                        onChange={() => setAccent(option.id)}
+                        className="peer sr-only"
+                      />
+                      <span className="sr-only">{option.label}</span>
+                      <span
+                        aria-hidden="true"
+                        className="grid size-11 cursor-pointer place-items-center rounded-full border-2 border-transparent transition-transform hover:scale-105 peer-checked:border-(--color-text-primary) peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-accent-primary)"
+                      >
+                        <span
+                          className="grid size-8 place-items-center rounded-full text-[#111] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]"
+                          style={{ background: option.swatch }}
+                        >
+                          {accent === option.id ? (
+                            <Check size={15} strokeWidth={3} />
+                          ) : null}
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            ) : null}
 
             <fieldset className="mt-4">
               <legend className={LEGEND}>Font</legend>

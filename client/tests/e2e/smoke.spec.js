@@ -220,7 +220,7 @@ test("appearance menu works on mobile (theme, accent, font)", async ({
   await page.getByRole("button", { name: "Customize appearance" }).click();
   await expect(page.getByRole("switch", { name: "UI sounds" })).toBeVisible();
 
-  await page.getByRole("radio", { name: "Light" }).check();
+  await page.getByRole("radio", { name: "Paper" }).check();
   await page.getByTitle("Sky").click();
   await page.getByText("Space Grotesk", { exact: true }).click();
   const html = page.locator("html");
@@ -232,6 +232,15 @@ test("appearance menu works on mobile (theme, accent, font)", async ({
   await page.reload();
   await expect(html).toHaveAttribute("data-accent", "sky");
   await expect(html).toHaveAttribute("data-font", "grotesk");
+
+  // A full theme (docs/14 R7) also survives a reload, from the first paint.
+  await page.getByRole("button", { name: "Customize appearance" }).click();
+  await page.locator("label").filter({ hasText: "Cyanotype" }).click();
+  await expect(html).toHaveAttribute("data-scene", "cyanotype");
+  await page.reload();
+  await expect(html).toHaveAttribute("data-scene", "cyanotype");
+  await expect(html).toHaveAttribute("data-theme", "dark");
+  await expect(html).toHaveAttribute("data-accent", "lime");
 });
 
 test("greeting popup appears and its quick reply pre-fills contact", async ({
