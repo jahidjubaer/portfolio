@@ -191,11 +191,12 @@ export function getAttentionItems(content) {
     (post) => post.status === "draft",
   );
   if (drafts.length) {
+    const fromBlog = drafts.filter((post) => post.kind === "blog").length;
     items.push({
       id: "drafts",
       tone: "suggestion",
-      message: `${drafts.length} draft ${plural(drafts.length, "post is", "posts are")} waiting to be published.`,
-      to: "/admin/posts",
+      message: `${drafts.length} draft ${plural(drafts.length, "post is", "posts are")} waiting to be published${fromBlog ? ` (${fromBlog} from the personal blog)` : ""}.`,
+      to: "/admin/posts?filter=drafts",
     });
   }
 

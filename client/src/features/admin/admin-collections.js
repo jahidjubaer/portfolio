@@ -1546,6 +1546,38 @@ export const LISTS = {
     compare: (a, b) =>
       (b.publishedAt ?? "9999").localeCompare(a.publishedAt ?? "9999"),
     newItem: () => ({ status: "draft", tags: [], publishedAt: today() }),
+    thumbnailOf: (item) => item.cover,
+    // Chips above the list, with counts; they combine with the search.
+    filters: [
+      { id: "notes", label: "Notes", test: (item) => item.kind !== "blog" },
+      { id: "blog", label: "Blog", test: (item) => item.kind === "blog" },
+      {
+        id: "drafts",
+        label: "Drafts",
+        test: (item) => item.status !== "published",
+      },
+      {
+        id: "published",
+        label: "Published",
+        test: (item) => item.status === "published",
+      },
+    ],
+    // One click per row, so 22 imported drafts don't need 22 forms.
+    quickToggle: {
+      label: (item) => (item.status === "published" ? "Unpublish" : "Publish"),
+      apply: (item) =>
+        item.status === "published"
+          ? { ...item, status: "draft" }
+          : {
+              ...item,
+              status: "published",
+              publishedAt: item.publishedAt ?? today(),
+            },
+      done: (item) =>
+        item.status === "published"
+          ? `“${item.title}” is a draft again. Press Publish to update the site.`
+          : `“${item.title}” is marked published. Press Publish to put it live.`,
+    },
     fields: [
       {
         name: "slug",

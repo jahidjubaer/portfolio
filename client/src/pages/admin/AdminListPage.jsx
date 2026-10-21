@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowDown,
   ArrowUp,
@@ -12,7 +12,11 @@ import {
 } from "lucide-react";
 import { useAdmin } from "../../features/admin/admin-context";
 import { LISTS } from "../../features/admin/admin-collections";
-import { deleteListItem, reorderList } from "../../features/admin/admin-api";
+import {
+  deleteListItem,
+  reorderList,
+  updateListItem,
+} from "../../features/admin/admin-api";
 import { Button } from "../../components/ui/Button";
 import { ButtonLink } from "../../components/ui/ButtonLink";
 import { AdminPageHeader } from "./AdminPageHeader";
@@ -25,10 +29,15 @@ const SEARCH_FROM = 7;
 const ICON_BUTTON =
   "inline-grid size-10 place-items-center rounded-(--radius-sm) border border-(--color-border) text-(--color-text-secondary) hover:border-(--color-border-strong) hover:text-(--color-text-primary) disabled:opacity-35";
 
+const CHIP =
+  "min-h-11 rounded-(--radius-pill) border px-3.5 text-sm transition-colors";
+
 /**
  * A list section: items in display order with drag-and-drop and move
  * up/down buttons (unless the list sorts itself, like posts by date), a
- * search box for long lists, edit, and delete (confirmed inline).
+ * search box for long lists, filter chips and a one-click toggle when the
+ * list defines them (`filters`, `quickToggle`), edit, and delete
+ * (confirmed inline).
  * @param {{ name: keyof typeof LISTS }} props
  */
 export function AdminListPage({ name }) {
@@ -42,19 +51,30 @@ export function AdminListPage({ name }) {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
   const [query, setQuery] = useState("");
+  // ?filter=drafts opens the list filtered (the overview links there).
+  const [searchParams] = useSearchParams();
+  const [filterId, setFilterId] = useState(() => {
+    const requested = searchParams.get("filter");
+    return config.filters?.some((item) => item.id === requested)
+      ? requested
+      : null;
+  });
   const [dragFrom, setDragFrom] = useState(null);
   const [dragOver, setDragOver] = useState(null);
   const searchId = useId();
   const needle = query.trim().toLowerCase();
-  const visible = needle
-    ? items.filter((item) =>
+  const filter = config.filters?.find((item) => item.id === filterId);
+  const visible = items.filter(
+    (item) =>
+      (!filter || filter.test(item)) &&
+      (!needle ||
         `${config.titleOf(item, content)} ${config.subtitleOf(item, content)}`
           .toLowerCase()
-          .includes(needle),
-      )
-    : items;
+          .includes(needle)),
+  );
   // Reordering a filtered list would be ambiguous, so it waits.
-  const canReorder = sortable && !needle;
+  const canReorder = sortable && !needle && !filter;
+  const toggle = config.quickToggle;
   const QuickAdd = config.quickAdd;
 
   async function run(action, message) {
@@ -131,9 +151,39 @@ export function AdminListPage({ name }) {
           />
         </div>
       ) : null}
-      {needle && visible.length === 0 ? (
+      {config.filters && items.length > 0 ? (
+        <div
+          role="group"
+          aria-label={`Show ${config.label.toLowerCase()}`}
+          className="mb-3 flex flex-wrap gap-2"
+        >
+          {[
+            { id: null, label: "All", test: () => true },
+            ...config.filters,
+          ].map((option) => (
+            <button
+              key={option.label}
+              type="button"
+              aria-pressed={filterId === option.id}
+              onClick={() => setFilterId(option.id)}
+              className={cn(
+                CHIP,
+                filterId === option.id
+                  ? "border-(--color-accent-primary) bg-(--color-accent-primary-soft) font-semibold text-(--color-text-primary)"
+                  : "border-(--color-border) text-(--color-text-secondary) hover:text-(--color-text-primary)",
+              )}
+            >
+              {option.label}{" "}
+              <span className="tabular-nums text-(--color-text-muted)">
+                {items.filter(option.test).length}
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {(needle || filter) && visible.length === 0 ? (
         <p className="text-sm text-(--color-text-secondary)">
-          Nothing matches “{query}”.
+          {needle ? `Nothing matches “${query}”.` : "Nothing here yet."}
         </p>
       ) : null}
       {items.length === 0 ? (
@@ -262,6 +312,22 @@ export function AdminListPage({ name }) {
                           <ArrowDown size={16} aria-hidden="true" />
                         </button>
                       </>
+                    ) : null}
+                    {toggle ? (
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        disabled={busy}
+                        onClick={() =>
+                          run(
+                            () => updateListItem(name, key, toggle.apply(item)),
+                            toggle.done(item),
+                          )
+                        }
+                        aria-label={`${toggle.label(item)} “${title}”`}
+                      >
+                        {toggle.label(item)}
+                      </Button>
                     ) : null}
                     <Link
                       to={`/admin/${name}/${encodeURIComponent(key)}`}

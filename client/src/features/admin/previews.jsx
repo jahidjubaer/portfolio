@@ -10,6 +10,7 @@ import {
   OrganizationLogo,
   OrganizationName,
 } from "../organizations/Organization";
+import { PostCard } from "../writing/PostCard";
 
 /**
  * Live previews for the item editor: the unsaved form values rendered by
@@ -82,4 +83,15 @@ export const PREVIEWS = {
     });
     return <LearningTrackCard track={track} />;
   },
+  // The post as its card on /writing (the body has its own preview).
+  posts: (value) =>
+    value.title && value.publishedAt ? (
+      <PostCard
+        post={{
+          ...value,
+          excerpt: value.excerpt ?? "",
+          tags: value.tags ?? [],
+        }}
+      />
+    ) : null,
 };
