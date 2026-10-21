@@ -11,7 +11,6 @@ import { Reveal } from "../features/motion/Reveal";
 import { ProjectHero } from "../features/projects/ProjectHero";
 import { ProjectSection } from "../features/projects/ProjectSection";
 import { ProjectSectionNav } from "../features/projects/ProjectSectionNav";
-import { ProjectMediaGallery } from "../features/projects/ProjectMediaGallery";
 import { RelatedProjects } from "../features/projects/RelatedProjects";
 import { CaseStudyPager } from "../features/projects/CaseStudyPager";
 import { CaseStudyUnavailable } from "../features/projects/CaseStudyUnavailable";
@@ -20,8 +19,8 @@ import { ArchitectureFlow } from "../features/projects/ArchitectureFlow";
 import {
   getProjectBySlug,
   getRelatedProjects,
+  visibleCaseStudySections,
 } from "../features/projects/project-selectors";
-import { getProjectMedia } from "../lib/project-assets";
 
 /**
  * Header for project routes: a back link to the index plus the project
@@ -102,11 +101,6 @@ function RelatedProjectsSection({ relatedProjects }) {
 }
 
 function ProjectInPreparation({ project, relatedProjects }) {
-  // Manifest-tracked screenshots render even before the written case
-  // study exists — real product imagery is verified evidence, while the
-  // narrative sections stay honestly "in preparation" until confirmed.
-  const { gallery: galleryImages } = getProjectMedia(project.slug);
-
   return (
     <Container as="div" className="section-spacing">
       <Reveal>
@@ -140,19 +134,6 @@ function ProjectInPreparation({ project, relatedProjects }) {
           </div>
         ) : null}
 
-        {galleryImages.length > 0 ? (
-          <div className="mt-10">
-            <h2 className="label text-(--color-text-muted)">Screenshots</h2>
-            <div className="mt-4">
-              <ProjectMediaGallery
-                title={project.title}
-                images={galleryImages}
-                captionsByFile={{}}
-              />
-            </div>
-          </div>
-        ) : null}
-
         <div className="mt-10">
           <CaseStudyUnavailable
             message={`The full case study for ${project.title} — role, architecture, decisions, challenges, and outcomes — is still in preparation.`}
@@ -169,21 +150,7 @@ function ProjectInPreparation({ project, relatedProjects }) {
   );
 }
 
-function CaseStudySectionBody({
-  section,
-  project,
-  galleryImages,
-  captionsByFile,
-}) {
-  if (section.type === "gallery") {
-    return (
-      <ProjectMediaGallery
-        title={project.title}
-        images={galleryImages}
-        captionsByFile={captionsByFile}
-      />
-    );
-  }
+function CaseStudySectionBody({ section, project }) {
   if (section.type === "diagram") {
     return (
       <>
@@ -198,15 +165,7 @@ function CaseStudySectionBody({
 }
 
 function CompleteCaseStudy({ project, relatedProjects }) {
-  const caseStudy = project.caseStudy;
-  const { gallery: galleryImages } = getProjectMedia(project.slug);
-  const captionsByFile = Object.fromEntries(
-    (caseStudy.gallery ?? []).map((entry) => [entry.file, entry.caption]),
-  );
-  // A gallery section without screenshots would be an empty heading.
-  const visibleSections = caseStudy.sections.filter(
-    (section) => section.type !== "gallery" || galleryImages.length > 0,
-  );
+  const visibleSections = visibleCaseStudySections(project.caseStudy.sections);
 
   return (
     <Container as="div" className="section-spacing">
@@ -216,19 +175,14 @@ function CompleteCaseStudy({ project, relatedProjects }) {
 
       <ProjectSectionNav sections={visibleSections} className="mt-10" />
 
-      <div className="mt-10 space-y-14">
+      <div className="mt-10 max-w-[46rem] space-y-14">
         {visibleSections.map((section) => (
           <ProjectSection
             key={section.id}
             id={section.id}
             heading={section.heading}
           >
-            <CaseStudySectionBody
-              section={section}
-              project={project}
-              galleryImages={galleryImages}
-              captionsByFile={captionsByFile}
-            />
+            <CaseStudySectionBody section={section} project={project} />
           </ProjectSection>
         ))}
       </div>

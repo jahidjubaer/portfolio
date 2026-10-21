@@ -57,6 +57,7 @@ function FilePicker({ accept, onFile, inputRef }) {
  *   value: { url: string, width: number, height: number } | null,
  *   onChange: (value: unknown) => void,
  *   kind: "photo" | "image",
+ *   smallWidth?: number,
  *   optional?: boolean,
  *   describedBy?: string,
  *   invalid?: boolean,
@@ -67,6 +68,7 @@ export function ImageControl({
   value,
   onChange,
   kind,
+  smallWidth,
   optional,
   describedBy,
   invalid,
@@ -122,7 +124,9 @@ export function ImageControl({
         inputRef={inputRef}
         accept={IMAGE_ACCEPT}
         onFile={(file) =>
-          run(async () => onChange(await uploadImage(kind, file)))
+          run(async () =>
+            onChange(await uploadImage(kind, file, { smallWidth })),
+          )
         }
       />
     </div>

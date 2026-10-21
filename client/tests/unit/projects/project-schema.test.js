@@ -77,11 +77,26 @@ describe("validateProjects", () => {
       }),
     ]);
     expect(
-      errors.some((error) => error.includes("need at least one section")),
+      errors.some((error) => error.includes("need at least one written")),
     ).toBe(true);
   });
 
-  it("flags a text section without a Markdown body", () => {
+  it("allows blank template sections next to a written one", () => {
+    const errors = validateProjects([
+      validProject({
+        caseStudyStatus: "complete",
+        caseStudy: {
+          sections: [
+            { id: "problem", heading: "Problem", type: "text", body: "A" },
+            { id: "hard-part", heading: "The hard part", type: "text" },
+          ],
+        },
+      }),
+    ]);
+    expect(errors).toEqual([]);
+  });
+
+  it("flags a complete case study whose sections are all blank", () => {
     const errors = validateProjects([
       validProject({
         caseStudyStatus: "complete",
@@ -91,7 +106,7 @@ describe("validateProjects", () => {
       }),
     ]);
     expect(
-      errors.some((error) => error.includes("text section needs a Markdown")),
+      errors.some((error) => error.includes("need at least one written")),
     ).toBe(true);
   });
 

@@ -100,7 +100,23 @@ describe("Sarabo's architecture", () => {
   });
 
   it("turns the Architecture section into a diagram and keeps its text", () => {
-    const { order, ...rest } = withArchitecture(sarabo);
+    // Sarabo before docs/14 moved it into the case-study template.
+    const before = {
+      ...sarabo,
+      caseStudy: {
+        ...sarabo.caseStudy,
+        architecture: undefined,
+        sections: [
+          {
+            id: "architecture",
+            heading: "Architecture",
+            type: "text",
+            body: "- **Express API** — handles repair requests.",
+          },
+        ],
+      },
+    };
+    const { order, ...rest } = withArchitecture(before);
     const result = projectSchema.safeParse({ ...rest, order: order ?? 0 });
     expect(result.success).toBe(true);
     const architecture = result.data.caseStudy.sections.find(

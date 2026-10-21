@@ -442,7 +442,13 @@ describe("AI drafts", () => {
         projectType: "Full-stack web app",
         stack: ["React"],
         capabilities: ["Booking"],
-        caseStudy: [{ heading: "What I built", body: "Booking flow." }],
+        caseStudy: {
+          problem: "",
+          whatIBuilt: "Booking flow.",
+          howItWorks: "",
+          hardPart: "",
+          result: "",
+        },
         seoTitle: "Sarabo",
         seoDescription: "Booking app.",
         missingContent: ["Add screenshots"],
@@ -457,12 +463,16 @@ describe("AI drafts", () => {
       seo: { title: "Sarabo", description: "Booking app." },
       caseStudy: {
         sections: [
+          { id: "problem", heading: "Problem", body: "" },
           {
             id: "what-i-built",
             heading: "What I built",
             type: "text",
             body: "Booking flow.",
           },
+          { id: "how-it-works", body: "" },
+          { id: "hard-part", body: "" },
+          { id: "result", heading: "Result and next", body: "" },
         ],
       },
     });
@@ -511,7 +521,7 @@ describe("AI drafts", () => {
         projectType: "Full-stack web app",
         stack: ["React", "Express"],
         capabilities: ["Booking"],
-        caseStudy: [],
+        caseStudy: {},
         seoTitle: "Sarabo",
         seoDescription: "Booking app.",
         missingContent: [],

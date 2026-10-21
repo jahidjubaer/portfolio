@@ -38,38 +38,33 @@ describe("Project detail route", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: "Sarabo" }),
     ).toBeInTheDocument();
-    [
-      "Overview",
-      "Roles",
-      "Workflow",
-      "Capabilities",
-      "Architecture",
-      "Implementation approach",
-      "Challenge, outcome and reflection",
-    ].forEach((heading) => {
-      expect(
-        screen.getByRole("heading", { level: 2, name: heading }),
-      ).toBeInTheDocument();
-    });
+    ["Problem", "What I built", "How it works", "Result and next"].forEach(
+      (heading) => {
+        expect(
+          screen.getByRole("heading", { level: 2, name: heading }),
+        ).toBeInTheDocument();
+      },
+    );
+    // "The hard part" is still blank, so it isn't shown, and nor is a
+    // screenshot gallery: the cover is the only picture.
+    expect(
+      screen.queryByRole("heading", { name: "The hard part" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByRole("img", { name: /cover|sarabo/i })).toHaveLength(
+      1,
+    );
   });
 
-  it("shows restrained, non-fabricated challenge, outcome, and reflection content", async () => {
+  it("states the result without invented numbers", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work/sarabo"],
     });
     render(<RouterProvider router={router} />);
 
     expect(
-      await screen.findByText(/Validation was one of the main implementation/),
+      await screen.findByText(/There are no usage numbers to report/),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /Quantitative product outcomes and usage metrics are not currently available/,
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Building Sarabo as a solo project/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/refining validation/)).toBeInTheDocument();
   });
 
   it("shows the confirmed role and timeline in project metadata", async () => {
@@ -82,16 +77,14 @@ describe("Project detail route", () => {
     expect(screen.getByText("July–August")).toBeInTheDocument();
   });
 
-  it("describes the workflow as a cautious lifecycle summary, not a fixed step sequence", async () => {
+  it("describes the repair-request lifecycle", async () => {
     const router = createMemoryRouter(routeConfig, {
       initialEntries: ["/work/sarabo"],
     });
     render(<RouterProvider router={router} />);
 
     expect(
-      await screen.findByText(
-        /Sarabo supports a repair-request lifecycle covering/,
-      ),
+      await screen.findByText(/service selection, submission, quotation/),
     ).toBeInTheDocument();
   });
 

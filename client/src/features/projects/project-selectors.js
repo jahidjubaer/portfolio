@@ -91,3 +91,14 @@ export function getProjectLiveUrl(project, snapshot = githubSnapshot) {
   if (live?.url) return live.url;
   return getProjectRepo(project, snapshot)?.homepage ?? null;
 }
+
+/**
+ * Sections with something to show: a diagram, or written text. The
+ * template's sections start blank and stay off the page until written.
+ * @param {import("../../data/projects").CaseStudySection[]} sections
+ */
+export function visibleCaseStudySections(sections) {
+  return sections.filter(
+    (section) => section.type === "diagram" || Boolean(section.body?.trim()),
+  );
+}

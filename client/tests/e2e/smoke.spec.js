@@ -310,10 +310,10 @@ test("Sarabo case-study section navigation jumps to the target section", async (
   });
   await expect(sectionNav).toBeVisible();
 
-  await sectionNav.getByRole("link", { name: "Architecture" }).click();
-  await expect(page).toHaveURL(/#architecture$/);
+  await sectionNav.getByRole("link", { name: "How it works" }).click();
+  await expect(page).toHaveURL(/#how-it-works$/);
   await expect(
-    page.getByRole("heading", { level: 2, name: "Architecture" }),
+    page.getByRole("heading", { level: 2, name: "How it works" }),
   ).toBeInViewport();
 });
 

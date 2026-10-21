@@ -46,7 +46,7 @@ test("phones get the finished diagram and every step listed", async ({
   await page.setViewportSize({ width: 360, height: 740 });
   await page.goto("/work/sarabo");
 
-  const section = page.locator("#architecture");
+  const section = page.locator("#how-it-works");
   await expect(section.locator("ol > li")).toHaveCount(7);
   await expect(section.getByRole("button")).toHaveCount(0);
   expect(await hasHorizontalOverflow(page)).toBe(false);

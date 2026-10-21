@@ -3,7 +3,7 @@ import { BookOpen, Globe, Lock } from "lucide-react";
 import { FocusBrackets } from "../../components/ui/FocusBrackets";
 import { ImageWithFallback } from "../../components/media/ImageWithFallback";
 import { GitHubIcon } from "../../components/icons/BrandIcons";
-import { getProjectMedia } from "../../lib/project-assets";
+import { getProjectCover } from "../../lib/project-assets";
 import { cn } from "../../lib/cn";
 import { formatRelativeDate } from "../../lib/relativeTime";
 import { useNow } from "../../lib/hydration";
@@ -62,7 +62,7 @@ export function ProjectCard({
   className = "",
 }) {
   const HeadingTag = headingLevel;
-  const { cover } = getProjectMedia(project.slug);
+  const cover = getProjectCover(project);
   const repositories = getProjectLinks(project, "repository");
   const repo = getProjectRepo(project);
   const liveUrl = getProjectLiveUrl(project);
@@ -89,7 +89,7 @@ export function ProjectCard({
             srcSet={cover.srcSet}
             sizes="(min-width: 640px) 400px, 100vw"
             fallbackSrc={cover.fallback}
-            alt={`${project.title} project cover`}
+            alt={cover.alt}
             className="h-full w-full object-cover object-top transition-transform duration-(--duration-slow) ease-(--ease-standard) motion-safe:group-hover:scale-[1.03]"
             loading={priorityImage ? "eager" : "lazy"}
             fetchPriority={priorityImage ? "high" : undefined}

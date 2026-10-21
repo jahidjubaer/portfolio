@@ -3,6 +3,7 @@ import { Sparkles } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { draftFromRepo } from "./admin-api";
 import { linkedRepoNames } from "./repo-links";
+import { mergeDraftSections } from "./draft-sections";
 
 const INPUT =
   "min-h-11 w-full rounded-(--radius-md) border border-(--color-border-strong) bg-(--color-canvas) px-3 text-(--color-text-primary)";
@@ -19,9 +20,9 @@ function draftLabel(busy, repoCount) {
 }
 
 /**
- * Merges an AI draft into the form values. A written case study and
- * missing-content notes are kept: the draft only fills an empty case
- * study and adds notes.
+ * Merges an AI draft into the form values. Written case-study text and
+ * missing-content notes are kept: the draft fills blank sections and
+ * adds notes.
  */
 function mergeDraft(kind, values, draft) {
   const { missingContent = [], ...fields } = draft;
@@ -32,11 +33,15 @@ function mergeDraft(kind, values, draft) {
       since: values.since || fields.since,
     };
   }
-  const hasCaseStudy = Boolean(values.caseStudy?.sections?.length);
-  const caseStudy =
-    hasCaseStudy || !fields.caseStudy
-      ? values.caseStudy
-      : { ...values.caseStudy, sections: fields.caseStudy.sections };
+  const caseStudy = fields.caseStudy
+    ? {
+        ...values.caseStudy,
+        sections: mergeDraftSections(
+          values.caseStudy?.sections ?? [],
+          fields.caseStudy.sections,
+        ),
+      }
+    : values.caseStudy;
   return {
     ...fields,
     caseStudy,

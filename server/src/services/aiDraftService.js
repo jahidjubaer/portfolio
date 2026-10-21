@@ -2,6 +2,7 @@ import { generateText, Output } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { z } from "zod";
 import { env } from "../config/env.js";
+import { CASE_STUDY_TEMPLATE } from "../schemas/case-study-template.js";
 import { fetchRepoContext } from "./githubApi.js";
 
 function httpError(status, message) {
@@ -54,6 +55,11 @@ function describeRepo(repo) {
   ].join("\n\n");
 }
 
+/** "what-i-built" → "whatIBuilt": the model's output keys are identifiers. */
+function draftKey(id) {
+  return id.replace(/-(\w)/g, (_, letter) => letter.toUpperCase());
+}
+
 const projectDraftSchema = z.object({
   title: z.string().describe("Human-readable project name"),
   summary: z
@@ -69,10 +75,19 @@ const projectDraftSchema = z.object({
     .array(z.string())
     .describe("3-6 concrete features, each a short phrase"),
   caseStudy: z
-    .array(z.object({ heading: z.string(), body: z.string() }))
-    .describe(
-      "2-4 short Markdown sections: Overview, What I built, Technical decisions. Only facts from the repo.",
-    ),
+    .object(
+      Object.fromEntries(
+        CASE_STUDY_TEMPLATE.map((section) => [
+          draftKey(section.id),
+          z
+            .string()
+            .describe(
+              `"${section.heading}": ${section.hint} Markdown. Only facts the repo shows; an empty string when it doesn't show them.`,
+            ),
+        ]),
+      ),
+    )
+    .describe("The five case-study sections, short and specific."),
   seoTitle: z.string().describe("Under 60 characters"),
   seoDescription: z.string().describe("Under 160 characters"),
   missingContent: z.array(z.string()),
@@ -93,14 +108,6 @@ const learningDraftSchema = z.object({
     ),
   missingContent: z.array(z.string()),
 });
-
-function slugify(text) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-}
 
 function requireAi() {
   if (!isAiConfigured()) {
@@ -173,16 +180,14 @@ export async function draftProjectFromRepos(repoNames) {
     projectType: result.projectType,
     stack: result.stack,
     capabilities: result.capabilities,
-    caseStudy: result.caseStudy.length
-      ? {
-          sections: result.caseStudy.map((section, index) => ({
-            id: slugify(section.heading) || `section-${index + 1}`,
-            heading: section.heading,
-            type: "text",
-            body: section.body,
-          })),
-        }
-      : null,
+    caseStudy: {
+      sections: CASE_STUDY_TEMPLATE.map((section) => ({
+        id: section.id,
+        heading: section.heading,
+        type: "text",
+        body: result.caseStudy[draftKey(section.id)]?.trim() ?? "",
+      })),
+    },
     seo: { title: result.seoTitle, description: result.seoDescription },
     missingContent: result.missingContent,
   };

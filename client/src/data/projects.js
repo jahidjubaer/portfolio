@@ -11,10 +11,10 @@ import { assertValidProjects } from "./project-schema";
  * @typedef {{
  *   id: string,
  *   heading: string,
- *   type: "text" | "gallery" | "diagram",
+ *   type: "text" | "diagram",
  *   body?: string,
- * }} CaseStudySection  `body` is Markdown; a gallery section has none, and
- *   a diagram section shows `caseStudy.architecture` below its optional body.
+ * }} CaseStudySection  `body` is Markdown (a blank one isn't shown), and a
+ *   diagram section shows `caseStudy.architecture` below its optional body.
  * @typedef {{
  *   nodes: { id: string, label: string, column: number, row: number }[],
  *   steps: { from: string, to: string, label: string }[],
@@ -23,7 +23,6 @@ import { assertValidProjects } from "./project-schema";
  *   role?: string,
  *   timeline?: string,
  *   sections: CaseStudySection[],
- *   gallery?: { file: string, caption: string }[],
  *   architecture?: Architecture,
  * }} CaseStudy
  * @typedef {{
@@ -38,6 +37,8 @@ import { assertValidProjects } from "./project-schema";
  *   links: ProjectLink[],
  *   caseStudyStatus: "complete" | "in-preparation" | "none",
  *   caseStudy: CaseStudy | null,
+ *   cover?: { url: string, width: number, height: number, small?: { url: string, width: number, height: number } },
+ *   coverAlt?: string,
  *   roleContext?: string,
  *   relatedSlugs: string[],
  *   seo: { title: string, description: string },

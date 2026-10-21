@@ -11,6 +11,7 @@ import {
   roleSchema,
 } from "../../src/schemas/content.js";
 import { toYearMonth, upgradeContent } from "../../src/db/content-upgrade.js";
+import { CASE_STUDY_TEMPLATE } from "../../src/schemas/case-study-template.js";
 
 const BLOB_IMAGE = {
   url: "https://store.public.blob.vercel-storage.com/photos/a-x1.webp",
@@ -159,22 +160,22 @@ describe("case study sections", () => {
     body: "Some **Markdown**.",
   });
 
-  it("accepts text and gallery sections", () => {
+  it("accepts text sections, including blank template ones", () => {
     const result = caseStudySchema.safeParse({
       role: "Sole Developer",
       sections: [
-        text("overview"),
-        { id: "gallery", heading: "Gallery", type: "gallery" },
+        text("problem"),
+        { id: "hard-part", heading: "The hard part", type: "text", body: "" },
       ],
     });
     expect(result.success).toBe(true);
   });
 
-  it("needs a body on text sections and unique ids", () => {
-    const empty = caseStudySchema.safeParse({
-      sections: [{ id: "overview", heading: "Overview", type: "text" }],
+  it("no longer has a gallery type, and needs unique ids", () => {
+    const gallery = caseStudySchema.safeParse({
+      sections: [{ id: "gallery", heading: "Gallery", type: "gallery" }],
     });
-    expect(empty.error.issues[0].path).toEqual(["sections", 0, "body"]);
+    expect(gallery.error.issues[0].path).toEqual(["sections", 0, "type"]);
 
     const duplicate = caseStudySchema.safeParse({
       sections: [text("overview"), text("overview")],
@@ -182,17 +183,16 @@ describe("case study sections", () => {
     expect(duplicate.success).toBe(false);
   });
 
-  it("seeds the Sarabo case study as sections", () => {
+  it("seeds the Sarabo case study in the five-section template", () => {
     const sarabo = buildSeedContent().projects.find(
       (project) => project.slug === "sarabo",
     );
-    expect(sarabo.caseStudy.sections[0]).toMatchObject({
-      id: "overview",
-      type: "text",
-    });
+    expect(sarabo.caseStudy.sections.map((section) => section.id)).toEqual(
+      CASE_STUDY_TEMPLATE.map((section) => section.id),
+    );
     expect(
-      sarabo.caseStudy.sections.find((section) => section.id === "gallery"),
-    ).toMatchObject({ type: "gallery" });
+      sarabo.caseStudy.sections.find((s) => s.id === "how-it-works"),
+    ).toMatchObject({ type: "diagram" });
   });
 });
 

@@ -108,6 +108,24 @@ export const PROJECT_STATUS_VALUES = [
 ];
 export const CASE_STUDY_STATUS_VALUES = ["complete", "in-preparation", "none"];
 
+/**
+ * An uploaded image in the Vercel Blob store. Width and height are read
+ * from the file before upload, so pages can reserve space (no layout shift).
+ */
+export const blobImageSchema = z.object(
+  {
+    url: url.refine(
+      (value) =>
+        URL.canParse(value) &&
+        new URL(value).hostname.endsWith(".blob.vercel-storage.com"),
+      "Upload the image instead of linking to it.",
+    ),
+    width: z.number().int().positive(),
+    height: z.number().int().positive(),
+  },
+  { error: "Upload an image." },
+);
+
 const projectLinkSchema = z.object({
   label: text,
   url: url.nullable(),
@@ -115,23 +133,18 @@ const projectLinkSchema = z.object({
 });
 
 /**
- * A case study is an ordered list of sections. Text sections hold a
- * Markdown body; a gallery section marks where the project's screenshots
- * appear (captions come from `gallery`, keyed by screenshot file name).
- * Section ids double as in-page anchors for the section navigation.
+ * A case study is an ordered list of sections, each with a Markdown body.
+ * A text section left blank is kept (the template's five sections start
+ * blank) but not shown on the site. Section ids double as in-page anchors
+ * for the section navigation.
  */
-export const caseStudySectionSchema = z
-  .object({
-    id: slug,
-    heading: text,
-    // "diagram" shows caseStudy.architecture, with optional text above it.
-    type: z.enum(["text", "gallery", "diagram"]),
-    body: z.string().trim().optional(),
-  })
-  .refine((section) => section.type !== "text" || Boolean(section.body), {
-    message: "Write the section text, or change its type to gallery.",
-    path: ["body"],
-  });
+export const caseStudySectionSchema = z.object({
+  id: slug,
+  heading: text,
+  // "diagram" shows caseStudy.architecture, with optional text above it.
+  type: z.enum(["text", "diagram"]),
+  body: z.string().trim().optional(),
+});
 
 const gridPosition = z
   .number({ error: "Enter 1, 2, or 3." })
@@ -215,7 +228,6 @@ export const caseStudySchema = z
           sections.length,
         "Each section needs a different ID.",
       ),
-    gallery: z.array(z.object({ file: text, caption: text })).optional(),
     architecture: architectureSchema.optional(),
   })
   .refine(
@@ -244,6 +256,12 @@ export const projectSchema = z
     stack: z.array(text),
     capabilities: z.array(text),
     links: z.array(projectLinkSchema),
+    // The one picture a project has: the card, the case-study hero, and the
+    // link preview. `small` is a 640 px copy for cards and srcset.
+    cover: blobImageSchema
+      .extend({ small: blobImageSchema.optional() })
+      .optional(),
+    coverAlt: text.optional(),
     caseStudyStatus: z.enum(CASE_STUDY_STATUS_VALUES),
     caseStudy: caseStudySchema.nullable(),
     roleContext: text.optional(),
@@ -253,30 +271,21 @@ export const projectSchema = z
   })
   .refine(
     (project) =>
-      project.caseStudyStatus !== "complete" || project.caseStudy !== null,
+      project.caseStudyStatus !== "complete" ||
+      Boolean(
+        project.caseStudy?.sections.some(
+          (section) => section.type === "diagram" || section.body,
+        ),
+      ),
     {
-      message: "A complete case study needs at least one section.",
+      message: "A complete case study needs at least one written section.",
       path: ["caseStudy"],
     },
-  );
-
-/**
- * An uploaded image in the Vercel Blob store. Width and height are read
- * from the file before upload, so pages can reserve space (no layout shift).
- */
-export const blobImageSchema = z.object(
-  {
-    url: url.refine(
-      (value) =>
-        URL.canParse(value) &&
-        new URL(value).hostname.endsWith(".blob.vercel-storage.com"),
-      "Upload the image instead of linking to it.",
-    ),
-    width: z.number().int().positive(),
-    height: z.number().int().positive(),
-  },
-  { error: "Upload an image." },
-);
+  )
+  .refine((project) => !project.cover || Boolean(project.coverAlt), {
+    message: "Describe the cover image for people who can't see it.",
+    path: ["coverAlt"],
+  });
 
 /**
  * "2024" or "2024-06". Months are optional because most early dates are

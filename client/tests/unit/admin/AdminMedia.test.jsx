@@ -78,25 +78,52 @@ describe("admin media editors", { timeout: 20_000 }, () => {
     })[0];
     expect(within(preview).getByText("repair").tagName).toBe("STRONG");
 
-    // The gallery section has no text to write. Found by its value: label
-    // lookups across this long form are slow in jsdom.
-    const galleryItem = within(sections)
-      .getByDisplayValue("Gallery")
-      .closest("div.grid.gap-3");
-    expect(within(galleryItem).queryByLabelText(/^Text/)).toBeNull();
+    // Each template section shows what belongs in it.
+    expect(
+      within(sections).getByText(/One real technical problem/),
+    ).toBeInTheDocument();
 
     await user.click(buttonWithText(document.body, "Save changes"));
     await screen.findByText("Saved.");
     const saved = lastWrite(api).body.caseStudy;
     expect(saved.sections[0]).toMatchObject({
-      id: "overview",
+      id: "problem",
       type: "text",
       body: "A **repair** platform.",
     });
+    // A diagram section keeps its text above the diagram.
     expect(
-      saved.sections.find((section) => section.type === "gallery"),
-    ).not.toHaveProperty("body");
+      saved.sections.find((section) => section.type === "diagram").body,
+    ).toMatch(/React client/);
     expect(saved.role).toBe("Sole Developer");
+  });
+
+  it("uploads a project cover with a 640 px copy and asks for a description", async () => {
+    const api = installFakeAdminApi({ withProjects: true });
+    const user = userEvent.setup();
+    renderAdmin("/admin/projects/sarabo");
+
+    await findSectionsGroup();
+    await user.upload(fileInput(IMAGE_ACCEPT), photoFile());
+    await screen.findByRole("button", { name: "Replace image" });
+    expect(uploads.uploadImage).toHaveBeenCalledWith(
+      "image",
+      expect.any(File),
+      { smallWidth: 640 },
+    );
+
+    await user.click(buttonWithText(document.body, "Save changes"));
+    expect(
+      await screen.findByText(/Describe the cover image/),
+    ).toBeInTheDocument();
+    await user.click(screen.getByLabelText(/^Cover image description/));
+    await user.paste("Sarabo's customer dashboard");
+    await user.click(buttonWithText(document.body, "Save changes"));
+    await screen.findByText("Saved.");
+    expect(lastWrite(api).body).toMatchObject({
+      cover: { width: 1600, height: 1067 },
+      coverAlt: "Sarabo's customer dashboard",
+    });
   });
 
   it("makes a section anchor from its heading", async () => {
@@ -143,7 +170,11 @@ describe("admin media editors", { timeout: 20_000 }, () => {
     expect(
       await screen.findByRole("button", { name: "Replace image" }),
     ).toBeInTheDocument();
-    expect(uploads.uploadImage).toHaveBeenCalledWith("photo", expect.any(File));
+    expect(uploads.uploadImage).toHaveBeenCalledWith(
+      "photo",
+      expect.any(File),
+      { smallWidth: undefined },
+    );
     expect(screen.getByText("1600 × 1067")).toBeInTheDocument();
 
     await user.type(screen.getByLabelText("Album"), "Cricket");

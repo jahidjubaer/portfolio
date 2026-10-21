@@ -13,7 +13,7 @@ export const PROJECT_STATUS_VALUES = [
 ];
 export const CASE_STUDY_STATUS_VALUES = ["complete", "in-preparation", "none"];
 export const LINK_TYPE_VALUES = ["live", "repository", "documentation"];
-export const SECTION_TYPE_VALUES = ["text", "gallery", "diagram"];
+export const SECTION_TYPE_VALUES = ["text", "diagram"];
 
 function isNonEmptyString(value) {
   return typeof value === "string" && value.trim().length > 0;
@@ -152,8 +152,6 @@ function validateCaseStudy(caseStudy, slug, caseStudyStatus) {
       errors.push(
         `${where}: type must be one of ${SECTION_TYPE_VALUES.join(", ")}.`,
       );
-    } else if (section.type === "text" && !isNonEmptyString(section.body)) {
-      errors.push(`${where}: a text section needs a Markdown body.`);
     } else if (section.type === "diagram" && !caseStudy.architecture) {
       errors.push(`${where}: a diagram section needs caseStudy.architecture.`);
     }
@@ -163,9 +161,12 @@ function validateCaseStudy(caseStudy, slug, caseStudyStatus) {
     errors.push(...validateArchitecture(caseStudy.architecture, slug));
   }
 
-  if (!caseStudy.sections?.length) {
+  const written = (caseStudy.sections ?? []).some(
+    (section) => section?.type === "diagram" || isNonEmptyString(section?.body),
+  );
+  if (!written) {
     errors.push(
-      `Project "${slug}": complete case studies need at least one section.`,
+      `Project "${slug}": complete case studies need at least one written section.`,
     );
   }
 

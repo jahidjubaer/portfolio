@@ -17,14 +17,14 @@ function canvasToBlob(canvas, type, quality) {
 }
 
 /**
- * Downscales a photo to at most 2400 px on its long edge and re-encodes it
+ * Downscales a photo to at most `maxEdge` (2400) px on its long edge and re-encodes it
  * as WebP (JPEG where the browser can't encode WebP). Camera files are
  * often 5–20 MB; this keeps uploads quick and pages light, and gives the
  * exact pixel size the public site needs to reserve space.
  * @param {File} file
  * @returns {Promise<{ blob: Blob, width: number, height: number }>}
  */
-export async function prepareImage(file) {
+export async function prepareImage(file, maxEdge = MAX_EDGE) {
   if (!IMAGE_INPUT_TYPES.includes(file.type)) {
     throw new Error("Choose a JPEG, PNG, WebP, or AVIF image.");
   }
@@ -34,7 +34,7 @@ export async function prepareImage(file) {
   } catch {
     throw new Error("That image couldn't be read. Try another file.");
   }
-  const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+  const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
   const width = Math.round(bitmap.width * scale);
   const height = Math.round(bitmap.height * scale);
   const canvas = document.createElement("canvas");
@@ -72,12 +72,28 @@ async function uploadBlob(kind, filename, body, contentType) {
 /**
  * @param {"photo" | "image"} kind
  * @param {File} file
- * @returns {Promise<{ url: string, width: number, height: number }>}
+ * @param {{ smallWidth?: number }} [options] also upload a copy this wide,
+ *   for cards and `srcset` (skipped when the image is already that narrow)
+ * @returns {Promise<{ url: string, width: number, height: number, small?: { url: string, width: number, height: number } }>}
  */
-export async function uploadImage(kind, file) {
+export async function uploadImage(kind, file, { smallWidth } = {}) {
   const { blob, width, height } = await prepareImage(file);
   const url = await uploadBlob(kind, file.name, blob, blob.type);
-  return { url, width, height };
+  if (!smallWidth || width <= smallWidth) return { url, width, height };
+  const smallEdge = Math.round((smallWidth * Math.max(width, height)) / width);
+  const small = await prepareImage(file, smallEdge);
+  const smallUrl = await uploadBlob(
+    kind,
+    file.name.replace(/(\.[^.]+)?$/, `-${smallWidth}w$1`),
+    small.blob,
+    small.blob.type,
+  );
+  return {
+    url,
+    width,
+    height,
+    small: { url: smallUrl, width: small.width, height: small.height },
+  };
 }
 
 /** @param {File} file @returns {Promise<string>} the PDF's public URL */

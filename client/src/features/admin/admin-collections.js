@@ -38,6 +38,10 @@ import {
   PROFILE_SECTIONS,
 } from "../../../../server/src/schemas/settings-defaults.js";
 import {
+  blankTemplateSections,
+  templateHint,
+} from "../../../../server/src/schemas/case-study-template.js";
+import {
   ACCENT_OPTIONS,
   FONT_OPTIONS,
 } from "../preferences/appearance-options";
@@ -483,15 +487,13 @@ export function slugify(text) {
 
 /**
  * The form always edits a case-study object; an empty one is saved as
- * null. Blank anchors come from the heading, and gallery sections drop
- * any leftover text.
+ * null. Blank anchors come from the heading.
  */
 export function normalizeProject(project) {
   const caseStudy = project.caseStudy ?? {};
   const sections = (caseStudy.sections ?? []).map((section) => ({
     ...section,
     id: section.id || slugify(section.heading),
-    body: section.type === "text" ? section.body : undefined,
   }));
   const isEmpty =
     sections.length === 0 && !caseStudy.role && !caseStudy.timeline;
@@ -505,7 +507,6 @@ export function normalizeProject(project) {
       : {
           ...caseStudy,
           sections,
-          gallery: caseStudy.gallery?.length ? caseStudy.gallery : undefined,
           architecture: hasArchitecture ? architecture : undefined,
         },
   };
@@ -515,7 +516,7 @@ const NEW_PROJECT = {
   status: "repository-available",
   featured: false,
   caseStudyStatus: "none",
-  caseStudy: null,
+  caseStudy: { sections: blankTemplateSections() },
   links: [],
   relatedSlugs: [],
   missingContent: [],
@@ -687,6 +688,21 @@ export const LISTS = {
         type: "checkbox",
         optional: true,
       },
+      {
+        name: "cover",
+        label: "Cover image",
+        type: "image",
+        uploadKind: "image",
+        smallWidth: 640,
+        optional: true,
+        hint: "The project's one picture: its card, the case study, and nowhere else. A 16:9 screenshot of the main screen works best. A 640 px copy is made for cards.",
+      },
+      {
+        name: "coverAlt",
+        label: "Cover image description",
+        optional: true,
+        hint: "What the picture shows, for people who can't see it, e.g. “Sarabo’s customer dashboard listing two repair requests”.",
+      },
       { name: "stack", label: "Tech stack", type: "lines" },
       { name: "capabilities", label: "Key features", type: "lines" },
       { name: "roleContext", label: "Your role", optional: true },
@@ -747,6 +763,7 @@ export const LISTS = {
         type: "objectList",
         itemLabel: "section",
         newItem: { type: "text" },
+        hint: "Every case study uses five sections: Problem, What I built, How it works, The hard part, Result and next. Keep each one short and factual. A section left blank isn't shown on the site.",
         fields: [
           { name: "heading", label: "Heading" },
           {
@@ -755,7 +772,6 @@ export const LISTS = {
             type: "select",
             options: [
               { value: "text", label: "Text (Markdown)" },
-              { value: "gallery", label: "Screenshot gallery" },
               { value: "diagram", label: "Architecture diagram" },
             ],
           },
@@ -763,10 +779,10 @@ export const LISTS = {
             name: "body",
             label: "Text",
             type: "markdown",
-            rows: 10,
+            rows: 8,
             optional: true,
-            showWhen: (section) => section.type !== "gallery",
             hint: "A diagram section shows this text above the diagram.",
+            hintFor: (section) => templateHint(section?.id),
           },
           {
             name: "id",
@@ -774,20 +790,6 @@ export const LISTS = {
             optional: true,
             hint: "For links like /work/sarabo#overview. Leave blank to make one from the heading.",
           },
-        ],
-      },
-      {
-        name: "caseStudy.gallery",
-        label: "Screenshot captions",
-        type: "objectList",
-        itemLabel: "caption",
-        fields: [
-          {
-            name: "file",
-            label: "Screenshot file",
-            hint: 'File name in the project screenshot folder, e.g. "screenshot-01.webp"',
-          },
-          { name: "caption", label: "Caption" },
         ],
       },
       {

@@ -140,85 +140,34 @@
         "timeline": "July–August",
         "sections": [
           {
-            "id": "overview",
-            "heading": "Overview",
+            "id": "problem",
+            "heading": "Problem",
             "type": "text",
-            "body": "Sarabo is a multi-role electronics-repair service platform. Customers submit repair requests and track progress; technicians manage assigned repairs; administrators oversee accounts, requests, and technician assignment across the platform.\n\nThis was a solo project. Jahid was responsible for the end-to-end development of the client and server applications."
+            "body": "A repair passes through three people: the customer who needs a device fixed, the administrator who assigns the job, and the technician who does it. Sarabo gives each of them their own view of the same repair request, from submission to payment."
           },
           {
-            "id": "roles",
-            "heading": "Roles",
+            "id": "what-i-built",
+            "heading": "What I built",
             "type": "text",
-            "body": "- **Customer** — Submits repair requests, tracks progress, reviews quotations, pays through Stripe, and leaves reviews.\n- **Technician** — Receives assigned repair requests and updates their progress through the repair lifecycle.\n- **Administrator** — Manages accounts and repair requests, and assigns technicians across the platform."
+            "body": "- **Three roles** with their own dashboards: customers submit and track repairs, technicians update the repairs assigned to them, administrators manage accounts and assign technicians.\n- **A repair-request lifecycle**: service selection, submission, quotation and review, assignment, progress tracking, and payment.\n- **Quotations and Stripe payments**: customers review a quotation and pay through Stripe.\n- **Authentication and role-based access** with Firebase.\n- **Notifications and customer reviews.**"
           },
           {
-            "id": "workflow",
-            "heading": "Workflow",
-            "type": "text",
-            "body": "Sarabo supports a repair-request lifecycle covering service selection, request submission, quotation and review, assignment-related handling, progress tracking and payment-related states."
-          },
-          {
-            "id": "capabilities",
-            "heading": "Capabilities",
-            "type": "text",
-            "body": "- Authentication and role-based access\n- Repair-request lifecycle tracking\n- Technician assignment\n- Quotation management\n- Notifications\n- Customer reviews\n- Stripe payment flow"
-          },
-          {
-            "id": "gallery",
-            "heading": "Gallery",
-            "type": "gallery"
-          },
-          {
-            "id": "architecture",
-            "heading": "Architecture",
+            "id": "how-it-works",
+            "heading": "How it works",
             "type": "diagram",
-            "body": "- **React client** — The customer, technician, and administrator interfaces.\n- **Firebase authentication** — Handles sign-in and role-based access across the client.\n- **Express API** — A Node.js and Express API deployed separately from the client, handling repair-request, quotation, and role logic.\n- **MongoDB** — Persists repair requests, quotations, roles, and reviews.\n- **Stripe** — Processes customer payments for completed quotations."
+            "body": "A React client, hosted on Firebase Hosting, talks to a Node.js and Express API that is deployed separately. Firebase handles sign-in; the API keeps repair requests, quotations, roles, and reviews in MongoDB; Stripe processes payment for a quotation."
           },
           {
-            "id": "decisions",
-            "heading": "Implementation approach",
+            "id": "hard-part",
+            "heading": "The hard part",
             "type": "text",
-            "body": "- The React client and the Express API are deployed separately — the client via Firebase Hosting, the API on its own deployment.\n- Firebase handles authentication while a custom Express and MongoDB API manages repair-request, quotation, and role data."
+            "body": ""
           },
           {
-            "id": "reflection",
-            "heading": "Challenge, outcome and reflection",
+            "id": "result",
+            "heading": "Result and next",
             "type": "text",
-            "body": "**Challenge:** Validation was one of the main implementation challenges during development. Detailed notes about the specific validation cases and the final solution are still being documented.\n\n**Outcome:** The project resulted in a working full-stack service platform that demonstrates role-based workflows, repair-request management, authentication, tracking and payment-related integration. Quantitative product outcomes and usage metrics are not currently available.\n\n**Reflection:** Building Sarabo as a solo project provided practical experience managing a full-stack application from client-side flows through server-side functionality. Validation emerged as an important area for further refinement and documentation."
-          }
-        ],
-        "gallery": [
-          {
-            "file": "screenshot-01.webp",
-            "caption": "Sarabo administrator dashboard"
-          },
-          {
-            "file": "screenshot-02.webp",
-            "caption": "Sarabo home interface"
-          },
-          {
-            "file": "screenshot-03.webp",
-            "caption": "Sarabo mobile view"
-          },
-          {
-            "file": "screenshot-04.webp",
-            "caption": "Sarabo payment interface"
-          },
-          {
-            "file": "screenshot-05.webp",
-            "caption": "Sarabo repair-request flow"
-          },
-          {
-            "file": "screenshot-06.webp",
-            "caption": "Sarabo technician dashboard"
-          },
-          {
-            "file": "screenshot-07.webp",
-            "caption": "Sarabo tracking interface"
-          },
-          {
-            "file": "screenshot-08.webp",
-            "caption": "Sarabo customer dashboard"
+            "body": "A working full-stack platform, live, built solo from the client to the server: role-based workflows, repair tracking, authentication, and Stripe payments. There are no usage numbers to report. Next: refining validation, the main challenge during development, and documenting how it works."
           }
         ],
         "architecture": {

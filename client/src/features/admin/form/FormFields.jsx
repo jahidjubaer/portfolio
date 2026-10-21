@@ -106,6 +106,7 @@ function Field({ field, path, draft, errors, onChange, isNew }) {
         value={value}
         onChange={(next) => onChange(path, next)}
         kind={field.uploadKind ?? "image"}
+        smallWidth={field.smallWidth}
         optional={field.optional}
         describedBy={describedBy}
         invalid={Boolean(error)}
@@ -418,7 +419,14 @@ function ObjectListField({ field, path, draft, errors, onChange, isNew }) {
               .map((sub) => (
                 <div key={sub.name} className={fieldSpan(sub)}>
                   <Field
-                    field={sub}
+                    field={
+                      sub.hintFor
+                        ? {
+                            ...sub,
+                            hint: sub.hintFor(items[index]) ?? sub.hint,
+                          }
+                        : sub
+                    }
                     path={`${path}.${index}.${sub.name}`}
                     draft={draft}
                     errors={errors}
