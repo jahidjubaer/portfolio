@@ -51,3 +51,19 @@ test("phones get the finished diagram and every step listed", async ({
   await expect(section.getByRole("button")).toHaveCount(0);
   expect(await hasHorizontalOverflow(page)).toBe(false);
 });
+
+test("the Learning page maps every distinct problem as a dot", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto("/learning");
+  const map = page.locator("figure", { hasText: "One dot per problem" });
+  const caption = await map
+    .getByText(/One dot per problem · \d+ distinct/)
+    .textContent();
+  const distinct = Number(caption.match(/(\d+) distinct/)[1]);
+  expect(distinct).toBeGreaterThan(0);
+  await expect(map.locator("circle.problem-dot")).toHaveCount(distinct);
+  await map.scrollIntoViewIfNeeded();
+  expect(await hasHorizontalOverflow(page)).toBe(false);
+});

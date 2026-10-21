@@ -59,12 +59,11 @@ describe("admin media editors", { timeout: 20_000 }, () => {
     })[0];
     expect(within(preview).getByText("repair").tagName).toBe("STRONG");
 
-    // The gallery section has no text to write.
-    const headings = within(sections).getAllByLabelText("Heading");
-    const galleryIndex = headings.findIndex(
-      (input) => input.value === "Gallery",
-    );
-    const galleryItem = headings[galleryIndex].closest("div.grid.gap-3");
+    // The gallery section has no text to write. Found by its value: label
+    // lookups across this long form are slow in jsdom.
+    const galleryItem = within(sections)
+      .getByDisplayValue("Gallery")
+      .closest("div.grid.gap-3");
     expect(within(galleryItem).queryByLabelText(/^Text/)).toBeNull();
 
     await user.click(screen.getByRole("button", { name: "Save changes" }));
@@ -75,7 +74,9 @@ describe("admin media editors", { timeout: 20_000 }, () => {
       type: "text",
       body: "A **repair** platform.",
     });
-    expect(saved.sections[galleryIndex]).not.toHaveProperty("body");
+    expect(
+      saved.sections.find((section) => section.type === "gallery"),
+    ).not.toHaveProperty("body");
     expect(saved.role).toBe("Sole Developer");
   });
 

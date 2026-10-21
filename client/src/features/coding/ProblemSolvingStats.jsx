@@ -9,6 +9,7 @@ import {
   practicePeriod,
 } from "../../data/coding";
 import { judgeLabel, judgeSource } from "./judges";
+import { ProblemMap } from "./ProblemMap";
 import { formatYearMonth } from "../../lib/dates";
 import { cn } from "../../lib/cn";
 
@@ -153,6 +154,8 @@ function DimikCard({ solved }) {
  * paused (set in the admin) the block says so and shows the period, so
  * old numbers never read as current activity. Without synced stats it
  * falls back to the profile's own summary.
+ * The dot map shows only in the wide layout (the Learning page), not
+ * the Resume's single column.
  * @param {{ columns?: 1 | 3, className?: string }} props
  */
 export function ProblemSolvingStats({ columns = 3, className }) {
@@ -226,6 +229,9 @@ export function ProblemSolvingStats({ columns = 3, className }) {
         ) : null}
       </dl>
 
+      {columns === 3 && judges.length && total !== null ? (
+        <ProblemMap judges={judges} dimikSolved={dimikSolved} total={total} />
+      ) : null}
       {dimikSolved !== null ? <DimikCard solved={dimikSolved} /> : null}
       {judges.length ? <JudgeTable judges={judges} /> : null}
 

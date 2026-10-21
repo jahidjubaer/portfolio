@@ -118,8 +118,10 @@ describe("ProblemSolvingStats", () => {
     coding.stats = STATS;
     coding.dimik = 40;
     render(<ProblemSolvingStats />);
-    expect(screen.getByText("Dimik OJ")).toBeVisible();
-    expect(screen.getByText("40")).toBeVisible();
+    // The card, not the map's label (the map is a picture, aria-hidden).
+    const card = screen.getByText("Dimik OJ", { selector: "p" }).parentElement;
+    expect(card).toBeVisible();
+    expect(within(card).getByText("40")).toBeVisible();
     expect(screen.getByText("181")).toBeVisible();
     expect(screen.getByText("on 3 judges, each counted once")).toBeVisible();
   });

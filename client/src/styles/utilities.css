@@ -169,3 +169,29 @@
     opacity: 0;
   }
 }
+
+/* Problem-solving map (features/coding/ProblemMap.jsx): dots wait hidden
+   while the map is below the fold, then settle in one by one. */
+.problem-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.problem-map-armed .problem-dot {
+  opacity: 0;
+}
+
+.problem-map-playing .problem-dot {
+  animation: problem-dot-in var(--duration-standard) var(--ease-standard) both;
+}
+
+@keyframes problem-dot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
